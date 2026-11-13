@@ -1,0 +1,325 @@
+:root {
+  color-scheme: dark;
+
+  /* PRTS Tactical Terminal 背景层级 */
+  --color-bg-base: #171a1d;       /* 终端底色 (深灰黑，非纯黑) */
+  --color-bg-sub: #20262b;        /* 二级容器、侧栏、卡组抽屉 */
+  --color-bg-panel: #293137;      /* 信息面板、卡牌浮层 */
+  --color-bg-raised: #343d43;     /* 高亮弹出层、悬浮选中 */
+
+  /* PRTS 文字层级 */
+  --color-text-primary: #e8e9e6;   /* 主要高对比文本 */
+  --color-text-secondary: #aab2b5; /* 辅助文字、技能说明、参数 */
+  --color-text-muted: #778187;     /* 非重点编号、修饰标注 */
+
+  /* 功能与强调色 (Arknights 战术黄) */
+  --color-accent: #e5a52b;         /* 明日方舟战术黄 / 关键操作 */
+  --color-accent-hover: #f59e0b;
+  --color-accent-soft: rgba(229, 165, 43, 0.22);
+  --color-ally: #38bdf8;           /* 友方蓝 (Sky Blue / 玩家 A) */
+  --color-enemy: #fb7185;          /* 敌方红 (Rose / 玩家 B) */
+  --color-success: #34d399;        /* 成功 / 就绪 / 治疗 */
+  --color-warning: #fbbf24;        /* 警告 / 费用不足 */
+  --color-danger: #f87171;         /* 危险 / 受击 / 阵亡 */
+
+  /* 结构分割与线条 */
+  --color-border: #4a555b;         /* 面板线框 */
+  --color-border-subtle: #2d353b;  /* 次级细分隔线 */
+
+  /* 稀有度主题色 */
+  --rarity-3: #94a3b8;            /* 3星: 灰蓝/标准干员 */
+  --rarity-4: #a855f7;            /* 4星: 紫色/精英干员 */
+  --rarity-5: #eab308;            /* 5星: 金黄/资深干员 */
+  --rarity-6: #f97316;            /* 6星: 橙红/高级资深干员 */
+
+  /* 战术切角剪裁路径 */
+  --clip-cut-sm: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  --clip-cut-md: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  --clip-cut-lg: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+
+  /* 既有变量向后兼容映射 */
+  --bg: var(--color-bg-base);
+  --panel: var(--color-bg-sub);
+  --panel-2: var(--color-bg-panel);
+  --line: var(--color-border);
+  --text: var(--color-text-primary);
+  --muted: var(--color-text-secondary);
+  --accent: var(--color-accent);
+  --accent-soft: var(--color-accent-soft);
+  --good: var(--color-success);
+  --warn: var(--color-warning);
+  --bad: var(--color-danger);
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1 { font-size: 22px; margin: 0 0 8px; }
+h2 { font-size: 16px; margin: 0 0 8px; }
+b { color: #fff; }
+
+.btn {
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.big { padding: 12px 28px; font-size: 16px; }
+
+.note, .hint { color: var(--muted); font-size: 12px; }
+.empty-hint { color: var(--muted); font-size: 12px; }
+
+/* ---------- Online/Bot 过渡状态页 ---------- */
+.mulligan {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 48px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+
+
+/* ---------- Phase 4: CardFrame CSS 变量系统 (Rarity & State Tokens) ---------- */
+.card-frame {
+  --card-accent: var(--rarity-3);
+  --card-border: #3c4752;
+  --card-glow: transparent;
+  --card-corner-cut: 10px;
+  --card-surface: #171c22;
+  --card-tint: rgba(148, 163, 184, 0.08);
+  background-color: var(--card-surface);
+  border-color: var(--card-border);
+  box-shadow: var(--card-glow);
+}
+
+.card-frame[data-rarity="3"] {
+  --card-accent: var(--rarity-3);
+  --card-border: rgba(148, 163, 184, 0.45);
+  --card-tint: rgba(148, 163, 184, 0.08);
+}
+
+.card-frame[data-rarity="4"] {
+  --card-accent: var(--rarity-4);
+  --card-border: rgba(168, 85, 247, 0.5);
+  --card-tint: rgba(168, 85, 247, 0.12);
+}
+
+.card-frame[data-rarity="5"] {
+  --card-accent: var(--rarity-5);
+  --card-border: rgba(234, 179, 8, 0.58);
+  --card-tint: rgba(234, 179, 8, 0.14);
+}
+
+.card-frame[data-rarity="6"] {
+  --card-accent: var(--rarity-6);
+  --card-border: rgba(249, 115, 22, 0.68);
+  --card-tint: rgba(249, 115, 22, 0.16);
+}
+
+.card-frame[data-interactive="true"]:hover {
+  border-color: var(--card-accent);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), 0 0 12px color-mix(in srgb, var(--card-accent) 28%, transparent);
+}
+
+.card-frame[data-state="selected"] {
+  --card-border: #e5a52b;
+  border-color: #e5a52b;
+  box-shadow: 0 0 0 2px rgba(229, 165, 43, 0.45), 0 10px 24px rgba(229, 165, 43, 0.25);
+}
+
+.card-frame[data-state="in-deck"] {
+  border-color: rgba(56, 189, 248, 0.7);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35);
+}
+
+.card-frame[data-state="unplayable"] {
+  opacity: 0.72;
+}
+
+.card-frame[data-state="disabled"] {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+}
+
+.card-frame:focus-visible {
+  outline: 2px solid #e5a52b;
+  outline-offset: 2px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.14s ease-out both;
+}
+
+/* ---------- Phase 6: 轻量战斗与视觉反馈动效（仅合成属性 transform / opacity） ---------- */
+@keyframes deployLand {
+  0% { opacity: 0.45; transform: translateY(-8px) scale(1.07); }
+  65% { opacity: 1; transform: translateY(1px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes slotPulseFlash {
+  0% { opacity: 0.9; transform: scale(0.96); }
+  100% { opacity: 0; transform: scale(1.03); }
+}
+
+@keyframes hitShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  45% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes hitFlashOverlay {
+  0% { opacity: 0.65; }
+  100% { opacity: 0; }
+}
+
+@keyframes meleeLungeUp {
+  0% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-9px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes meleeLungeDown {
+  0% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(9px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes rangedBoltUp {
+  0% { opacity: 0; transform: translateY(18px) scaleY(0.5); }
+  25% { opacity: 1; transform: translateY(4px) scaleY(1.1); }
+  100% { opacity: 0; transform: translateY(-28px) scaleY(0.8); }
+}
+
+@keyframes rangedBoltDown {
+  0% { opacity: 0; transform: translateY(-18px) scaleY(0.5); }
+  25% { opacity: 1; transform: translateY(-4px) scaleY(1.1); }
+  100% { opacity: 0; transform: translateY(28px) scaleY(0.8); }
+}
+
+@keyframes floatNumberUp {
+  0% { opacity: 0; transform: translateY(6px) scale(0.88); }
+  20% { opacity: 1; transform: translateY(-2px) scale(1.05); }
+  75% { opacity: 1; transform: translateY(-16px) scale(1); }
+  100% { opacity: 0; transform: translateY(-24px) scale(0.96); }
+}
+
+@keyframes ghostFadeOut {
+  0% { opacity: 0.95; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9) translateY(-6px); }
+}
+
+@keyframes skillBurstRing {
+  0% { opacity: 0.9; transform: scale(0.92); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+
+@keyframes turnBannerSlide {
+  0% { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  18% { opacity: 1; transform: translateY(0) scale(1); }
+  82% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-6px) scale(0.98); }
+}
+
+@keyframes baseHitPulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.anim-deploy-land { animation: deployLand 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-slot-flash { animation: slotPulseFlash 0.32s ease-out both; }
+.anim-hit-shake { animation: hitShake 0.2s ease-out both; }
+.anim-hit-flash { animation: hitFlashOverlay 0.22s ease-out both; }
+.anim-melee-lunge-up { animation: meleeLungeUp 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-melee-lunge-down { animation: meleeLungeDown 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-ranged-bolt-up { animation: rangedBoltUp 0.26s ease-out both; }
+.anim-ranged-bolt-down { animation: rangedBoltDown 0.26s ease-out both; }
+.anim-float-number { animation: floatNumberUp 0.68s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-ghost-fade { animation: ghostFadeOut 0.36s ease-out both; }
+.anim-skill-burst { animation: skillBurstRing 0.32s ease-out both; }
+.anim-turn-banner { animation: turnBannerSlide 0.46s ease-out both; }
+.anim-base-hit { animation: baseHitPulse 0.28s ease-out both; }
+
+.pb-safe {
+  padding-bottom: max(0.375rem, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card-frame,
+  .card.interactive:hover,
+  .animate-fade-in,
+  .animate-pulse,
+  .animate-ping,
+  .animate-spin,
+  .anim-deploy-land,
+  .anim-slot-flash,
+  .anim-hit-shake,
+  .anim-hit-flash,
+  .anim-melee-lunge-up,
+  .anim-melee-lunge-down,
+  .anim-ranged-bolt-up,
+  .anim-ranged-bolt-down,
+  .anim-float-number,
+  .anim-ghost-fade,
+  .anim-skill-burst,
+  .anim-turn-banner,
+  .anim-base-hit {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ---------- 日志滚动区 ---------- */
+.log-view { max-height: 70vh; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+.log-omitted { color: var(--muted); font-size: 11px; margin-bottom: 4px; }
+.log-empty { color: var(--muted); }
+
+/* ---------- 联机等待与中断弹窗 ---------- */
+.status-box {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 24px; color: #ffe08a; font-size: 15px; margin: 12px 0;
+}
+
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+.modal-card {
+  background: var(--panel); border: 1px solid var(--bad); border-radius: 14px;
+  padding: 28px 36px; max-width: 480px; width: 90%; text-align: center;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.modal-card h2 { color: #ffadad; margin: 0; font-size: 20px; }
+
+@media (max-width: 900px) {
+  .log-view { max-height: 40vh; }
+}

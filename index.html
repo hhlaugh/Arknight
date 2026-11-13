@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>舟塔自走牌</title>
+    <meta name="description" content="明日方舟主题卡牌自走策略对战游戏「舟塔自走牌」，支持单人人机、本地双人热座及 WebRTC P2P 免服好友联机对战。" />
+    <meta property="og:title" content="舟塔自走牌" />
+    <meta property="og:description" content="明日方舟主题卡牌自走策略对战游戏「舟塔自走牌」，支持单人人机、本地双人热座及 WebRTC P2P 免服好友联机对战。" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>" />
+    <link rel="stylesheet" crossorigin href="./assets/index.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // GitHub Pages static fallback:
+      // When hosted on GitHub Pages static web server without Vite runtime,
+      // load the bundled assets/index.js if /src/main.tsx was not transpiled.
+      window.addEventListener('DOMContentLoaded', function () {
+        if (!window.__MRFZ_LOADED__) {
+          var tag = document.createElement('script');
+          tag.type = 'module';
+          tag.crossOrigin = 'anonymous';
+          tag.src = './assets/index.js';
+          document.body.appendChild(tag);
+        }
+      });
+    </script>
+  </body>
+</html>
