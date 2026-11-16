@@ -188,26 +188,29 @@ b { color: #fff; }
 
 @keyframes hitShake {
   0% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  45% { transform: translateX(4px); }
+  20% { transform: translateX(-5px); }
+  45% { transform: translateX(5px); }
   70% { transform: translateX(-2px); }
   100% { transform: translateX(0); }
 }
 
 @keyframes hitFlashOverlay {
-  0% { opacity: 0.65; }
-  100% { opacity: 0; }
+  0% { opacity: 0.85; filter: brightness(2.2) saturate(0.6); }
+  45% { opacity: 0.55; filter: brightness(1.3); }
+  100% { opacity: 0; filter: brightness(1); }
 }
 
 @keyframes meleeLungeUp {
   0% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(-9px) scale(1.03); }
+  40% { transform: translateY(-13px) scale(1.06); }
+  70% { transform: translateY(-2px) scale(1.01); }
   100% { transform: translateY(0) scale(1); }
 }
 
 @keyframes meleeLungeDown {
   0% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(9px) scale(1.03); }
+  40% { transform: translateY(13px) scale(1.06); }
+  70% { transform: translateY(2px) scale(1.01); }
   100% { transform: translateY(0) scale(1); }
 }
 
@@ -267,6 +270,75 @@ b { color: #fff; }
 .anim-turn-banner { animation: turnBannerSlide 0.46s ease-out both; }
 .anim-base-hit { animation: baseHitPulse 0.28s ease-out both; }
 
+/* ---------- 攻击瞬间金色高光（攻击者叠加层） ---------- */
+@keyframes attackGlow {
+  0% { opacity: 0; box-shadow: 0 0 0 rgba(229, 165, 43, 0); }
+  40% { opacity: 1; box-shadow: 0 0 16px rgba(229, 165, 43, 0.8), inset 0 0 12px rgba(255, 224, 130, 0.55); }
+  100% { opacity: 0; box-shadow: 0 0 0 rgba(229, 165, 43, 0); }
+}
+.anim-attack-glow { animation: attackGlow 0.24s ease-out both; }
+
+/* ---------- 5★/6★ 部署入场光柱 ---------- */
+@keyframes deployRarityBeam {
+  0% { opacity: 0; transform: translateY(-60%) scaleY(0.6); }
+  35% { opacity: 1; transform: translateY(0) scaleY(1); }
+  100% { opacity: 0; transform: translateY(10%) scaleY(1.15); }
+}
+@keyframes deployRarityRing {
+  0% { opacity: 0.85; transform: scale(0.7); }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+.anim-deploy-rarity-5 { animation: deployRarityBeam 0.42s ease-out both; }
+.anim-deploy-rarity-6 { animation: deployRarityBeam 0.5s ease-out both, deployRarityRing 0.5s ease-out both; }
+
+/* ---------- 寻访揭示特效（4★ 快翻 / 5★ 金紫脉冲 / 6★ 爆发光柱） ---------- */
+@keyframes gachaRevealPop {
+  0% { opacity: 0; transform: translateY(10px) scale(0.92); }
+  60% { opacity: 1; transform: translateY(-3px) scale(1.03); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes gachaRevealGold {
+  0% { opacity: 0; transform: scale(0.78) translateY(8px); filter: brightness(2.4); }
+  30% { opacity: 1; transform: scale(1.07) translateY(-2px); filter: brightness(1.5); }
+  55% { transform: scale(1.01) translateY(0); filter: brightness(1.15); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: brightness(1); }
+}
+@keyframes gachaGoldBurst {
+  0% { opacity: 0; transform: scale(0.5); }
+  25% { opacity: 0.95; transform: scale(1.12); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+@keyframes gachaGoldBeam {
+  0% { opacity: 0; transform: translateY(-70%) scaleY(0.7); }
+  30% { opacity: 1; transform: translateY(0) scaleY(1); }
+  100% { opacity: 0; transform: translateY(35%) scaleY(1.2); }
+}
+@keyframes gachaScreenShake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 2px); }
+  40% { transform: translate(3px, -2px); }
+  60% { transform: translate(-2px, 1px); }
+  80% { transform: translate(2px, -1px); }
+}
+@keyframes gachaLightSweep {
+  0% { opacity: 0; transform: translateX(-130%) skewX(-18deg); }
+  35% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateX(150%) skewX(-18deg); }
+}
+@keyframes progressShine {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(340%); }
+}
+.gacha-reveal-4 { animation: gachaRevealPop 0.26s ease-out both; }
+.gacha-reveal-5 { animation: gachaRevealGold 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gacha-reveal-6 { animation: gachaRevealGold 0.68s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gacha-burst-5 { animation: gachaGoldBurst 0.55s ease-out both; }
+.gacha-burst-6 { animation: gachaGoldBurst 0.75s ease-out both; }
+.gacha-beam-6 { animation: gachaGoldBeam 0.65s ease-out both; }
+.gacha-shake { animation: gachaScreenShake 0.42s ease-out both; }
+.gacha-sweep { animation: gachaLightSweep 0.95s ease-out 0.18s both; }
+.gacha-progress-shine { animation: progressShine 2.4s linear infinite; }
+
 .pb-safe {
   padding-bottom: max(0.375rem, env(safe-area-inset-bottom));
 }
@@ -291,7 +363,19 @@ b { color: #fff; }
   .anim-ghost-fade,
   .anim-skill-burst,
   .anim-turn-banner,
-  .anim-base-hit {
+  .anim-base-hit,
+  .anim-attack-glow,
+  .anim-deploy-rarity-5,
+  .anim-deploy-rarity-6,
+  .gacha-reveal-4,
+  .gacha-reveal-5,
+  .gacha-reveal-6,
+  .gacha-burst-5,
+  .gacha-burst-6,
+  .gacha-beam-6,
+  .gacha-shake,
+  .gacha-sweep,
+  .gacha-progress-shine {
     transition: none !important;
     animation: none !important;
     transform: none !important;

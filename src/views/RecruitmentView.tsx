@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CARD_BY_ID, DEMO_CARDS } from '../client/demoData';
 import type { UiCardDefinition } from '../client/demoData';
 import { DEFAULT_POOL, GACHA_CONFIG, derivePoolMembers } from '../data/load-gacha-data';
@@ -32,18 +32,42 @@ export function RecruitmentView({ onBack }: RecruitmentViewProps) {
   const [collection, setCollection] = useState(() => getActiveCollection());
   const [pending, setPending] = useState<PendingReveal | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const revealGridRef = useRef<HTMLDivElement | null>(null);
+  const prefersReducedMotion = useMemo(
+    () =>
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    [],
+  );
+  const rarityOf = (cardId: CardFrameCardId) => CARD_BY_ID.get(cardId)?.rarity ?? 0;
 
   const membersByRarity = useMemo(() => derivePoolMembers(DEMO_CARDS, DEFAULT_POOL).byRarity, []);
   const economy = GACHA_CONFIG.economy;
 
-  // 十连逐张揭示（可跳过）：只回放已落库结果
+  // 十连逐张揭示（可跳过）：只回放已落库结果；揭示节奏按稀有度分级制造期待感
   useEffect(() => {
     if (!pending || pending.revealed >= pending.outcome.results.length) return;
+    const nextRarity = rarityOf(pending.outcome.results[pending.revealed]);
+    const delay = prefersReducedMotion ? 90 : nextRarity >= 6 ? 850 : nextRarity === 5 ? 550 : 180;
     const timer = window.setTimeout(() => {
       setPending((prev) => (prev ? { ...prev, revealed: Math.min(prev.outcome.results.length, prev.revealed + 1) } : prev));
-    }, 130);
+      if (!prefersReducedMotion && nextRarity >= 6) {
+        // 6★ 揭示瞬间轻微屏震（Web Animations API，不重挂载节点）
+        revealGridRef.current?.animate?.(
+          [
+            { transform: 'translate(0, 0)' },
+            { transform: 'translate(-3px, 2px)' },
+            { transform: 'translate(3px, -2px)' },
+            { transform: 'translate(0, 0)' },
+          ],
+          { duration: 420, easing: 'ease-out' },
+        );
+      }
+    }, delay);
     return () => window.clearTimeout(timer);
-  }, [pending]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pending, prefersReducedMotion]);
 
   const pull = (count: 1 | 10) => {
     const current = getActiveCollection();
@@ -74,16 +98,47 @@ export function RecruitmentView({ onBack }: RecruitmentViewProps) {
   const tenCost = DEFAULT_POOL.cost.ten;
   const allRevealed = pending !== null && pending.revealed >= pending.outcome.results.length;
   const conversionTotal = pending?.outcome.originiteGained ?? 0;
+  const maxResultRarity = pending ? Math.max(...pending.outcome.results.map((id) => rarityOf(id))) : 0;
 
   const renderResultCard = (cardId: CardFrameCardId, index: number) => {
     const definition = CARD_BY_ID.get(cardId);
+    const rarity = definition?.rarity ?? 0;
+    const revealCls = prefersReducedMotion ? '' : `gacha-reveal-${Math.min(Math.max(rarity, 4), 6)}`;
     return (
-      <div key={`${cardId}-${index}`} className="relative">
-        <CardFrame cardId={cardId} definition={definition} variant="deck" className="w-full" />
-        {definition && definition.rarity >= 6 && (
-          <div className="absolute -top-1 -left-1 z-10 px-1 py-0.5 bg-amber-500 text-black text-[9px] font-black rounded-sm pointer-events-none">
+      <div key={`${cardId}-${index}`} className={`relative ${revealCls}`}>
+        <CardFrame
+          cardId={cardId}
+          definition={definition}
+          variant="deck"
+          className={`w-full ${
+            rarity >= 6
+              ? 'ring-2 ring-amber-400 shadow-[0_0_16px_rgba(245,185,66,0.6)]'
+              : rarity === 5
+                ? 'ring-1 ring-fuchsia-400/80 shadow-[0_0_10px_rgba(232,121,249,0.45)]'
+                : ''
+          }`}
+        />
+        {rarity >= 6 && (
+          <div className="absolute -top-1 -left-1 z-20 px-1.5 py-0.5 bg-amber-400 text-black text-[10px] font-black rounded-sm pointer-events-none shadow-[0_0_8px_rgba(245,185,66,0.9)]">
             6★
           </div>
+        )}
+        {rarity === 5 && (
+          <div className="absolute -top-1 -left-1 z-20 px-1.5 py-0.5 bg-fuchsia-500 text-white text-[10px] font-black rounded-sm pointer-events-none shadow-[0_0_8px_rgba(232,121,249,0.8)]">
+            5★
+          </div>
+        )}
+        {!prefersReducedMotion && rarity === 5 && (
+          <div className="absolute inset-0 z-10 pointer-events-none gacha-burst-5 bg-[radial-gradient(circle_at_50%_45%,rgba(232,121,249,0.55),rgba(245,185,66,0.35)_45%,transparent_70%)]" />
+        )}
+        {!prefersReducedMotion && rarity >= 6 && (
+          <>
+            <div className="absolute inset-0 z-10 pointer-events-none gacha-burst-6 bg-[radial-gradient(circle_at_50%_40%,rgba(255,236,160,0.85),rgba(245,185,66,0.5)_45%,transparent_72%)]" />
+            <div className="absolute inset-x-2 inset-y-0 z-10 pointer-events-none gacha-beam-6 bg-gradient-to-b from-amber-200/90 via-amber-400/35 to-transparent" />
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+              <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent gacha-sweep" />
+            </div>
+          </>
         )}
       </div>
     );
@@ -140,8 +195,11 @@ export function RecruitmentView({ onBack }: RecruitmentViewProps) {
                 {since6Star >= DEFAULT_POOL.pity.softPityFrom ? ' · 天井提升中' : ''}
                 {since6Star > 0 ? ` · 距必出还剩 ${DEFAULT_POOL.pity.hardPityAt - since6Star} 抽` : ''}
               </div>
-              <div className="h-2 bg-[#0d1117] border border-[#2b353e] overflow-hidden">
+              <div className="relative h-2 bg-[#0d1117] border border-[#2b353e] overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-amber-700 to-amber-400 transition-all" style={{ width: `${pityPercent}%` }} />
+                {!prefersReducedMotion && (
+                  <div className="absolute inset-y-0 w-1/4 bg-gradient-to-r from-transparent via-white/60 to-transparent gacha-progress-shine pointer-events-none" />
+                )}
               </div>
               <div className="text-[9px] font-mono text-slate-500 mt-1">
                 重复转化返还：4★ +{economy.conversion['4']} · 5★ +{economy.conversion['5']} · 6★ +{economy.conversion['6']}（持有满 2 张后自动触发）
@@ -188,7 +246,11 @@ export function RecruitmentView({ onBack }: RecruitmentViewProps) {
                   </span>
                 )}
               </div>
-              <div className="grid grid-cols-5 gap-2" onClick={() => !allRevealed && setPending({ ...pending, revealed: pending.outcome.results.length })}>
+              <div
+                ref={revealGridRef}
+                className="grid grid-cols-5 gap-2"
+                onClick={() => !allRevealed && setPending({ ...pending, revealed: pending.outcome.results.length })}
+              >
                 {pending.outcome.results.map((cardId, index) =>
                   index < pending.revealed ? (
                     renderResultCard(cardId, index)
@@ -202,6 +264,17 @@ export function RecruitmentView({ onBack }: RecruitmentViewProps) {
                   ),
                 )}
               </div>
+              {allRevealed && maxResultRarity >= 5 && (
+                <div
+                  className={`animate-fade-in px-3 py-1.5 border text-center font-black tracking-widest text-sm ${
+                    maxResultRarity >= 6
+                      ? 'bg-gradient-to-r from-amber-950/80 via-amber-500/25 to-amber-950/80 border-amber-400 text-amber-300 shadow-[0_0_14px_rgba(245,185,66,0.4)]'
+                      : 'bg-gradient-to-r from-fuchsia-950/70 via-fuchsia-500/20 to-fuchsia-950/70 border-fuchsia-400/80 text-fuchsia-200'
+                  }`}
+                >
+                  {maxResultRarity >= 6 ? '★★★★★★ 六星干员，加入作战！' : '★★★★★ 五星干员，加入作战！'}
+                </div>
+              )}
             </div>
           )}
 

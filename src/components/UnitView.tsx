@@ -75,16 +75,18 @@ export function UnitView({
   const hasStatuses = combat.statuses.length > 0 || combat.equipment_ids.length > 0;
 
   const motionOff = Boolean(animState?.disableMotion);
+  const rarityDeployCls =
+    !motionOff && rarity >= 6 ? ' anim-deploy-rarity-6' : !motionOff && rarity === 5 ? ' anim-deploy-rarity-5' : '';
   const motionClass = motionOff
     ? ''
     : animState?.hit
       ? 'anim-hit-shake'
       : animState?.attackDirection === 'up'
-        ? 'anim-melee-lunge-up'
+        ? 'anim-melee-lunge-up anim-attack-glow'
         : animState?.attackDirection === 'down'
-          ? 'anim-melee-lunge-down'
+          ? 'anim-melee-lunge-down anim-attack-glow'
           : animState?.deployed
-            ? 'anim-deploy-land'
+            ? `anim-deploy-land${rarityDeployCls}`
             : '';
 
   const floatingPopups = animState?.floatingPopups ?? [];
@@ -137,9 +139,9 @@ export function UnitView({
           style={{ backgroundColor: rarityTheme.color }}
         />
 
-        {/* 受击瞬时红闪遮罩 */}
+        {/* 受击瞬时白闪+红晕遮罩 */}
         {!motionOff && animState?.hit && (
-          <div className="absolute inset-0 bg-rose-500/45 pointer-events-none z-20 anim-hit-flash" />
+          <div className="absolute inset-0 pointer-events-none z-20 anim-hit-flash bg-gradient-to-b from-white/75 via-rose-500/55 to-rose-600/65" />
         )}
 
         {/* 技能发动瞬时光环遮罩 */}
@@ -244,15 +246,25 @@ export function UnitView({
           aria-hidden="true"
           className="absolute inset-x-0 -top-1 flex flex-col items-center gap-0.5 pointer-events-none z-40"
         >
-          {floatingPopups.slice(0, 3).map((popup, idx) => (
+          {floatingPopups.slice(0, 3).map((popup, idx) => {
+            const numeric = Number.parseFloat(popup.label.replace(/[^\d.-]/g, ''));
+            const magnitude = Number.isFinite(numeric) ? Math.abs(numeric) : 0;
+            const sizeCls =
+              magnitude >= 3
+                ? 'text-[15px] px-2 py-0.5 shadow-[0_0_10px_rgba(244,63,94,0.65)]'
+                : magnitude >= 2
+                  ? 'text-[13px] px-1.5 py-0.2'
+                  : 'text-[11px] px-1.5 py-0.2';
+            return (
             <span
               key={popup.id}
               style={{ marginTop: `${idx * -2}px` }}
-              className={`px-1.5 py-0.2 border font-mono font-black text-[11px] leading-tight whitespace-nowrap anim-float-number ${POPUP_COLORS[popup.kind]}`}
+              className={`px-1.5 py-0.2 border font-mono font-black leading-tight whitespace-nowrap anim-float-number ${sizeCls} ${POPUP_COLORS[popup.kind]}`}
             >
               {popup.label}
             </span>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
