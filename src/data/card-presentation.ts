@@ -42,7 +42,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/fang/portrait.webp',
       avatar: '/assets/arknights/operators/fang/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '行动预备组A1队长' },
   },
   {
@@ -56,7 +56,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/plume/portrait.webp',
       avatar: '/assets/arknights/operators/plume/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '拉特兰铳骑士' },
   },
   {
@@ -70,7 +70,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/myrtle/portrait.webp',
       avatar: '/assets/arknights/operators/myrtle/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 25%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 25%' },
     source: { name: 'Arknights Official Assets', notes: '执旗手先锋' },
   },
   {
@@ -84,7 +84,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/courier/portrait.webp',
       avatar: '/assets/arknights/operators/courier/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '谢拉格邮差' },
   },
   {
@@ -98,7 +98,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/vigna/portrait.webp',
       avatar: '/assets/arknights/operators/vigna/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '冲锋手先锋' },
   },
   {
@@ -112,7 +112,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/texas/portrait.webp',
       avatar: '/assets/arknights/operators/texas/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '企鹅物流干员' },
   },
   {
@@ -126,7 +126,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/elysium/portrait.webp',
       avatar: '/assets/arknights/operators/elysium/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '罗德岛信使' },
   },
   {
@@ -140,7 +140,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/siege/portrait.webp',
       avatar: '/assets/arknights/operators/siege/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '格拉斯哥帮首领' },
   },
   {
@@ -154,7 +154,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/bagpipe/portrait.webp',
       avatar: '/assets/arknights/operators/bagpipe/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '维多利亚军人' },
   },
 
@@ -170,7 +170,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/melantha/portrait.webp',
       avatar: '/assets/arknights/operators/melantha/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '预备组A4组长' },
   },
   {
@@ -184,7 +184,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/midnight/portrait.webp',
       avatar: '/assets/arknights/operators/midnight/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '领主近卫' },
   },
   {
@@ -198,7 +198,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/cutter/portrait.webp',
       avatar: '/assets/arknights/operators/cutter/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '双剑剑豪' },
   },
   {
@@ -212,7 +212,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/utage/portrait.webp',
       avatar: '/assets/arknights/operators/utage/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '武者近卫' },
   },
   {
@@ -226,7 +226,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/lappland/portrait.webp',
       avatar: '/assets/arknights/operators/lappland/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '叙拉古干员' },
   },
   {
@@ -240,7 +240,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/specter/portrait.webp',
       avatar: '/assets/arknights/operators/specter/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '深海猎人' },
   },
   {
@@ -254,7 +254,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/silverash/portrait.webp',
       avatar: '/assets/arknights/operators/silverash/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '谢拉格领主' },
   },
   {
@@ -268,7 +268,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/thorns/portrait.webp',
       avatar: '/assets/arknights/operators/thorns/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '伊比利亚至高之术' },
   },
   {
@@ -282,7 +282,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/surtr/portrait.webp',
       avatar: '/assets/arknights/operators/surtr/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '黄昏魔剑' },
   },
 
@@ -298,7 +298,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/beagle/portrait.webp',
       avatar: '/assets/arknights/operators/beagle/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '行动预备组A1' },
   },
   {
@@ -312,7 +312,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/spot/portrait.webp',
       avatar: '/assets/arknights/operators/spot/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '庇护卫士' },
   },
   {
@@ -326,7 +326,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/cuora/portrait.webp',
       avatar: '/assets/arknights/operators/cuora/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '坚守铁卫' },
   },
   {
@@ -340,7 +340,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/gummy/portrait.webp',
       avatar: '/assets/arknights/operators/gummy/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '乌萨斯学生自治团' },
   },
   {
@@ -354,7 +354,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/bubble/portrait.webp',
       avatar: '/assets/arknights/operators/bubble/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '萨尔贡勇士' },
   },
   {
@@ -368,7 +368,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/liskarm/portrait.webp',
       avatar: '/assets/arknights/operators/liskarm/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '黑钢国际' },
   },
   {
@@ -382,7 +382,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/nearl/portrait.webp',
       avatar: '/assets/arknights/operators/nearl/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '耀骑士' },
   },
   {
@@ -396,7 +396,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/saria/portrait.webp',
       avatar: '/assets/arknights/operators/saria/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '莱茵生命主任' },
   },
   {
@@ -410,7 +410,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/hoshiguma/portrait.webp',
       avatar: '/assets/arknights/operators/hoshiguma/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '龙门近卫局督察' },
   },
 
@@ -426,7 +426,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/kroos/portrait.webp',
       avatar: '/assets/arknights/operators/kroos/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '行动预备组A1' },
   },
   {
@@ -440,7 +440,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/jessica/portrait.webp',
       avatar: '/assets/arknights/operators/jessica/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '黑钢国际干员' },
   },
   {
@@ -454,7 +454,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/meteor/portrait.webp',
       avatar: '/assets/arknights/operators/meteor/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '卡西米尔森林巡林者' },
   },
   {
@@ -468,7 +468,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/may/portrait.webp',
       avatar: '/assets/arknights/operators/may/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '维多利亚皇家侦探' },
   },
   {
@@ -482,7 +482,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/platinum/portrait.webp',
       avatar: '/assets/arknights/operators/platinum/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '无胄盟刺客' },
   },
   {
@@ -496,7 +496,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/bluepoison/portrait.webp',
       avatar: '/assets/arknights/operators/bluepoison/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '毒理学干员' },
   },
   {
@@ -510,7 +510,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/firewatch/portrait.webp',
       avatar: '/assets/arknights/operators/firewatch/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '远程战术狙击' },
   },
   {
@@ -524,7 +524,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/exusiai/portrait.webp',
       avatar: '/assets/arknights/operators/exusiai/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '企鹅物流干员' },
   },
   {
@@ -538,7 +538,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/schwarz/portrait.webp',
       avatar: '/assets/arknights/operators/schwarz/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '汐斯塔保镖' },
   },
 
@@ -554,7 +554,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/steward/portrait.webp',
       avatar: '/assets/arknights/operators/steward/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '行动预备组A4' },
   },
   {
@@ -568,7 +568,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/lava/portrait.webp',
       avatar: '/assets/arknights/operators/lava/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '扩散术师' },
   },
   {
@@ -582,7 +582,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/haze/portrait.webp',
       avatar: '/assets/arknights/operators/haze/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '削弱法抗' },
   },
   {
@@ -596,7 +596,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/click/portrait.webp',
       avatar: '/assets/arknights/operators/click/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '驭械术师' },
   },
   {
@@ -610,7 +610,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/gitano/portrait.webp',
       avatar: '/assets/arknights/operators/gitano/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '占卜扩散法' },
   },
   {
@@ -624,7 +624,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/amiya/portrait.webp',
       avatar: '/assets/arknights/operators/amiya/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '罗德岛公开领袖' },
   },
   {
@@ -638,7 +638,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/nightmare/portrait.webp',
       avatar: '/assets/arknights/operators/nightmare/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '双重人格法师' },
   },
   {
@@ -652,7 +652,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/eyjafjalla/portrait.webp',
       avatar: '/assets/arknights/operators/eyjafjalla/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '火山学者' },
   },
   {
@@ -666,7 +666,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/ifrit/portrait.webp',
       avatar: '/assets/arknights/operators/ifrit/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '莱茵生命实验体' },
   },
 
@@ -682,7 +682,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/ansel/portrait.webp',
       avatar: '/assets/arknights/operators/ansel/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '行动预备组A4' },
   },
   {
@@ -696,7 +696,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/hibiscus/portrait.webp',
       avatar: '/assets/arknights/operators/hibiscus/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '行动预备组A1' },
   },
   {
@@ -710,7 +710,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/perfumer/portrait.webp',
       avatar: '/assets/arknights/operators/perfumer/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '群愈医疗' },
   },
   {
@@ -724,7 +724,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/gavial/portrait.webp',
       avatar: '/assets/arknights/operators/gavial/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '阿卡胡拉医术' },
   },
   {
@@ -738,7 +738,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/sussurro/portrait.webp',
       avatar: '/assets/arknights/operators/sussurro/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '深度治疗' },
   },
   {
@@ -752,7 +752,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/silence/portrait.webp',
       avatar: '/assets/arknights/operators/silence/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '无人机医疗' },
   },
   {
@@ -766,7 +766,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/warfarin/portrait.webp',
       avatar: '/assets/arknights/operators/warfarin/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '血液学医生' },
   },
   {
@@ -780,7 +780,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/shining/portrait.webp',
       avatar: '/assets/arknights/operators/shining/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '使徒干员' },
   },
   {
@@ -794,7 +794,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/nightingale/portrait.webp',
       avatar: '/assets/arknights/operators/nightingale/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '圣域法抗' },
   },
 
@@ -810,7 +810,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/orchid/portrait.webp',
       avatar: '/assets/arknights/operators/orchid/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '行动预备组A4组长' },
   },
   {
@@ -824,7 +824,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/podenco/portrait.webp',
       avatar: '/assets/arknights/operators/podenco/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '温室孢子控场' },
   },
   {
@@ -838,7 +838,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/earthspirit/portrait.webp',
       avatar: '/assets/arknights/operators/earthspirit/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '地质学停顿' },
   },
   {
@@ -852,7 +852,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/istina/portrait.webp',
       avatar: '/assets/arknights/operators/istina/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '乌萨斯学生自治团' },
   },
   {
@@ -866,7 +866,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/pramanix/portrait.webp',
       avatar: '/assets/arknights/operators/pramanix/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '谢拉格圣女' },
   },
   {
@@ -880,7 +880,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/mayer/portrait.webp',
       avatar: '/assets/arknights/operators/mayer/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '机械水獭召唤' },
   },
   {
@@ -894,7 +894,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/angelina/portrait.webp',
       avatar: '/assets/arknights/operators/angelina/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '反重力密使' },
   },
   {
@@ -908,7 +908,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/suzuran/portrait.webp',
       avatar: '/assets/arknights/operators/suzuran/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '光辉原石技艺' },
   },
   {
@@ -922,7 +922,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/magallan/portrait.webp',
       avatar: '/assets/arknights/operators/magallan/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '莱茵生命极地科考' },
   },
 
@@ -938,7 +938,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/rope/portrait.webp',
       avatar: '/assets/arknights/operators/rope/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '钩爪特种' },
   },
   {
@@ -952,7 +952,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/shaw/portrait.webp',
       avatar: '/assets/arknights/operators/shaw/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '推力特种' },
   },
   {
@@ -966,7 +966,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/gravel/portrait.webp',
       avatar: '/assets/arknights/operators/gravel/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '快速复活处决' },
   },
   {
@@ -980,7 +980,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/ethan/portrait.webp',
       avatar: '/assets/arknights/operators/ethan/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '潜行定身特种' },
   },
   {
@@ -994,7 +994,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/jaye/portrait.webp',
       avatar: '/assets/arknights/operators/jaye/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 20%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 20%' },
     source: { name: 'Arknights Official Assets', notes: '龙门水产刀工' },
   },
   {
@@ -1008,7 +1008,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/manticore/portrait.webp',
       avatar: '/assets/arknights/operators/manticore/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '隐匿刺杀' },
   },
   {
@@ -1022,7 +1022,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/red/portrait.webp',
       avatar: '/assets/arknights/operators/red/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 18%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 18%' },
     source: { name: 'Arknights Official Assets', notes: '狼群刺杀与眩晕' },
   },
   {
@@ -1036,7 +1036,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/phantom/portrait.webp',
       avatar: '/assets/arknights/operators/phantom/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '猩红剧团影子' },
   },
   {
@@ -1050,7 +1050,7 @@ const PRESENTATIONS: readonly CardPresentation[] = [
       portrait: '/assets/arknights/operators/weedy/portrait.webp',
       avatar: '/assets/arknights/operators/weedy/avatar.webp',
     },
-    display: { portraitFit: 'contain', portraitPosition: 'center 15%' },
+    display: { portraitFit: 'cover', portraitPosition: 'center 15%' },
     source: { name: 'Arknights Official Assets', notes: '生化加农炮' },
   },
 ];
@@ -1081,7 +1081,7 @@ export function getCardPresentation(cardId: CardId): CardPresentation {
       avatar: `/assets/arknights/fallback/${fallbackId}_icon.webp`,
     },
     display: {
-      portraitFit: 'contain',
+      portraitFit: 'cover',
       portraitPosition: 'center center',
     },
     source: {
