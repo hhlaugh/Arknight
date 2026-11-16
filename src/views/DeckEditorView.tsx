@@ -9,8 +9,11 @@ import {
   getCustomDecks,
   saveCustomDeck,
   validateDeck,
+  validateDeckWithOwnership,
   type UiCardDefinition,
 } from '../client/demoData';
+import { getActiveCollection, getDeckMode, setDeckMode } from '../data/playerCollection';
+import type { DeckMode } from '../data/playerCollection';
 import type { CardId, DeckDefinition } from '../game/types';
 import { getCardPresentation } from '../data/card-presentation';
 import { OperatorPortrait } from '../components/cards/OperatorPortrait';
@@ -109,6 +112,9 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
   const [mobileTab, setMobileTab] = useState<'catalog' | 'deck'>('catalog');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [deckMode, setDeckModeState] = useState<DeckMode>(() => getDeckMode());
+  // 持有量快照：进入构筑器/切换模式时刷新（寻访收录发生在其他视图）。
+  const [owned, setOwned] = useState<Readonly<Record<string, number>>>(() => getActiveCollection().owned);
 
   const showNotice = (msg: string) => {
     setStatusNotice(msg);
@@ -117,7 +123,20 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
     }, 3000);
   };
 
-  const validation = useMemo(() => validateDeck(currentDeck, DEMO_CARDS), [currentDeck]);
+  const toggleDeckMode = (next: DeckMode) => {
+    setDeckMode(next);
+    setDeckModeState(next);
+    setOwned(getActiveCollection().owned);
+    showNotice(next === 'collection' ? '已切换到收录模式：只能使用已持有干员，同名张数受持有量限制' : '已切换到自由构筑：全量 72 干员可用');
+  };
+
+  const validation = useMemo(
+    () =>
+      deckMode === 'collection'
+        ? validateDeckWithOwnership(currentDeck, DEMO_CARDS, owned)
+        : validateDeck(currentDeck, DEMO_CARDS),
+    [currentDeck, deckMode, owned],
+  );
   const isDirty = useMemo(() => serializeDeckSignature(currentDeck) !== savedSignature, [currentDeck, savedSignature]);
   const isCustomDeckSaved = useMemo(
     () => customDecks.some((d) => d.deck_id === currentDeck.deck_id),
@@ -164,6 +183,9 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
     const result = DEMO_CARDS.filter((card) => {
       const uiCard = card as UiCardDefinition;
       const p = getCardPresentation(card.card_id);
+
+      // 收录模式：未持有的干员不进入目录
+      if (deckMode === 'collection' && !(owned[card.card_id] ?? 0)) return false;
 
       if (searchQuery.trim()) {
         const query = searchQuery.trim().toLowerCase();
@@ -217,7 +239,7 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
     });
 
     return result;
-  }, [searchQuery, selectedClass, selectedCost, selectedRarity, selectedTrait, sortBy]);
+  }, [deckMode, owned, searchQuery, selectedClass, selectedCost, selectedRarity, selectedTrait, sortBy]);
 
   // Real-data deck analytics
   const deckAnalytics = useMemo(() => {
@@ -288,8 +310,18 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
     }
 
     const currentCardCount = inDeckCardCounts.get(cardId) ?? 0;
-    if (currentCardCount >= 2) {
-      showNotice(`卡牌「${def.card_name_zh}」最多加入 2 张`);
+    const ownedCount = owned[cardId] ?? 0;
+    const copyCap = deckMode === 'collection' ? Math.min(2, ownedCount) : 2;
+    if (deckMode === 'collection' && ownedCount === 0) {
+      showNotice(`未持有「${def.card_name_zh}」，收录模式下无法加入；可前往干员寻访收录`);
+      return;
+    }
+    if (currentCardCount >= copyCap) {
+      showNotice(
+        deckMode === 'collection' && copyCap < 2
+          ? `「${def.card_name_zh}」持有 ${ownedCount} 张，已达收录上限`
+          : `卡牌「${def.card_name_zh}」最多加入 2 张`,
+      );
       return;
     }
 
@@ -532,6 +564,20 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
 
         {/* Global Deck Actions */}
         <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex items-center gap-1 bg-[#161b21] border border-[#3b485e] p-0.5">
+            {(['collection', 'free'] as DeckMode[]).map((candidate) => (
+              <button
+                key={candidate}
+                type="button"
+                onClick={() => toggleDeckMode(candidate)}
+                className={`px-2 py-1 text-[10px] font-mono font-bold transition-colors ${
+                  deckMode === candidate ? 'bg-[#e5a52b] text-black' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {candidate === 'collection' ? '收录模式' : '自由构筑'}
+              </button>
+            ))}
+          </div>
           <select
             aria-label="载入官方预设模版"
             className="bg-[#202731] text-xs text-slate-200 px-2 py-1.5 border border-[#3b485e] focus:border-amber-400 focus:outline-none cursor-pointer max-w-[165px]"
@@ -782,20 +828,27 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
                 const uiCard = card as UiCardDefinition;
                 const inDeckCount = inDeckCardCounts.get(card.card_id) ?? 0;
                 const nameCount = inDeckNameCounts.get(uiCard.card_name_zh) ?? 0;
-                const isMaxed = inDeckCount >= 2 || nameCount >= 2 || validation.totalCards >= 20;
+                const ownedCount = owned[card.card_id] ?? 0;
+                const copyCap = deckMode === 'collection' ? Math.max(1, Math.min(2, ownedCount)) : 2;
+                const isMaxed = inDeckCount >= copyCap || nameCount >= 2 || validation.totalCards >= 20;
 
                 return (
                   <div
                     key={card.card_id}
                     onMouseEnter={() => setInspectCard(uiCard)}
-                    className="h-full flex flex-col"
+                    className="h-full flex flex-col relative"
                   >
+                    {deckMode === 'collection' && (
+                      <div className="absolute top-1 right-1 z-10 px-1.5 py-0.5 bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 text-[9px] font-mono font-bold pointer-events-none">
+                        持有×{ownedCount}{ownedCount >= 2 ? ' ·满仓' : ''}
+                      </div>
+                    )}
                     <CardFrame
                       cardId={card.card_id}
                       definition={uiCard}
                       variant="deck"
                       inDeckCount={inDeckCount}
-                      maxInDeckCount={2}
+                      maxInDeckCount={copyCap}
                       selected={inDeckCount > 0}
                       disabled={isMaxed && inDeckCount === 0}
                       onClick={() => addCard(card.card_id)}
@@ -804,7 +857,7 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
                         setInspectCard(uiCard);
                         setMobileInspectCard(uiCard);
                       }}
-                      actionLabel={inDeckCount >= 2 ? '已满' : nameCount >= 2 ? '同名满' : validation.totalCards >= 20 ? '满编' : '+ 加入'}
+                      actionLabel={inDeckCount >= copyCap ? (deckMode === 'collection' && copyCap < 2 ? '持有上限' : '已满') : nameCount >= 2 ? '同名满' : validation.totalCards >= 20 ? '满编' : '+ 加入'}
                       className="flex-1"
                     />
                   </div>

@@ -5,6 +5,7 @@ import {
   type UiCardDefinition,
 } from '../client/demoData';
 import { getCardPresentation, type CardPresentation } from '../data/card-presentation';
+import { getActiveCollection } from '../data/playerCollection';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -27,6 +28,8 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
   // Currently inspected card for detailed dossier
   const [inspectCard, setInspectCard] = useState<UiCardDefinition>(() => DEMO_CARDS[0] as UiCardDefinition);
   const [mobileDossierOpen, setMobileDossierOpen] = useState(false);
+  // 持有数据在进入图鉴时读取一次（账户切换会重新挂载本视图）。
+  const [owned] = useState<Readonly<Record<string, number>>>(() => getActiveCollection().owned);
 
   const inspectPresentation = useMemo<CardPresentation>(() => {
     return getCardPresentation(inspectCard.card_id);
@@ -416,10 +419,11 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
               filteredCards.map((card) => {
                 const uiCard = card as UiCardDefinition;
                 const isSelected = inspectCard.card_id === card.card_id;
+                const ownedCount = owned[card.card_id] ?? 0;
                 return (
                   <div
                     key={card.card_id}
-                    className="h-full flex flex-col"
+                    className="h-full flex flex-col relative"
                   >
                     <CardFrame
                       cardId={card.card_id}
@@ -430,6 +434,11 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
                       onInspectClick={() => onCardSelect(uiCard)}
                       className="flex-1"
                     />
+                    {ownedCount > 0 && (
+                      <div className="absolute top-1 right-1 z-10 px-1.5 py-0.5 bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 text-[9px] font-mono font-bold pointer-events-none">
+                        持有×{ownedCount}{ownedCount >= 2 ? ' ·满仓' : ''}
+                      </div>
+                    )}
                   </div>
                 );
               })

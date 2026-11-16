@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { LocalGameController } from './client/localGameController';
 import type { LocalGameSetup } from './client/localGameController';
 import { OnlineMatchController, type OnlineMatchSnapshot } from './client/onlineMatchController';
@@ -12,11 +12,19 @@ import { CardLibraryView } from './views/CardLibraryView';
 import { MulliganView } from './views/MulliganView';
 import { BattleView } from './views/BattleView';
 import { SettlementView } from './views/SettlementView';
+import { RecruitmentView } from './views/RecruitmentView';
 import { RoomLobbyView } from './views/RoomLobbyView';
+import { awardBattleReward, getActiveAccountName, getDeckMode } from './data/playerCollection';
 import type { CardInstanceId, DeckDefinition, PlayerId } from './game/types';
 
-type Screen = 'title' | 'deckSelect' | 'game' | 'online' | 'deckEditor' | 'library';
+type Screen = 'title' | 'deckSelect' | 'game' | 'online' | 'deckEditor' | 'library' | 'recruitment';
 type Mode = 'hotseat' | 'vs-bot' | 'online';
+
+interface BattleReward {
+  readonly originite: number;
+  readonly accountName: string;
+}
+
 
 function randomSeed(): number {
   return Math.floor(Math.random() * 2 ** 31);
@@ -37,6 +45,10 @@ export function App() {
         onOpenDeckEditor={() => setScreen('deckEditor')}
       />
     );
+  }
+
+  if (screen === 'recruitment') {
+    return <RecruitmentView onBack={() => setScreen('title')} />;
   }
 
   if (screen === 'deckEditor') {
@@ -63,6 +75,9 @@ export function App() {
         }}
         onLibrary={() => {
           setScreen('library');
+        }}
+        onRecruitment={() => {
+          setScreen('recruitment');
         }}
       />
     );
@@ -120,10 +135,36 @@ interface GameScreenProps {
 function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreenProps) {
   const snapshot = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const state = snapshot.state;
+  const [reward, setReward] = useState<BattleReward | null>(null);
+  const rewardGrantedRef = useRef(false);
   const bot = useMemo(
     () => (mode === 'vs-bot' ? new BotPlayer({ player: botSeat, log: (message) => console.info(message) }) : null),
     [mode, botSeat, controller],
   );
+
+  // 新对局重置奖励发放标记（再来一局 = 新 controller 实例）。
+  useEffect(() => {
+    rewardGrantedRef.current = false;
+    setReward(null);
+  }, [controller]);
+
+  // 对局结束发放合成玉（每局一次）：vs-bot 按玩家 A（人类）胜负；热座非平局按胜档计入活跃账户。
+  useEffect(() => {
+    if (state.phase !== 'finished' || rewardGrantedRef.current) return;
+    rewardGrantedRef.current = true;
+    const result: 'win' | 'lose' | 'draw' =
+      mode === 'vs-bot'
+        ? state.winner === 'player_a'
+          ? 'win'
+          : state.winner === 'draw'
+            ? 'draw'
+            : 'lose'
+        : state.winner === 'draw'
+          ? 'draw'
+          : 'win';
+    const originite = awardBattleReward(result);
+    setReward({ originite, accountName: getActiveAccountName() });
+  }, [state.phase, state.winner, mode]);
 
   // 机器人自动起手换牌。
   useEffect(() => {
@@ -194,6 +235,7 @@ function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreen
         snapshot={snapshot}
         setup={controller.getSetup()}
         modeLabel={mode === 'vs-bot' ? '模式：单人对战（机器人 · 普通难度）' : '模式：本地热座（双人）'}
+        reward={reward}
         onRestart={onRestart}
         onExit={onExit}
       />
@@ -216,6 +258,23 @@ interface OnlineScreenProps {
 }
 
 function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
+  const [reward, setReward] = useState<BattleReward | null>(null);
+  const rewardRoomRef = useRef<string | null>(null);
+  const mySeat: PlayerId = snapshot.seat === 'host' ? 'player_a' : 'player_b';
+
+  // P2P 对局结束按本地席位结果发放合成玉（每个房间只发一次）。
+  useEffect(() => {
+    if (!snapshot.inGame || !snapshot.gameSnapshot) return;
+    if (snapshot.gameSnapshot.state.phase !== 'finished') return;
+    const roomKey = snapshot.roomCode ?? 'unknown-room';
+    if (rewardRoomRef.current === roomKey) return;
+    rewardRoomRef.current = roomKey;
+    const winner = snapshot.gameSnapshot.state.winner;
+    const result: 'win' | 'lose' | 'draw' = winner === 'draw' ? 'draw' : winner === mySeat ? 'win' : 'lose';
+    const originite = awardBattleReward(result);
+    setReward({ originite, accountName: getActiveAccountName() });
+  }, [snapshot, mySeat]);
+
   // If not yet in game, show room lobby
   if (!snapshot.inGame || !snapshot.gameSnapshot) {
     return <RoomLobbyView controller={controller} snapshot={snapshot} onBackToTitle={onExit} />;
@@ -223,9 +282,8 @@ function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
 
   const gameSnapshot = snapshot.gameSnapshot;
   const state = gameSnapshot.state;
-  const mySeat: PlayerId = snapshot.seat === 'host' ? 'player_a' : 'player_b';
 
-  const allDecks = getAllAvailableDecks();
+  const allDecks = getAllAvailableDecks(getDeckMode());
   const deckA: DeckDefinition = allDecks.find((d) => d.deck_id === snapshot.hostDeckId) ?? allDecks[0]!;
   const deckB: DeckDefinition = allDecks.find((d) => d.deck_id === snapshot.guestDeckId) ?? allDecks[1] ?? deckA;
 
@@ -266,6 +324,7 @@ function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
         snapshot={gameSnapshot}
         setup={setup}
         modeLabel={`模式：好友联机对战（房间码：${snapshot.roomCode} · 你执${mySeat === 'player_a' ? '玩家 A' : '玩家 B'}）`}
+        reward={reward}
         onRestart={() => controller.leaveRoom()}
         onExit={() => {
           controller.leaveRoom();

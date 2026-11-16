@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CARD_BY_ID, DEMO_CARDS, getAllAvailableDecks, getCustomDecks, PLAYER_LABEL, validateDeck } from '../client/demoData';
+import { getDeckMode, setDeckMode } from '../data/playerCollection';
+import type { DeckMode } from '../data/playerCollection';
 import type { LocalGameSetup } from '../client/localGameController';
 import type { DeckDefinition, PlayerId } from '../game/types';
 import { Panel } from '../components/ui/Panel';
@@ -20,11 +22,24 @@ function deckComposition(deck: DeckDefinition): string {
 }
 
 export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: DeckSelectViewProps) {
-  const availableDecks = useMemo(() => getAllAvailableDecks(), []);
+  const [deckMode, setDeckModeState] = useState<DeckMode>(() => getDeckMode());
+  const availableDecks = useMemo(() => getAllAvailableDecks(deckMode), [deckMode]);
   const incompleteCustomDecks = useMemo(
     () => getCustomDecks().filter((deck) => !validateDeck(deck, DEMO_CARDS).valid),
     [],
   );
+
+  // 切换构筑模式后，已选卡组可能不再可用（收录模式下被过滤），回退到首个可用卡组。
+  useEffect(() => {
+    setDeckIds((prev) => {
+      const validA = availableDecks.some((deck) => deck.deck_id === prev.player_a);
+      const validB = availableDecks.some((deck) => deck.deck_id === prev.player_b);
+      return {
+        player_a: validA ? prev.player_a : availableDecks[0]?.deck_id ?? '',
+        player_b: validB ? prev.player_b : availableDecks[1]?.deck_id ?? availableDecks[0]?.deck_id ?? '',
+      };
+    });
+  }, [availableDecks]);
 
   const [deckIds, setDeckIds] = useState<Record<PlayerId, string>>({
     player_a: availableDecks[0]?.deck_id ?? '',
@@ -120,14 +135,33 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
                 作战出击配置 · 编制选择
               </h2>
               <span className="text-[10px] font-mono text-slate-400 tracking-wider">
-                {mode === 'vs-bot' ? '单人人机推演模式' : '本地热座双人推演模式'}
+                {mode === 'vs-bot' ? '单人人机推演模式' : '本地热座双人推演模式'} · {deckMode === 'collection' ? '收录模式（仅已持有干员）' : '自由构筑（全量干员）'}
               </span>
             </div>
           </div>
           {onOpenDeckEditor && (
-            <Button variant="outline" size="sm" cornerCut onClick={onOpenDeckEditor}>
-              🎴 打开卡组构筑器
-            </Button>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-[#161b21] border border-[#3b485e] p-0.5">
+                {(['collection', 'free'] as DeckMode[]).map((candidate) => (
+                  <button
+                    key={candidate}
+                    type="button"
+                    onClick={() => {
+                      setDeckMode(candidate);
+                      setDeckModeState(candidate);
+                    }}
+                    className={`px-2 py-1 text-[10px] font-mono font-bold transition-colors ${
+                      deckMode === candidate ? 'bg-[#e5a52b] text-black' : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {candidate === 'collection' ? '收录模式' : '自由构筑'}
+                  </button>
+                ))}
+              </div>
+              <Button variant="outline" size="sm" cornerCut onClick={onOpenDeckEditor}>
+                🎴 打开卡组构筑器
+              </Button>
+            </div>
           )}
         </div>
 
@@ -138,6 +172,11 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
               <div className="px-3 py-2 bg-rose-950/70 border border-rose-500/60 text-rose-200 text-xs flex items-center justify-between">
                 <span>⚠️ {errorMessage}</span>
                 <button onClick={() => setErrorMessage(null)} className="text-rose-400 hover:text-white ml-2">✕</button>
+              </div>
+            )}
+            {deckMode === 'collection' && (
+              <div className="px-3 py-2 bg-sky-950/50 border border-sky-500/40 text-sky-200 text-xs">
+                ℹ️ 收录模式：仅显示由已持有干员组成的卡组（含低星 starter 预设）；未持有的官方预设已隐藏。切换到自由构筑可使用全量卡池。
               </div>
             )}
             {incompleteCustomDecks.length > 0 && (

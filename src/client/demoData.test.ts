@@ -6,6 +6,7 @@ import {
   getCustomDecks,
   validateDeck,
 } from './demoData';
+import { getActiveCollection } from '../data/playerCollection';
 import type { CardId, DeckDefinition } from '../game/types';
 
 function mockLocalStorage(initial: Record<string, string> = {}) {
@@ -58,10 +59,11 @@ describe('demoData custom deck sanitization and validation', () => {
     expect(validateDeck(loadedCustom[0]!, DEMO_CARDS).totalCards).toBe(18);
     expect(validateDeck(loadedCustom[0]!, DEMO_CARDS).valid).toBe(false);
 
-    // 清理后的数据已回写到 localStorage
-    const persisted = JSON.parse(storage.getItem('mrfz_custom_decks') ?? '[]') as DeckDefinition[];
+    // 清理后的数据已迁入账户存档（arknight_accounts_v1）；旧 localStorage 键被移除
+    const persisted = getActiveCollection().customDecks;
     expect(persisted).toHaveLength(1);
     expect(persisted[0]!.cards.every((c) => c.card_id !== ('DEMO-TAC-003' as CardId))).toBe(true);
+    expect(storage.getItem('mrfz_custom_decks')).toBeNull();
 
     // 未满 20 张的自定义卡组不会出现在对战可选列表 getAllAvailableDecks 中
     const battleDecks = getAllAvailableDecks();

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "pools": [
+    {
+      "poolId": "standard-1",
+      "label": "标准寻访",
+      "minRarity": 4,
+      "rates": { "sixStar": 0.02, "fiveStar": 0.08 },
+      "cost": { "single": 600, "ten": 6000 },
+      "pity": { "softPityFrom": 51, "softPityStep": 0.02, "hardPityAt": 99 }
+    }
+  ],
+  "economy": {
+    "currencyId": "originite",
+    "initialOriginite": 6000,
+    "testAccountOriginite": 999999,
+    "battleRewards": { "win": 900, "lose": 300, "draw": 300 },
+    "conversion": { "4": 100, "5": 300, "6": 1200 },
+    "ownedLimit": 2
+  }
+}

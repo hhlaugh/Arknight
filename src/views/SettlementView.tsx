@@ -9,11 +9,12 @@ interface SettlementViewProps {
   readonly snapshot: LocalGameSnapshot;
   readonly setup: LocalGameSetup;
   readonly modeLabel?: string;
+  readonly reward?: { readonly originite: number; readonly accountName: string } | null;
   readonly onRestart: () => void;
   readonly onExit: () => void;
 }
 
-export function SettlementView({ snapshot, setup, modeLabel, onRestart, onExit }: SettlementViewProps) {
+export function SettlementView({ snapshot, setup, modeLabel, reward, onRestart, onExit }: SettlementViewProps) {
   const state = snapshot.state;
   const isWinnerA = state.winner === 'player_a';
   const isWinnerB = state.winner === 'player_b';
@@ -57,6 +58,14 @@ export function SettlementView({ snapshot, setup, modeLabel, onRestart, onExit }
             推演总回合: {state.turn_number} · 记录战斗事件: {snapshot.logHistory.length} 条
           </p>
         </div>
+
+        {/* Originite Reward */}
+        {reward && (
+          <div className="px-4 sm:px-5 py-2.5 bg-[#10141a] border-b border-[#2e3740] flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+            <span className="text-amber-300 font-bold">◆ 合成玉 +{reward.originite}</span>
+            <span className="text-slate-400 text-[10px]">已发放至账户 {reward.accountName} · 可在干员寻访中使用</span>
+          </div>
+        )}
 
         {/* Tactical Metrics Grid */}
         <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#13171b] text-xs font-mono">

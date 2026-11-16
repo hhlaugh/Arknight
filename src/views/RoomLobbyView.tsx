@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { OnlineMatchController, OnlineMatchSnapshot } from '../client/onlineMatchController';
 import { getAllAvailableDecks } from '../client/demoData';
+import { getActiveAccountName, getDeckMode } from '../data/playerCollection';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -99,7 +100,10 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
                 </span>
               </div>
             </div>
-            <Badge variant="ally">免服直连</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="neutral">账户 {getActiveAccountName()}</Badge>
+              <Badge variant="ally">免服直连</Badge>
+            </div>
           </div>
 
           <div className="px-4 sm:px-5 py-2.5 bg-[#1a2026] border-b border-[#2e3740] text-xs text-emerald-300 flex items-center gap-2">
@@ -204,7 +208,7 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
   // 2. 房间大厅视图
   const allReady = Boolean(roomState?.host.ready && roomState?.guest?.ready);
   const guestJoined = Boolean(roomState?.guest);
-  const decks = getAllAvailableDecks();
+  const decks = getAllAvailableDecks(getDeckMode());
 
   return (
     <div className="min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none">

@@ -1,4 +1,10 @@
 import { loadDemoData } from '../data/load-demo-data';
+import {
+  getAccountCustomDecks,
+  getActiveCollection,
+  saveAccountCustomDecks,
+} from '../data/playerCollection';
+import type { DeckMode } from '../data/playerCollection';
 import type { CardDefinition, CardId, DeckDefinition, LaneId, PlayerId } from '../game/types';
 
 /** UI 侧使用的卡牌定义视图：在引擎类型上补充数据里实际存在、但引擎类型未声明的展示字段。 */
@@ -67,6 +73,45 @@ export const PRESET_DECKS: readonly DeckDefinition[] = [
   },
 ];
 
+/**
+ * 低星 starter 预设（GACHA_PLAN_v0.3 §5）：全部由 3★ 干员组成；每个新账户都拥有这些干员 ×2，
+ * 因此在收录模式下始终可选；自由构筑模式下不额外展示（自由模式保持原有可选列表不变）。
+ */
+export const STARTER_PRESETS: readonly DeckDefinition[] = [
+  {
+    deck_id: 'DECK-STARTER-A',
+    deck_name_zh: '新兵突击编制（低星 starter）',
+    cards: [
+      { card_id: 'OP-VAN-001' as CardId, quantity: 2 },
+      { card_id: 'OP-VAN-002' as CardId, quantity: 2 },
+      { card_id: 'OP-GUA-001' as CardId, quantity: 2 },
+      { card_id: 'OP-GUA-002' as CardId, quantity: 2 },
+      { card_id: 'OP-SNI-001' as CardId, quantity: 2 },
+      { card_id: 'OP-CAS-001' as CardId, quantity: 2 },
+      { card_id: 'OP-CAS-002' as CardId, quantity: 2 },
+      { card_id: 'OP-DEF-001' as CardId, quantity: 2 },
+      { card_id: 'OP-DEF-002' as CardId, quantity: 2 },
+      { card_id: 'OP-MED-001' as CardId, quantity: 2 },
+    ],
+  },
+  {
+    deck_id: 'DECK-STARTER-B',
+    deck_name_zh: '新兵防守编制（低星 starter）',
+    cards: [
+      { card_id: 'OP-DEF-001' as CardId, quantity: 2 },
+      { card_id: 'OP-DEF-002' as CardId, quantity: 2 },
+      { card_id: 'OP-MED-001' as CardId, quantity: 2 },
+      { card_id: 'OP-MED-002' as CardId, quantity: 2 },
+      { card_id: 'OP-SUP-001' as CardId, quantity: 2 },
+      { card_id: 'OP-SNI-001' as CardId, quantity: 2 },
+      { card_id: 'OP-CAS-001' as CardId, quantity: 2 },
+      { card_id: 'OP-VAN-001' as CardId, quantity: 2 },
+      { card_id: 'OP-VAN-002' as CardId, quantity: 2 },
+      { card_id: 'OP-GUA-001' as CardId, quantity: 2 },
+    ],
+  },
+];
+
 export const CARD_BY_ID: ReadonlyMap<CardId, UiCardDefinition> = new Map(
   DEMO_CARDS.map((card) => [card.card_id, card as UiCardDefinition]),
 );
@@ -103,91 +148,98 @@ export const CLASS_COLOR: Readonly<Record<string, string>> = {
   support: '#64748b',  // slate
 };
 
-const CUSTOM_DECKS_STORAGE_KEY = 'mrfz_custom_decks';
-
-let inMemoryCustomDecks: DeckDefinition[] = [];
-
 export function getCustomDecks(): DeckDefinition[] {
-  try {
-    const raw = localStorage.getItem(CUSTOM_DECKS_STORAGE_KEY);
-    if (!raw) return inMemoryCustomDecks;
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      let mutated = false;
-      const sanitized: DeckDefinition[] = [];
-      for (const item of parsed) {
-        if (!item || typeof item !== 'object' || typeof item.deck_id !== 'string' || !Array.isArray(item.cards)) {
-          mutated = true;
-          continue;
-        }
-        const originalCards = item.cards as { card_id?: unknown; quantity?: unknown }[];
-        const validCards = originalCards.filter(
-          (entry): entry is { card_id: CardId; quantity: number } =>
-            typeof entry?.card_id === 'string' &&
-            CARD_BY_ID.has(entry.card_id as CardId) &&
-            Number.isInteger(entry.quantity) &&
-            (entry.quantity as number) > 0,
-        );
-        if (validCards.length !== originalCards.length) {
-          mutated = true;
-          // 如果原卡组全是被移除的测试卡，则直接丢弃；否则保留其余合法卡牌供用户前往构筑器补齐
-          if (originalCards.length > 0 && validCards.length === 0) {
-            continue;
-          }
-        }
-        sanitized.push({
-          deck_id: item.deck_id,
-          deck_name_zh: typeof item.deck_name_zh === 'string' && item.deck_name_zh.trim() ? item.deck_name_zh : '自定义卡组',
-          cards: validCards,
-        });
-      }
-      if (mutated) {
-        inMemoryCustomDecks = sanitized;
-        try {
-          localStorage.setItem(CUSTOM_DECKS_STORAGE_KEY, JSON.stringify(sanitized));
-        } catch {
-          // ignore storage write error
-        }
-      }
-      return sanitized;
+  // 自定义牌组的存储已迁入账户层（arknight_accounts_v1，GACHA_PLAN_v0.3 §7）；
+  // 旧 localStorage 键 mrfz_custom_decks 由账户层引导时一次性迁入，此处仅做净化。
+  const stored = getAccountCustomDecks();
+  let mutated = false;
+  const sanitized: DeckDefinition[] = [];
+  for (const item of stored) {
+    if (!item || typeof item !== 'object' || typeof item.deck_id !== 'string' || !Array.isArray(item.cards)) {
+      mutated = true;
+      continue;
     }
-  } catch {
-    // fallback if localStorage not accessible
+    const originalCards = item.cards as { card_id?: unknown; quantity?: unknown }[];
+    const validCards = originalCards.filter(
+      (entry): entry is { card_id: CardId; quantity: number } =>
+        typeof entry?.card_id === 'string' &&
+        CARD_BY_ID.has(entry.card_id as CardId) &&
+        Number.isInteger(entry.quantity) &&
+        (entry.quantity as number) > 0,
+    );
+    if (validCards.length !== originalCards.length) {
+      mutated = true;
+      // 如果原卡组全是被移除的测试卡，则直接丢弃；否则保留其余合法卡牌供用户前往构筑器补齐
+      if (originalCards.length > 0 && validCards.length === 0) {
+        continue;
+      }
+    }
+    sanitized.push({
+      deck_id: item.deck_id,
+      deck_name_zh: typeof item.deck_name_zh === 'string' && item.deck_name_zh.trim() ? item.deck_name_zh : '自定义卡组',
+      cards: validCards,
+    });
   }
-  return inMemoryCustomDecks;
+  if (mutated) {
+    saveAccountCustomDecks(sanitized);
+  }
+  return sanitized;
 }
 
 export function saveCustomDeck(deck: DeckDefinition): void {
   const current = getCustomDecks();
   const existingIndex = current.findIndex((d) => d.deck_id === deck.deck_id);
-  let updated: DeckDefinition[];
-  if (existingIndex >= 0) {
-    updated = [...current];
-    updated[existingIndex] = deck;
-  } else {
-    updated = [deck, ...current];
-  }
-  inMemoryCustomDecks = updated;
-  try {
-    localStorage.setItem(CUSTOM_DECKS_STORAGE_KEY, JSON.stringify(updated));
-  } catch {
-    // ignore quota/security errors
-  }
+  const updated: DeckDefinition[] =
+    existingIndex >= 0
+      ? current.map((d, index) => (index === existingIndex ? deck : d))
+      : [deck, ...current];
+  saveAccountCustomDecks(updated);
 }
 
 export function deleteCustomDeck(deckId: string): void {
-  const current = getCustomDecks().filter((d) => d.deck_id !== deckId);
-  inMemoryCustomDecks = current;
-  try {
-    localStorage.setItem(CUSTOM_DECKS_STORAGE_KEY, JSON.stringify(current));
-  } catch {
-    // ignore
-  }
+  saveAccountCustomDecks(getCustomDecks().filter((d) => d.deck_id !== deckId));
 }
 
-export function getAllAvailableDecks(): readonly DeckDefinition[] {
+/**
+ * 对战可选卡组。mode 缺省为 'free'（自由构筑，行为与历史版本一致）。
+ * 'collection'（收录模式）：自定义牌组与预设均需通过持有量校验；
+ * 低星 starter 预设仅在收录模式出现（每个账户都拥有其全部干员）。
+ */
+export function getAllAvailableDecks(mode: DeckMode = 'free'): readonly DeckDefinition[] {
   const custom = getCustomDecks().filter((deck) => validateDeck(deck, DEMO_CARDS).valid);
-  return [...custom, ...PRESET_DECKS];
+  if (mode === 'free') return [...custom, ...PRESET_DECKS];
+  const owned = getActiveCollection().owned;
+  const ownedValid = (deck: DeckDefinition) => validateDeckWithOwnership(deck, DEMO_CARDS, owned).valid;
+  const presets = [...STARTER_PRESETS, ...PRESET_DECKS].filter(ownedValid);
+  return [...custom.filter(ownedValid), ...presets];
+}
+
+/** 收录模式卡组校验：在 validateDeck 基础上追加持有量检查（未持有 / 持有不足都拒收）。 */
+export function validateDeckWithOwnership(
+  deck: DeckDefinition,
+  cardPool: readonly CardDefinition[],
+  owned: Readonly<Record<string, number>>,
+): DeckValidationResult {
+  const base = validateDeck(deck, cardPool);
+  const errors: string[] = [];
+  const poolMap = new Map(cardPool.map((c) => [c.card_id, c]));
+  for (const item of deck.cards) {
+    const def = poolMap.get(item.card_id);
+    if (!def) continue; // 卡池外卡牌已由 validateDeck 报错
+    const have = owned[item.card_id] ?? 0;
+    if (have <= 0) {
+      errors.push(`未持有「${def.card_name_zh}」，收录模式下无法使用。`);
+    } else if (item.quantity > have) {
+      errors.push(`「${def.card_name_zh}」持有 ${have} 张，卡组需要 ${item.quantity} 张。`);
+    }
+  }
+  return {
+    valid: base.valid && errors.length === 0,
+    totalCards: base.totalCards,
+    uniqueCards: base.uniqueCards,
+    errors: [...base.errors, ...errors],
+    warnings: base.warnings,
+  };
 }
 
 export interface DeckValidationResult {

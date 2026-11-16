@@ -1,0 +1,2378 @@
+[
+  {
+    "cardId": "OP-VAN-001",
+    "operatorId": "operator_fang",
+    "codeNameZh": "芬",
+    "codeNameEn": "Fang",
+    "charId": "char_123_fang",
+    "portrait": {
+      "file": "char_123_fang_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_123_fang_1.png",
+      "bytes": 15074,
+      "size": [
+        180,
+        331
+      ]
+    },
+    "avatar": {
+      "file": "char_123_fang.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_123_fang.png",
+      "bytes": 11758,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_芬_1.png",
+      "url": "https://media.prts.wiki/a/af/%E7%AB%8B%E7%BB%98_%E8%8A%AC_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-VAN-002",
+    "operatorId": "operator_plume",
+    "codeNameZh": "翎羽",
+    "codeNameEn": "Plume",
+    "charId": "char_192_falco",
+    "portrait": {
+      "file": "char_192_falco_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_192_falco_1.png",
+      "bytes": 16530,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_192_falco.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_192_falco.png",
+      "bytes": 12782,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_翎羽_1.png",
+      "url": "https://media.prts.wiki/8/84/%E7%AB%8B%E7%BB%98_%E7%BF%8E%E7%BE%BD_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-VAN-003",
+    "operatorId": "operator_myrtle",
+    "codeNameZh": "桃金娘",
+    "codeNameEn": "Myrtle",
+    "charId": "char_151_myrtle",
+    "portrait": {
+      "file": "char_151_myrtle_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_151_myrtle_2.png",
+      "bytes": 14704,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_151_myrtle_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_151_myrtle_2.png",
+      "bytes": 11038,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_桃金娘_2.png",
+      "url": "https://media.prts.wiki/d/dc/%E7%AB%8B%E7%BB%98_%E6%A1%83%E9%87%91%E5%A8%98_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-VAN-004",
+    "operatorId": "operator_courier",
+    "codeNameZh": "讯使",
+    "codeNameEn": "Courier",
+    "charId": "char_198_blackd",
+    "portrait": {
+      "file": "char_198_blackd_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_198_blackd_2.png",
+      "bytes": 15042,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_198_blackd_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_198_blackd_2.png",
+      "bytes": 12176,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_讯使_2.png",
+      "url": "https://media.prts.wiki/c/cf/%E7%AB%8B%E7%BB%98_%E8%AE%AF%E4%BD%BF_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-VAN-005",
+    "operatorId": "operator_vigna",
+    "codeNameZh": "红豆",
+    "codeNameEn": "Vigna",
+    "charId": "char_290_vigna",
+    "portrait": {
+      "file": "char_290_vigna_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_290_vigna_2.png",
+      "bytes": 21336,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_290_vigna_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_290_vigna_2.png",
+      "bytes": 14908,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_红豆_2.png",
+      "url": "https://media.prts.wiki/2/26/%E7%AB%8B%E7%BB%98_%E7%BA%A2%E8%B1%86_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-VAN-006",
+    "operatorId": "operator_texas",
+    "codeNameZh": "德克萨斯",
+    "codeNameEn": "Texas",
+    "charId": "char_102_texas",
+    "portrait": {
+      "file": "char_102_texas_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_102_texas_2.png",
+      "bytes": 18266,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_102_texas_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_102_texas_2.png",
+      "bytes": 12148,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_德克萨斯_2.png",
+      "url": "https://media.prts.wiki/f/fc/%E7%AB%8B%E7%BB%98_%E5%BE%B7%E5%85%8B%E8%90%A8%E6%96%AF_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-VAN-007",
+    "operatorId": "operator_elysium",
+    "codeNameZh": "极境",
+    "codeNameEn": "Elysium",
+    "charId": "char_401_elysm",
+    "portrait": {
+      "file": "char_401_elysm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_401_elysm_2.png",
+      "bytes": 21440,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_401_elysm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_401_elysm_2.png",
+      "bytes": 14472,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_极境_2.png",
+      "url": "https://media.prts.wiki/4/40/%E7%AB%8B%E7%BB%98_%E6%9E%81%E5%A2%83_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-VAN-008",
+    "operatorId": "operator_siege",
+    "codeNameZh": "推进之王",
+    "codeNameEn": "Siege",
+    "charId": "char_112_siege",
+    "portrait": {
+      "file": "char_112_siege_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_112_siege_2.png",
+      "bytes": 18624,
+      "size": [
+        180,
+        332
+      ]
+    },
+    "avatar": {
+      "file": "char_112_siege_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_112_siege_2.png",
+      "bytes": 14406,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_推进之王_2.png",
+      "url": "https://media.prts.wiki/d/dd/%E7%AB%8B%E7%BB%98_%E6%8E%A8%E8%BF%9B%E4%B9%8B%E7%8E%8B_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-VAN-009",
+    "operatorId": "operator_bagpipe",
+    "codeNameZh": "风笛",
+    "codeNameEn": "Bagpipe",
+    "charId": "char_222_bpipe",
+    "portrait": {
+      "file": "char_222_bpipe_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_222_bpipe_2.png",
+      "bytes": 17972,
+      "size": [
+        180,
+        324
+      ]
+    },
+    "avatar": {
+      "file": "char_222_bpipe_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_222_bpipe_2.png",
+      "bytes": 13202,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_风笛_2.png",
+      "url": "https://media.prts.wiki/9/9d/%E7%AB%8B%E7%BB%98_%E9%A3%8E%E7%AC%9B_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-GUA-001",
+    "operatorId": "operator_melantha",
+    "codeNameZh": "玫兰莎",
+    "codeNameEn": "Melantha",
+    "charId": "char_208_melan",
+    "portrait": {
+      "file": "char_208_melan_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_208_melan_1.png",
+      "bytes": 18352,
+      "size": [
+        180,
+        348
+      ]
+    },
+    "avatar": {
+      "file": "char_208_melan.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_208_melan.png",
+      "bytes": 11948,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_玫兰莎_1.png",
+      "url": "https://media.prts.wiki/0/09/%E7%AB%8B%E7%BB%98_%E7%8E%AB%E5%85%B0%E8%8E%8E_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-GUA-002",
+    "operatorId": "operator_midnight",
+    "codeNameZh": "月见夜",
+    "codeNameEn": "Midnight",
+    "charId": "char_283_midn",
+    "portrait": {
+      "file": "char_283_midn_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_283_midn_1.png",
+      "bytes": 19894,
+      "size": [
+        180,
+        334
+      ]
+    },
+    "avatar": {
+      "file": "char_283_midn.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_283_midn.png",
+      "bytes": 15268,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_月见夜_1.png",
+      "url": "https://media.prts.wiki/0/02/%E7%AB%8B%E7%BB%98_%E6%9C%88%E8%A7%81%E5%A4%9C_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-GUA-003",
+    "operatorId": "operator_cutter",
+    "codeNameZh": "刻刀",
+    "codeNameEn": "Cutter",
+    "charId": "char_301_cutter",
+    "portrait": {
+      "file": "char_301_cutter_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_301_cutter_2.png",
+      "bytes": 17810,
+      "size": [
+        180,
+        344
+      ]
+    },
+    "avatar": {
+      "file": "char_301_cutter_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_301_cutter_2.png",
+      "bytes": 12122,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_刻刀_2.png",
+      "url": "https://media.prts.wiki/e/e8/%E7%AB%8B%E7%BB%98_%E5%88%BB%E5%88%80_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-GUA-004",
+    "operatorId": "operator_utage",
+    "codeNameZh": "宴",
+    "codeNameEn": "Utage",
+    "charId": "char_337_utage",
+    "portrait": {
+      "file": "char_337_utage_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_337_utage_2.png",
+      "bytes": 16290,
+      "size": [
+        180,
+        320
+      ]
+    },
+    "avatar": {
+      "file": "char_337_utage_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_337_utage_2.png",
+      "bytes": 13760,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_宴_2.png",
+      "url": "https://media.prts.wiki/0/05/%E7%AB%8B%E7%BB%98_%E5%AE%B4_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-GUA-005",
+    "operatorId": "operator_lappland",
+    "codeNameZh": "拉普兰德",
+    "codeNameEn": "Lappland",
+    "charId": "char_140_whitew",
+    "portrait": {
+      "file": "char_140_whitew_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_140_whitew_2.png",
+      "bytes": 18744,
+      "size": [
+        180,
+        343
+      ]
+    },
+    "avatar": {
+      "file": "char_140_whitew_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_140_whitew_2.png",
+      "bytes": 14338,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_拉普兰德_2.png",
+      "url": "https://media.prts.wiki/f/fe/%E7%AB%8B%E7%BB%98_%E6%8B%89%E6%99%AE%E5%85%B0%E5%BE%B7_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-GUA-006",
+    "operatorId": "operator_specter",
+    "codeNameZh": "幽灵鲨",
+    "codeNameEn": "Specter",
+    "charId": "char_143_ghost",
+    "portrait": {
+      "file": "char_143_ghost_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_143_ghost_2.png",
+      "bytes": 16220,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_143_ghost_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_143_ghost_2.png",
+      "bytes": 10972,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_幽灵鲨_2.png",
+      "url": "https://media.prts.wiki/d/d3/%E7%AB%8B%E7%BB%98_%E5%B9%BD%E7%81%B5%E9%B2%A8_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-GUA-007",
+    "operatorId": "operator_silverash",
+    "codeNameZh": "银灰",
+    "codeNameEn": "SilverAsh",
+    "charId": "char_172_svrash",
+    "portrait": {
+      "file": "char_172_svrash_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_172_svrash_2.png",
+      "bytes": 20512,
+      "size": [
+        180,
+        350
+      ]
+    },
+    "avatar": {
+      "file": "char_172_svrash_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_172_svrash_2.png",
+      "bytes": 15396,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_银灰_2.png",
+      "url": "https://media.prts.wiki/5/5f/%E7%AB%8B%E7%BB%98_%E9%93%B6%E7%81%B0_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-GUA-008",
+    "operatorId": "operator_thorns",
+    "codeNameZh": "棘刺",
+    "codeNameEn": "Thorns",
+    "charId": "char_293_thorns",
+    "portrait": {
+      "file": "char_293_thorns_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_293_thorns_2.png",
+      "bytes": 14192,
+      "size": [
+        180,
+        327
+      ]
+    },
+    "avatar": {
+      "file": "char_293_thorns_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_293_thorns_2.png",
+      "bytes": 9534,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_棘刺_2.png",
+      "url": "https://media.prts.wiki/4/41/%E7%AB%8B%E7%BB%98_%E6%A3%98%E5%88%BA_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-GUA-009",
+    "operatorId": "operator_surtr",
+    "codeNameZh": "史尔特尔",
+    "codeNameEn": "Surtr",
+    "charId": "char_350_surtr",
+    "portrait": {
+      "file": "char_350_surtr_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_350_surtr_2.png",
+      "bytes": 17928,
+      "size": [
+        180,
+        355
+      ]
+    },
+    "avatar": {
+      "file": "char_350_surtr_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_350_surtr_2.png",
+      "bytes": 14042,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_史尔特尔_2.png",
+      "url": "https://media.prts.wiki/2/2e/%E7%AB%8B%E7%BB%98_%E5%8F%B2%E5%B0%94%E7%89%B9%E5%B0%94_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-DEF-001",
+    "operatorId": "operator_beagle",
+    "codeNameZh": "米格鲁",
+    "codeNameEn": "Beagle",
+    "charId": "char_122_beagle",
+    "portrait": {
+      "file": "char_122_beagle_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_122_beagle_1.png",
+      "bytes": 15942,
+      "size": [
+        180,
+        354
+      ]
+    },
+    "avatar": {
+      "file": "char_122_beagle.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_122_beagle.png",
+      "bytes": 12856,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_米格鲁_1.png",
+      "url": "https://media.prts.wiki/4/44/%E7%AB%8B%E7%BB%98_%E7%B1%B3%E6%A0%BC%E9%B2%81_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-DEF-002",
+    "operatorId": "operator_spot",
+    "codeNameZh": "斑点",
+    "codeNameEn": "Spot",
+    "charId": "char_284_spot",
+    "portrait": {
+      "file": "char_284_spot_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_284_spot_1.png",
+      "bytes": 15174,
+      "size": [
+        180,
+        339
+      ]
+    },
+    "avatar": {
+      "file": "char_284_spot.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_284_spot.png",
+      "bytes": 11072,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_斑点_1.png",
+      "url": "https://media.prts.wiki/8/8a/%E7%AB%8B%E7%BB%98_%E6%96%91%E7%82%B9_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-DEF-003",
+    "operatorId": "operator_cuora",
+    "codeNameZh": "蛇屠箱",
+    "codeNameEn": "Cuora",
+    "charId": "char_150_snakek",
+    "portrait": {
+      "file": "char_150_snakek_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_150_snakek_2.png",
+      "bytes": 13996,
+      "size": [
+        180,
+        332
+      ]
+    },
+    "avatar": {
+      "file": "char_150_snakek_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_150_snakek_2.png",
+      "bytes": 10404,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_蛇屠箱_2.png",
+      "url": "https://media.prts.wiki/e/eb/%E7%AB%8B%E7%BB%98_%E8%9B%87%E5%B1%A0%E7%AE%B1_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-DEF-004",
+    "operatorId": "operator_gummy",
+    "codeNameZh": "古米",
+    "codeNameEn": "Gummy",
+    "charId": "char_196_sunbr",
+    "portrait": {
+      "file": "char_196_sunbr_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_196_sunbr_2.png",
+      "bytes": 17874,
+      "size": [
+        180,
+        333
+      ]
+    },
+    "avatar": {
+      "file": "char_196_sunbr_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_196_sunbr_2.png",
+      "bytes": 14928,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_古米_2.png",
+      "url": "https://media.prts.wiki/1/1f/%E7%AB%8B%E7%BB%98_%E5%8F%A4%E7%B1%B3_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-DEF-005",
+    "operatorId": "operator_bubble",
+    "codeNameZh": "泡泡",
+    "codeNameEn": "Bubble",
+    "charId": "char_381_bubble",
+    "portrait": {
+      "file": "char_381_bubble_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_381_bubble_2.png",
+      "bytes": 18520,
+      "size": [
+        180,
+        349
+      ]
+    },
+    "avatar": {
+      "file": "char_381_bubble_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_381_bubble_2.png",
+      "bytes": 15670,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_泡泡_2.png",
+      "url": "https://media.prts.wiki/4/49/%E7%AB%8B%E7%BB%98_%E6%B3%A1%E6%B3%A1_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-DEF-006",
+    "operatorId": "operator_liskarm",
+    "codeNameZh": "雷蛇",
+    "codeNameEn": "Liskarm",
+    "charId": "char_107_liskam",
+    "portrait": {
+      "file": "char_107_liskam_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_107_liskam_2.png",
+      "bytes": 16778,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_107_liskam_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_107_liskam_2.png",
+      "bytes": 13586,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_雷蛇_2.png",
+      "url": "https://media.prts.wiki/b/b5/%E7%AB%8B%E7%BB%98_%E9%9B%B7%E8%9B%87_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-DEF-007",
+    "operatorId": "operator_nearl",
+    "codeNameZh": "临光",
+    "codeNameEn": "Nearl",
+    "charId": "char_148_nearl",
+    "portrait": {
+      "file": "char_148_nearl_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_148_nearl_2.png",
+      "bytes": 23380,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_148_nearl_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_148_nearl_2.png",
+      "bytes": 16582,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_临光_2.png",
+      "url": "https://media.prts.wiki/5/5f/%E7%AB%8B%E7%BB%98_%E4%B8%B4%E5%85%89_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-DEF-008",
+    "operatorId": "operator_saria",
+    "codeNameZh": "塞雷娅",
+    "codeNameEn": "Saria",
+    "charId": "char_202_demkni",
+    "portrait": {
+      "file": "char_202_demkni_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_202_demkni_2.png",
+      "bytes": 18836,
+      "size": [
+        180,
+        329
+      ]
+    },
+    "avatar": {
+      "file": "char_202_demkni_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_202_demkni_2.png",
+      "bytes": 13006,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_塞雷娅_2.png",
+      "url": "https://media.prts.wiki/2/2e/%E7%AB%8B%E7%BB%98_%E5%A1%9E%E9%9B%B7%E5%A8%85_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-DEF-009",
+    "operatorId": "operator_hoshiguma",
+    "codeNameZh": "星熊",
+    "codeNameEn": "Hoshiguma",
+    "charId": "char_136_hsguma",
+    "portrait": {
+      "file": "char_136_hsguma_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_136_hsguma_2.png",
+      "bytes": 20216,
+      "size": [
+        180,
+        348
+      ]
+    },
+    "avatar": {
+      "file": "char_136_hsguma_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_136_hsguma_2.png",
+      "bytes": 16268,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_星熊_2.png",
+      "url": "https://media.prts.wiki/0/0a/%E7%AB%8B%E7%BB%98_%E6%98%9F%E7%86%8A_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-001",
+    "operatorId": "operator_kroos",
+    "codeNameZh": "克洛丝",
+    "codeNameEn": "Kroos",
+    "charId": "char_124_kroos",
+    "portrait": {
+      "file": "char_124_kroos_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_124_kroos_1.png",
+      "bytes": 17606,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_124_kroos.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_124_kroos.png",
+      "bytes": 13784,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_克洛丝_1.png",
+      "url": "https://media.prts.wiki/b/ba/%E7%AB%8B%E7%BB%98_%E5%85%8B%E6%B4%9B%E4%B8%9D_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-SNI-002",
+    "operatorId": "operator_jessica",
+    "codeNameZh": "杰西卡",
+    "codeNameEn": "Jessica",
+    "charId": "char_235_jesica",
+    "portrait": {
+      "file": "char_235_jesica_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_235_jesica_2.png",
+      "bytes": 16294,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_235_jesica_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_235_jesica_2.png",
+      "bytes": 14108,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_杰西卡_2.png",
+      "url": "https://media.prts.wiki/3/3b/%E7%AB%8B%E7%BB%98_%E6%9D%B0%E8%A5%BF%E5%8D%A1_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-003",
+    "operatorId": "operator_meteor",
+    "codeNameZh": "流星",
+    "codeNameEn": "Meteor",
+    "charId": "char_126_shotst",
+    "portrait": {
+      "file": "char_126_shotst_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_126_shotst_2.png",
+      "bytes": 20424,
+      "size": [
+        180,
+        346
+      ]
+    },
+    "avatar": {
+      "file": "char_126_shotst_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_126_shotst_2.png",
+      "bytes": 14178,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_流星_2.png",
+      "url": "https://media.prts.wiki/b/ba/%E7%AB%8B%E7%BB%98_%E6%B5%81%E6%98%9F_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-004",
+    "operatorId": "operator_may",
+    "codeNameZh": "梅",
+    "codeNameEn": "May",
+    "charId": "char_133_mm",
+    "portrait": {
+      "file": "char_133_mm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_133_mm_2.png",
+      "bytes": 20488,
+      "size": [
+        180,
+        347
+      ]
+    },
+    "avatar": {
+      "file": "char_133_mm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_133_mm_2.png",
+      "bytes": 14712,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_梅_2.png",
+      "url": "https://media.prts.wiki/8/86/%E7%AB%8B%E7%BB%98_%E6%A2%85_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-005",
+    "operatorId": "operator_platinum",
+    "codeNameZh": "白金",
+    "codeNameEn": "Platinum",
+    "charId": "char_204_platnm",
+    "portrait": {
+      "file": "char_204_platnm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_204_platnm_2.png",
+      "bytes": 16090,
+      "size": [
+        180,
+        356
+      ]
+    },
+    "avatar": {
+      "file": "char_204_platnm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_204_platnm_2.png",
+      "bytes": 12350,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_白金_2.png",
+      "url": "https://media.prts.wiki/7/77/%E7%AB%8B%E7%BB%98_%E7%99%BD%E9%87%91_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-006",
+    "operatorId": "operator_bluepoison",
+    "codeNameZh": "蓝毒",
+    "codeNameEn": "Blue Poison",
+    "charId": "char_129_bluep",
+    "portrait": {
+      "file": "char_129_bluep_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_129_bluep_2.png",
+      "bytes": 18068,
+      "size": [
+        180,
+        324
+      ]
+    },
+    "avatar": {
+      "file": "char_129_bluep_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_129_bluep_2.png",
+      "bytes": 12398,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_蓝毒_2.png",
+      "url": "https://media.prts.wiki/3/36/%E7%AB%8B%E7%BB%98_%E8%93%9D%E6%AF%92_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-007",
+    "operatorId": "operator_firewatch",
+    "codeNameZh": "守林人",
+    "codeNameEn": "Firewatch",
+    "charId": "char_158_milu",
+    "portrait": {
+      "file": "char_158_milu_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_158_milu_2.png",
+      "bytes": 21078,
+      "size": [
+        180,
+        344
+      ]
+    },
+    "avatar": {
+      "file": "char_158_milu_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_158_milu_2.png",
+      "bytes": 15542,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_守林人_2.png",
+      "url": "https://media.prts.wiki/4/4c/%E7%AB%8B%E7%BB%98_%E5%AE%88%E6%9E%97%E4%BA%BA_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-008",
+    "operatorId": "operator_exusiai",
+    "codeNameZh": "能天使",
+    "codeNameEn": "Exusiai",
+    "charId": "char_103_angel",
+    "portrait": {
+      "file": "char_103_angel_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_103_angel_2.png",
+      "bytes": 25504,
+      "size": [
+        180,
+        358
+      ]
+    },
+    "avatar": {
+      "file": "char_103_angel_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_103_angel_2.png",
+      "bytes": 17676,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_能天使_2.png",
+      "url": "https://media.prts.wiki/1/19/%E7%AB%8B%E7%BB%98_%E8%83%BD%E5%A4%A9%E4%BD%BF_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SNI-009",
+    "operatorId": "operator_schwarz",
+    "codeNameZh": "黑",
+    "codeNameEn": "Schwarz",
+    "charId": "char_340_shwaz",
+    "portrait": {
+      "file": "char_340_shwaz_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_340_shwaz_2.png",
+      "bytes": 23612,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_340_shwaz_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_340_shwaz_2.png",
+      "bytes": 18230,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_黑_2.png",
+      "url": "https://media.prts.wiki/d/db/%E7%AB%8B%E7%BB%98_%E9%BB%91_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-001",
+    "operatorId": "operator_steward",
+    "codeNameZh": "史都华德",
+    "codeNameEn": "Steward",
+    "charId": "char_210_stward",
+    "portrait": {
+      "file": "char_210_stward_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_210_stward_1.png",
+      "bytes": 18816,
+      "size": [
+        180,
+        355
+      ]
+    },
+    "avatar": {
+      "file": "char_210_stward.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_210_stward.png",
+      "bytes": 13862,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_史都华德_1.png",
+      "url": "https://media.prts.wiki/4/44/%E7%AB%8B%E7%BB%98_%E5%8F%B2%E9%83%BD%E5%8D%8E%E5%BE%B7_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-CAS-002",
+    "operatorId": "operator_lava",
+    "codeNameZh": "炎熔",
+    "codeNameEn": "Lava",
+    "charId": "char_121_lava",
+    "portrait": {
+      "file": "char_121_lava_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_121_lava_1.png",
+      "bytes": 20540,
+      "size": [
+        180,
+        340
+      ]
+    },
+    "avatar": {
+      "file": "char_121_lava.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_121_lava.png",
+      "bytes": 15444,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_炎狱炎熔_2.png",
+      "url": "https://media.prts.wiki/d/dd/%E7%AB%8B%E7%BB%98_%E7%82%8E%E7%8B%B1%E7%82%8E%E7%86%94_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-003",
+    "operatorId": "operator_haze",
+    "codeNameZh": "夜烟",
+    "codeNameEn": "Haze",
+    "charId": "char_141_nights",
+    "portrait": {
+      "file": "char_141_nights_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_141_nights_2.png",
+      "bytes": 17110,
+      "size": [
+        180,
+        358
+      ]
+    },
+    "avatar": {
+      "file": "char_141_nights_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_141_nights_2.png",
+      "bytes": 11764,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_夜烟_2.png",
+      "url": "https://media.prts.wiki/0/08/%E7%AB%8B%E7%BB%98_%E5%A4%9C%E7%83%9F_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-004",
+    "operatorId": "operator_click",
+    "codeNameZh": "卡达",
+    "codeNameEn": "Click",
+    "charId": "char_328_cammou",
+    "portrait": {
+      "file": "char_328_cammou_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_328_cammou_2.png",
+      "bytes": 10986,
+      "size": [
+        180,
+        350
+      ]
+    },
+    "avatar": {
+      "file": "char_328_cammou_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_328_cammou_2.png",
+      "bytes": 9892,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_卡达_2.png",
+      "url": "https://media.prts.wiki/b/b8/%E7%AB%8B%E7%BB%98_%E5%8D%A1%E8%BE%BE_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-005",
+    "operatorId": "operator_gitano",
+    "codeNameZh": "远山",
+    "codeNameEn": "Gitano",
+    "charId": "char_109_fmout",
+    "portrait": {
+      "file": "char_109_fmout_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_109_fmout_2.png",
+      "bytes": 19570,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_109_fmout_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_109_fmout_2.png",
+      "bytes": 14518,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_远山_2.png",
+      "url": "https://media.prts.wiki/f/f3/%E7%AB%8B%E7%BB%98_%E8%BF%9C%E5%B1%B1_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-006",
+    "operatorId": "operator_amiya",
+    "codeNameZh": "阿米娅",
+    "codeNameEn": "Amiya",
+    "charId": "char_002_amiya",
+    "portrait": {
+      "file": "char_002_amiya_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_002_amiya_2.png",
+      "bytes": 18536,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_002_amiya_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_002_amiya_2.png",
+      "bytes": 14674,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_阿米娅_2.png",
+      "url": "https://media.prts.wiki/3/3f/%E7%AB%8B%E7%BB%98_%E9%98%BF%E7%B1%B3%E5%A8%85_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-007",
+    "operatorId": "operator_nightmare",
+    "codeNameZh": "夜魔",
+    "codeNameEn": "Nightmare",
+    "charId": "char_164_nightm",
+    "portrait": {
+      "file": "char_164_nightm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_164_nightm_2.png",
+      "bytes": 15210,
+      "size": [
+        180,
+        324
+      ]
+    },
+    "avatar": {
+      "file": "char_164_nightm_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_164_nightm_2.png",
+      "bytes": 12668,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_夜魔_2.png",
+      "url": "https://media.prts.wiki/0/0d/%E7%AB%8B%E7%BB%98_%E5%A4%9C%E9%AD%94_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-008",
+    "operatorId": "operator_eyjafjalla",
+    "codeNameZh": "艾雅法拉",
+    "codeNameEn": "Eyjafjalla",
+    "charId": "char_180_amgoat",
+    "portrait": {
+      "file": "char_180_amgoat_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_180_amgoat_2.png",
+      "bytes": 21938,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_180_amgoat_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_180_amgoat_2.png",
+      "bytes": 14872,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_艾雅法拉_2.png",
+      "url": "https://media.prts.wiki/2/21/%E7%AB%8B%E7%BB%98_%E8%89%BE%E9%9B%85%E6%B3%95%E6%8B%89_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-CAS-009",
+    "operatorId": "operator_ifrit",
+    "codeNameZh": "伊芙利特",
+    "codeNameEn": "Ifrit",
+    "charId": "char_134_ifrit",
+    "portrait": {
+      "file": "char_134_ifrit_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_134_ifrit_2.png",
+      "bytes": 21024,
+      "size": [
+        180,
+        336
+      ]
+    },
+    "avatar": {
+      "file": "char_134_ifrit_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_134_ifrit_2.png",
+      "bytes": 15186,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_伊芙利特_2.png",
+      "url": "https://media.prts.wiki/f/f2/%E7%AB%8B%E7%BB%98_%E4%BC%8A%E8%8A%99%E5%88%A9%E7%89%B9_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-MED-001",
+    "operatorId": "operator_ansel",
+    "codeNameZh": "安赛尔",
+    "codeNameEn": "Ansel",
+    "charId": "char_212_ansel",
+    "portrait": {
+      "file": "char_212_ansel_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_212_ansel_1.png",
+      "bytes": 17252,
+      "size": [
+        180,
+        317
+      ]
+    },
+    "avatar": {
+      "file": "char_212_ansel.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_212_ansel.png",
+      "bytes": 14766,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_安赛尔_1.png",
+      "url": "https://media.prts.wiki/e/e4/%E7%AB%8B%E7%BB%98_%E5%AE%89%E8%B5%9B%E5%B0%94_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-MED-002",
+    "operatorId": "operator_hibiscus",
+    "codeNameZh": "芙蓉",
+    "codeNameEn": "Hibiscus",
+    "charId": "char_120_hibisc",
+    "portrait": {
+      "file": "char_120_hibisc_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_120_hibisc_1.png",
+      "bytes": 19434,
+      "size": [
+        180,
+        323
+      ]
+    },
+    "avatar": {
+      "file": "char_120_hibisc.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_120_hibisc.png",
+      "bytes": 13012,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_芙蓉_1.png",
+      "url": "https://media.prts.wiki/b/b9/%E7%AB%8B%E7%BB%98_%E8%8A%99%E8%93%89_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-MED-003",
+    "operatorId": "operator_perfumer",
+    "codeNameZh": "调香师",
+    "codeNameEn": "Perfumer",
+    "charId": "char_181_flower",
+    "portrait": {
+      "file": "char_181_flower_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_181_flower_2.png",
+      "bytes": 21894,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_181_flower_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_181_flower_2.png",
+      "bytes": 14472,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_调香师_2.png",
+      "url": "https://media.prts.wiki/b/b0/%E7%AB%8B%E7%BB%98_%E8%B0%83%E9%A6%99%E5%B8%88_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-MED-004",
+    "operatorId": "operator_gavial",
+    "codeNameZh": "嘉维尔",
+    "codeNameEn": "Gavial",
+    "charId": "char_187_ccheal",
+    "portrait": {
+      "file": "char_187_ccheal_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_187_ccheal_2.png",
+      "bytes": 16780,
+      "size": [
+        180,
+        334
+      ]
+    },
+    "avatar": {
+      "file": "char_187_ccheal_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_187_ccheal_2.png",
+      "bytes": 13452,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_嘉维尔_2.png",
+      "url": "https://media.prts.wiki/3/3a/%E7%AB%8B%E7%BB%98_%E5%98%89%E7%BB%B4%E5%B0%94_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-MED-005",
+    "operatorId": "operator_sussurro",
+    "codeNameZh": "苏苏洛",
+    "codeNameEn": "Sussurro",
+    "charId": "char_298_susuro",
+    "portrait": {
+      "file": "char_298_susuro_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_298_susuro_2.png",
+      "bytes": 18330,
+      "size": [
+        180,
+        341
+      ]
+    },
+    "avatar": {
+      "file": "char_298_susuro_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_298_susuro_2.png",
+      "bytes": 14752,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_苏苏洛_2.png",
+      "url": "https://media.prts.wiki/6/6e/%E7%AB%8B%E7%BB%98_%E8%8B%8F%E8%8B%8F%E6%B4%9B_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-MED-006",
+    "operatorId": "operator_silence",
+    "codeNameZh": "赫默",
+    "codeNameEn": "Silence",
+    "charId": "char_108_silent",
+    "portrait": {
+      "file": "char_108_silent_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_108_silent_2.png",
+      "bytes": 21728,
+      "size": [
+        180,
+        344
+      ]
+    },
+    "avatar": {
+      "file": "char_108_silent_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_108_silent_2.png",
+      "bytes": 17222,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_赫默_2.png",
+      "url": "https://media.prts.wiki/e/e2/%E7%AB%8B%E7%BB%98_%E8%B5%AB%E9%BB%98_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-MED-007",
+    "operatorId": "operator_warfarin",
+    "codeNameZh": "华法琳",
+    "codeNameEn": "Warfarin",
+    "charId": "char_171_bldsk",
+    "portrait": {
+      "file": "char_171_bldsk_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_171_bldsk_2.png",
+      "bytes": 14472,
+      "size": [
+        180,
+        321
+      ]
+    },
+    "avatar": {
+      "file": "char_171_bldsk_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_171_bldsk_2.png",
+      "bytes": 11550,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_华法琳_2.png",
+      "url": "https://media.prts.wiki/7/77/%E7%AB%8B%E7%BB%98_%E5%8D%8E%E6%B3%95%E7%90%B3_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-MED-008",
+    "operatorId": "operator_shining",
+    "codeNameZh": "闪灵",
+    "codeNameEn": "Shining",
+    "charId": "char_147_shining",
+    "portrait": {
+      "file": "char_147_shining_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_147_shining_2.png",
+      "bytes": 15766,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_147_shining_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_147_shining_2.png",
+      "bytes": 12628,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_闪灵_2.png",
+      "url": "https://media.prts.wiki/c/c7/%E7%AB%8B%E7%BB%98_%E9%97%AA%E7%81%B5_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-MED-009",
+    "operatorId": "operator_nightingale",
+    "codeNameZh": "夜莺",
+    "codeNameEn": "Nightingale",
+    "charId": "char_179_cgbird",
+    "portrait": {
+      "file": "char_179_cgbird_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_179_cgbird_2.png",
+      "bytes": 16714,
+      "size": [
+        180,
+        324
+      ]
+    },
+    "avatar": {
+      "file": "char_179_cgbird_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_179_cgbird_2.png",
+      "bytes": 11924,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_夜莺_2.png",
+      "url": "https://media.prts.wiki/b/b3/%E7%AB%8B%E7%BB%98_%E5%A4%9C%E8%8E%BA_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-001",
+    "operatorId": "operator_earthspirit_or_caper",
+    "codeNameZh": "梓兰",
+    "codeNameEn": "Orchid",
+    "charId": "char_278_orchid",
+    "portrait": {
+      "file": "char_278_orchid_1.png",
+      "stage": "elite1",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_278_orchid_1.png",
+      "bytes": 15810,
+      "size": [
+        180,
+        341
+      ]
+    },
+    "avatar": {
+      "file": "char_278_orchid.png",
+      "stage": "base",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_278_orchid.png",
+      "bytes": 13146,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_梓兰_1.png",
+      "url": "https://media.prts.wiki/b/bb/%E7%AB%8B%E7%BB%98_%E6%A2%93%E5%85%B0_1.png",
+      "stage": "base_or_elite1"
+    }
+  },
+  {
+    "cardId": "OP-SUP-002",
+    "operatorId": "operator_podenco",
+    "codeNameZh": "波登可",
+    "codeNameEn": "Podenco",
+    "charId": "char_258_podego",
+    "portrait": {
+      "file": "char_258_podego_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_258_podego_2.png",
+      "bytes": 18460,
+      "size": [
+        180,
+        357
+      ]
+    },
+    "avatar": {
+      "file": "char_258_podego_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_258_podego_2.png",
+      "bytes": 13588,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_波登可_2.png",
+      "url": "https://media.prts.wiki/2/2c/%E7%AB%8B%E7%BB%98_%E6%B3%A2%E7%99%BB%E5%8F%AF_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-003",
+    "operatorId": "operator_earthspirit",
+    "codeNameZh": "地灵",
+    "codeNameEn": "Earthspirit",
+    "charId": "char_183_skgoat",
+    "portrait": {
+      "file": "char_183_skgoat_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_183_skgoat_2.png",
+      "bytes": 20976,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_183_skgoat_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_183_skgoat_2.png",
+      "bytes": 16366,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_地灵_2.png",
+      "url": "https://media.prts.wiki/4/46/%E7%AB%8B%E7%BB%98_%E5%9C%B0%E7%81%B5_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-004",
+    "operatorId": "operator_istina",
+    "codeNameZh": "真理",
+    "codeNameEn": "Istina",
+    "charId": "char_195_glassb",
+    "portrait": {
+      "file": "char_195_glassb_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_195_glassb_2.png",
+      "bytes": 18310,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_195_glassb_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_195_glassb_2.png",
+      "bytes": 12914,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_真理_2.png",
+      "url": "https://media.prts.wiki/3/30/%E7%AB%8B%E7%BB%98_%E7%9C%9F%E7%90%86_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-005",
+    "operatorId": "operator_pramanix",
+    "codeNameZh": "初雪",
+    "codeNameEn": "Pramanix",
+    "charId": "char_174_slbell",
+    "portrait": {
+      "file": "char_174_slbell_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_174_slbell_2.png",
+      "bytes": 21444,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_174_slbell_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_174_slbell_2.png",
+      "bytes": 16366,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_初雪_2.png",
+      "url": "https://media.prts.wiki/0/05/%E7%AB%8B%E7%BB%98_%E5%88%9D%E9%9B%AA_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-006",
+    "operatorId": "operator_mayer",
+    "codeNameZh": "梅尔",
+    "codeNameEn": "Mayer",
+    "charId": "char_242_otter",
+    "portrait": {
+      "file": "char_242_otter_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_242_otter_2.png",
+      "bytes": 20974,
+      "size": [
+        180,
+        343
+      ]
+    },
+    "avatar": {
+      "file": "char_242_otter_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_242_otter_2.png",
+      "bytes": 15578,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_梅尔_2.png",
+      "url": "https://media.prts.wiki/b/b5/%E7%AB%8B%E7%BB%98_%E6%A2%85%E5%B0%94_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-007",
+    "operatorId": "operator_angelina",
+    "codeNameZh": "安洁莉娜",
+    "codeNameEn": "Angelina",
+    "charId": "char_291_aglina",
+    "portrait": {
+      "file": "char_291_aglina_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_291_aglina_2.png",
+      "bytes": 17776,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_291_aglina_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_291_aglina_2.png",
+      "bytes": 13862,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_安洁莉娜_2.png",
+      "url": "https://media.prts.wiki/0/02/%E7%AB%8B%E7%BB%98_%E5%AE%89%E6%B4%81%E8%8E%89%E5%A8%9C_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-008",
+    "operatorId": "operator_suzuran",
+    "codeNameZh": "铃兰",
+    "codeNameEn": "Suzuran",
+    "charId": "char_358_lisa",
+    "portrait": {
+      "file": "char_358_lisa_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_358_lisa_2.png",
+      "bytes": 25052,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_358_lisa_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_358_lisa_2.png",
+      "bytes": 16168,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_铃兰_2.png",
+      "url": "https://media.prts.wiki/8/87/%E7%AB%8B%E7%BB%98_%E9%93%83%E5%85%B0_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SUP-009",
+    "operatorId": "operator_magallan",
+    "codeNameZh": "麦哲伦",
+    "codeNameEn": "Magallan",
+    "charId": "char_248_mgllan",
+    "portrait": {
+      "file": "char_248_mgllan_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_248_mgllan_2.png",
+      "bytes": 20342,
+      "size": [
+        180,
+        319
+      ]
+    },
+    "avatar": {
+      "file": "char_248_mgllan_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_248_mgllan_2.png",
+      "bytes": 14452,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_麦哲伦_2.png",
+      "url": "https://media.prts.wiki/c/cf/%E7%AB%8B%E7%BB%98_%E9%BA%A6%E5%93%B2%E4%BC%A6_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-001",
+    "operatorId": "operator_rope",
+    "codeNameZh": "暗索",
+    "codeNameEn": "Rope",
+    "charId": "char_236_rope",
+    "portrait": {
+      "file": "char_236_rope_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_236_rope_2.png",
+      "bytes": 15322,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_236_rope_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_236_rope_2.png",
+      "bytes": 12190,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_暗索_2.png",
+      "url": "https://media.prts.wiki/5/57/%E7%AB%8B%E7%BB%98_%E6%9A%97%E7%B4%A2_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-002",
+    "operatorId": "operator_shaw",
+    "codeNameZh": "阿消",
+    "codeNameEn": "Shaw",
+    "charId": "char_277_sqrrel",
+    "portrait": {
+      "file": "char_277_sqrrel_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_277_sqrrel_2.png",
+      "bytes": 16030,
+      "size": [
+        180,
+        354
+      ]
+    },
+    "avatar": {
+      "file": "char_277_sqrrel_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_277_sqrrel_2.png",
+      "bytes": 12254,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_阿消_2.png",
+      "url": "https://media.prts.wiki/e/e1/%E7%AB%8B%E7%BB%98_%E9%98%BF%E6%B6%88_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-003",
+    "operatorId": "operator_gravel",
+    "codeNameZh": "砾",
+    "codeNameEn": "Gravel",
+    "charId": "char_237_gravel",
+    "portrait": {
+      "file": "char_237_gravel_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_237_gravel_2.png",
+      "bytes": 18414,
+      "size": [
+        180,
+        338
+      ]
+    },
+    "avatar": {
+      "file": "char_237_gravel_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_237_gravel_2.png",
+      "bytes": 14220,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_砾_2.png",
+      "url": "https://media.prts.wiki/6/62/%E7%AB%8B%E7%BB%98_%E7%A0%BE_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-004",
+    "operatorId": "operator_ethan",
+    "codeNameZh": "伊桑",
+    "codeNameEn": "Ethan",
+    "charId": "char_355_ethan",
+    "portrait": {
+      "file": "char_355_ethan_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_355_ethan_2.png",
+      "bytes": 8168,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_355_ethan_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_355_ethan_2.png",
+      "bytes": 5792,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_伊桑_2.png",
+      "url": "https://media.prts.wiki/b/b6/%E7%AB%8B%E7%BB%98_%E4%BC%8A%E6%A1%91_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-005",
+    "operatorId": "operator_jaye",
+    "codeNameZh": "孑",
+    "codeNameEn": "Jaye",
+    "charId": "char_272_strong",
+    "portrait": {
+      "file": "char_272_strong_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_272_strong_2.png",
+      "bytes": 16000,
+      "size": [
+        180,
+        341
+      ]
+    },
+    "avatar": {
+      "file": "char_272_strong_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_272_strong_2.png",
+      "bytes": 12552,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_孑_2.png",
+      "url": "https://media.prts.wiki/a/a3/%E7%AB%8B%E7%BB%98_%E5%AD%91_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-006",
+    "operatorId": "operator_manticore",
+    "codeNameZh": "狮蝎",
+    "codeNameEn": "Manticore",
+    "charId": "char_215_mantic",
+    "portrait": {
+      "file": "char_215_mantic_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_215_mantic_2.png",
+      "bytes": 22146,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_215_mantic_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_215_mantic_2.png",
+      "bytes": 17452,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_狮蝎_2.png",
+      "url": "https://media.prts.wiki/6/61/%E7%AB%8B%E7%BB%98_%E7%8B%AE%E8%9D%8E_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-007",
+    "operatorId": "operator_red",
+    "codeNameZh": "红",
+    "codeNameEn": "Projekt Red",
+    "charId": "char_144_red",
+    "portrait": {
+      "file": "char_144_red_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_144_red_2.png",
+      "bytes": 17768,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_144_red_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_144_red_2.png",
+      "bytes": 13838,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_红_2.png",
+      "url": "https://media.prts.wiki/a/ab/%E7%AB%8B%E7%BB%98_%E7%BA%A2_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-008",
+    "operatorId": "operator_phantom",
+    "codeNameZh": "傀影",
+    "codeNameEn": "Phantom",
+    "charId": "char_250_phatom",
+    "portrait": {
+      "file": "char_250_phatom_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_250_phatom_2.png",
+      "bytes": 14772,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_250_phatom_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_250_phatom_2.png",
+      "bytes": 12414,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_傀影_2.png",
+      "url": "https://media.prts.wiki/6/6f/%E7%AB%8B%E7%BB%98_%E5%82%80%E5%BD%B1_2.png",
+      "stage": "elite2"
+    }
+  },
+  {
+    "cardId": "OP-SPE-009",
+    "operatorId": "operator_weedy",
+    "codeNameZh": "温蒂",
+    "codeNameEn": "Weedy",
+    "charId": "char_400_weedy",
+    "portrait": {
+      "file": "char_400_weedy_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/portraits/char_400_weedy_2.png",
+      "bytes": 24608,
+      "size": [
+        180,
+        360
+      ]
+    },
+    "avatar": {
+      "file": "char_400_weedy_2.png",
+      "stage": "elite2",
+      "url": "https://raw.githubusercontent.com/Aceship/Arknight-Images/main/avatars/char_400_weedy_2.png",
+      "bytes": 17016,
+      "size": [
+        180,
+        180
+      ]
+    },
+    "portraitSource": {
+      "name": "PRTS Wiki (Arknights official art)",
+      "file": "文件:立绘_温蒂_2.png",
+      "url": "https://media.prts.wiki/c/c2/%E7%AB%8B%E7%BB%98_%E6%B8%A9%E8%92%82_2.png",
+      "stage": "elite2"
+    }
+  }
+]
