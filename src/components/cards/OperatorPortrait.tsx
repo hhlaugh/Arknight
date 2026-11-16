@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { CardId } from '../../game/types';
-import { getCardPresentation, type CardPresentation } from '../../data/card-presentation';
+import { getCardPresentation, resolveAssetUrl, type CardPresentation } from '../../data/card-presentation';
 import { CLASS_COLOR, CLASS_LABEL } from '../../client/demoData';
 import { RARITY_THEMES } from '../ui/tokens';
 
@@ -109,7 +109,9 @@ export function OperatorPortrait({
   alt,
 }: OperatorPortraitProps) {
   const p = presentation ?? getCardPresentation(cardId);
-  const assetUrl = variant === 'avatar' || variant === 'mini' ? p.assets.avatar : p.assets.portrait;
+  const assetUrl = resolveAssetUrl(
+    variant === 'avatar' || variant === 'mini' ? p.assets.avatar : p.assets.portrait,
+  );
   const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {

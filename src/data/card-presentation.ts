@@ -1064,6 +1064,17 @@ export const CARD_PRESENTATION_MAP: ReadonlyMap<CardId, CardPresentation> = new 
  * 获取指定卡牌的视觉表现配置。
  * 若尚未登记（如动态创建的卡），安全生成结构化 fallback，保证永远不返回 undefined。
  */
+/**
+ * 解析素材 URL：manifest 内路径以 '/' 开头（面向部署根书写）。
+ * GitHub Pages 等子路径部署（如 /Arknight/）下必须拼接 Vite BASE_URL（base: './'），
+ * 否则浏览器会把 '/assets/...' 解析到域名根导致 404（本地根路径部署不受影响）。
+ */
+export function resolveAssetUrl(path: string): string {
+  if (!path.startsWith('/')) return path;
+  const base = import.meta.env.BASE_URL ?? '/';
+  return base === '/' ? path : `${base}${path.slice(1)}`;
+}
+
 export function getCardPresentation(cardId: CardId): CardPresentation {
   const found = CARD_PRESENTATION_MAP.get(cardId);
   if (found) return found;
