@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { RhodesWatermarkBackdrop } from '../components/ui/RhodesWatermark';
 import {
   createAccount,
   exportAccountsJson,
@@ -84,25 +85,31 @@ export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrar
     event.target.value = '';
   };
   return (
-    <div className="min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-4 sm:p-6 select-none">
+    <div className="relative min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
+      <RhodesWatermarkBackdrop />
       {/* Central Terminal Console Panel */}
       <Panel
-        variant="raised"
+        variant="dark"
         cornerCut="lg"
         scanlines
         grid
-        className="w-full max-w-4xl border border-[#4a555b] shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-4xl border border-[#4a555b] bg-[#191d22]/86 shadow-2xl overflow-hidden"
       >
         {/* Top Operational Status Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45]">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a]/92 border-b border-[#363f45]">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-5 bg-[#e5a52b]" />
+            <img
+              src="./assets/arknights/logos/prts_badge.svg"
+              alt="PRTS Logo"
+              referrerPolicy="no-referrer"
+              className="w-10 h-10 shrink-0 object-contain border border-[#4a555b] bg-black"
+            />
             <div>
               <h1 className="text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
                 PRTS · 战术作战终端
               </h1>
               <span className="text-[10px] font-mono text-slate-400 tracking-wider">
-                RHODES ISLAND TACTICAL COMMAND SYSTEM
+                RHODES ISLAND PHARMACEUTICALS INC.
               </span>
             </div>
           </div>
@@ -119,8 +126,15 @@ export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrar
         </div>
 
         {/* Hero Section */}
-        <div className="px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-b from-[#1b2025] to-[#14181c] border-b border-[#2d353b]">
-          <div className="flex-1 space-y-2">
+        <div className="relative px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-b from-[#1b2025]/82 to-[#14181c]/88 border-b border-[#2d353b] overflow-hidden">
+          <img
+            src="./assets/arknights/logos/rhodes_island_dark.png"
+            alt=""
+            aria-hidden="true"
+            referrerPolicy="no-referrer"
+            className="pointer-events-none select-none absolute right-6 md:right-60 top-1/2 -translate-y-1/2 w-56 h-56 object-contain opacity-[0.22]"
+          />
+          <div className="relative z-10 flex-1 space-y-2">
             <div className="inline-flex items-center gap-2 text-xs font-mono text-[#e5a52b] tracking-wider uppercase">
               <span>RHODES ISLAND OPERATIONAL CARD GAME</span>
               <span>·</span>

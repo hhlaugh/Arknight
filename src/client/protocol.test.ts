@@ -184,6 +184,7 @@ describe('toPlayerView information boundary', () => {
 describe('protocol schema validators', () => {
   it('accepts well-formed ActionRequest/Ack and rejects malformed ones', () => {
     expect(isActionRequest({ requestId: 'r', expectedStateVersion: 0, action: { type: 'end_action_phase' } })).toBe(true);
+    expect(isActionRequest({ requestId: 'r', expectedStateVersion: 0, action: { type: 'surrender' } })).toBe(true);
     expect(isActionRequest({ requestId: 'r', expectedStateVersion: 3, action: { type: 'deploy_operator', card_instance_id: 'x', lane: 'left', position: 'front' } })).toBe(true);
     expect(isActionRequest({ requestId: 'r', expectedStateVersion: 3, action: { type: 'play_card', card_instance_id: 'x' } })).toBe(true);
     expect(isActionRequest({ requestId: '', expectedStateVersion: 0, action: { type: 'end_action_phase' } })).toBe(false);

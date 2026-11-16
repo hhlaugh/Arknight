@@ -121,6 +121,7 @@ export interface PlayerState {
 }
 export type GameAction =
   | { readonly type: 'end_action_phase' }
+  | { readonly type: 'surrender' }
   | { readonly type: 'play_card'; readonly card_instance_id: CardInstanceId; readonly target_instance_id?: CardInstanceId }
   | { readonly type: 'deploy_operator'; readonly card_instance_id: CardInstanceId; readonly lane: LaneId; readonly position: Position }
   | { readonly type: 'withdraw_operator'; readonly card_instance_id: CardInstanceId }

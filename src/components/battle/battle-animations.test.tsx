@@ -8,10 +8,13 @@ import type { CardInstanceId, CombatLogEvent, GameState, PlayerId } from '../../
 import {
   buildPresentationBeats,
   captureBoardPositions,
+  DEFAULT_ANIMATION_SPEED_MODE,
   getBeatDurationMs,
+  getCssAnimationScale,
   makeSlotKey,
 } from './combatPresentation';
 import { TacticalBattleHud } from './TacticalBattleHud';
+import { PlayerHandDock } from './PlayerHandDock';
 import { UnitView } from './UnitView';
 import { HealthBar } from '../ui/HealthBar';
 
@@ -253,6 +256,19 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
       },
     ];
 
+    const slowBeats = buildPresentationBeats({
+      prevState: staged,
+      nextState: prevState,
+      newEvents: events,
+      prevPositions,
+      bottomPlayer: actor,
+      speedMode: 'slow',
+    });
+    expect(DEFAULT_ANIMATION_SPEED_MODE).toBe('slow');
+    expect(getBeatDurationMs(340, 'slow')).toBe(680);
+    expect(getCssAnimationScale('slow')).toBe(2);
+    expect(slowBeats[0]!.durationMs).toBe(680);
+
     const fastBeats = buildPresentationBeats({
       prevState: staged,
       nextState: prevState,
@@ -357,22 +373,58 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
         actor={actor}
         bottomPlayer={actor}
         topPlayer={enemy}
-        canAct
-        isActionPhase
         hasPending={false}
         showLog
         onToggleLog={() => {}}
         showDetail
         onToggleDetail={() => {}}
-        onEndActionPhase={() => {}}
         animSpeedMode="fast"
         onCycleAnimSpeed={() => {}}
-        allyBaseDamageDelta={3}
         enemyBaseDamageDelta={2}
       />,
     );
     expect(hudHtml).toContain('2x');
-    expect(hudHtml).toContain('-3');
     expect(hudHtml).toContain('-2');
+
+    const dockHtml = renderToString(
+      <PlayerHandDock
+        state={state}
+        bottomPlayer={actor}
+        actor={actor}
+        canAct
+        isActionPhase
+        hasPending={false}
+        isHotseat={false}
+        isMobile={false}
+        selection={null}
+        draggingCardId={null}
+        allyBaseDamageDelta={3}
+        onHandCardClick={() => {}}
+        onLongPressCard={() => {}}
+        onHoverCard={() => {}}
+        onDragStartCard={() => {}}
+        onDragEndCard={() => {}}
+        onEndActionPhase={() => {}}
+      />,
+    );
+    expect(dockHtml).toContain('-3');
+    expect(dockHtml).toContain('结束行动');
+    expect(dockHtml).toContain('/10');
+
+    const defaultHudHtml = renderToString(
+      <TacticalBattleHud
+        state={state}
+        actor={actor}
+        bottomPlayer={actor}
+        topPlayer={enemy}
+        hasPending={false}
+        showLog
+        onToggleLog={() => {}}
+        showDetail
+        onToggleDetail={() => {}}
+        onCycleAnimSpeed={() => {}}
+      />,
+    );
+    expect(defaultHudHtml).toContain('0.5x');
   });
 });

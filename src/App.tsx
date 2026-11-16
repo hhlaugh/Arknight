@@ -226,6 +226,7 @@ function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreen
           deckName={controller.getSetup().decks[botSeat].deck_name_zh}
           waitingForOpponent
           onConfirm={() => ({ ok: true })}
+          onLeave={onExit}
         />
       );
     }
@@ -236,6 +237,7 @@ function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreen
         playerId={nextPlayer}
         deckName={controller.getSetup().decks[nextPlayer].deck_name_zh}
         onConfirm={(selected: readonly CardInstanceId[]) => controller.submitMulligan(nextPlayer, selected)}
+        onLeave={onExit}
       />
     );
   }
@@ -258,6 +260,7 @@ function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreen
       snapshot={snapshot}
       controller={controller}
       humanPlayer={mode === 'vs-bot' ? (botSeat === 'player_b' ? 'player_a' : 'player_b') : null}
+      onExit={onExit}
     />
   );
 }
@@ -329,6 +332,10 @@ function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
         playerId={mySeat}
         deckName={mySeat === 'player_a' ? deckA.deck_name_zh : deckB.deck_name_zh}
         onConfirm={(selected: readonly CardInstanceId[]) => controller.submitMulligan(selected)}
+        onLeave={() => {
+          controller.leaveRoom();
+          onExit();
+        }}
       />
     );
   }
@@ -355,6 +362,10 @@ function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
         snapshot={gameSnapshot}
         onDispatch={(action) => controller.dispatchAction(action)}
         humanPlayer={mySeat}
+        onExit={() => {
+          controller.leaveRoom();
+          onExit();
+        }}
         networkStatus={{
           isOnline: true,
           roomCode: snapshot.roomCode ?? '',

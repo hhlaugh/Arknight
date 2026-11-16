@@ -138,16 +138,23 @@ export function MulliganView({
           <div className="text-[11px] text-slate-400 font-mono">
             {selected.size === 0 ? '保持当前起手手牌不作替换' : `替换选中的 ${selected.size} 张卡牌`}
           </div>
-          <Button
-            variant="primary"
-            size="lg"
-            cornerCut
-            onClick={confirm}
-            loading={submitting}
-            className="font-bold px-8 shadow-lg"
-          >
-            确认调度（换 {selected.size} 张） ▶
-          </Button>
+          <div className="flex items-center gap-2">
+            {onLeave && (
+              <Button variant="ghost" size="md" onClick={onLeave}>
+                ✕ {leaveLabel}
+              </Button>
+            )}
+            <Button
+              variant="primary"
+              size="lg"
+              cornerCut
+              onClick={confirm}
+              loading={submitting}
+              className="font-bold px-8 shadow-lg"
+            >
+              确认调度（换 {selected.size} 张） ▶
+            </Button>
+          </div>
         </div>
       </Panel>
     </div>

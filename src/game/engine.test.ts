@@ -250,4 +250,28 @@ describe('turn phases, cost gain, and action reducer', () => {
     });
     expect(unavailable).toMatchObject({ ok: false, value: start.value });
   });
+
+  it('allows surrender for either player after mulligan, records log, and excludes surrender from legal-action bots', async () => {
+    const { enumerateLegalActions } = await import('./legal-actions');
+    const initial = createState();
+    expect(reduceGameAction(initial, 'player_a', { type: 'surrender' }).ok).toBe(false);
+
+    const ready = completeMulligans(initial);
+    const started = advancePhase(ready);
+    if (!started.ok) throw new Error(started.reason);
+
+    const active = started.value.active_player_id;
+    const waiting: PlayerId = active === 'player_a' ? 'player_b' : 'player_a';
+    expect(enumerateLegalActions(started.value, active).some((a) => a.type === 'surrender')).toBe(false);
+
+    const surrendered = reduceGameAction(started.value, waiting, { type: 'surrender' });
+    expect(surrendered.ok).toBe(true);
+    if (!surrendered.ok) return;
+    expect(surrendered.value.phase).toBe('finished');
+    expect(surrendered.value.winner).toBe(active);
+    expect(surrendered.value.combat_log.some((ev) => ev.action_type === 'surrender' && ev.detail.includes('投降'))).toBe(true);
+
+    // 结束后不可再次投降
+    expect(reduceGameAction(surrendered.value, active, { type: 'surrender' }).ok).toBe(false);
+  });
 });

@@ -1,5 +1,6 @@
 :root {
   color-scheme: dark;
+  --combat-anim-scale: 2;
 
   /* PRTS Tactical Terminal 背景层级 */
   --color-bg-base: #171a1d;       /* 终端底色 (深灰黑，非纯黑) */
@@ -227,19 +228,19 @@ b { color: #fff; }
   100% { transform: scale(1); }
 }
 
-.anim-deploy-land { animation: deployLand 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.anim-slot-flash { animation: slotPulseFlash 0.32s ease-out both; }
-.anim-hit-shake { animation: hitShake 0.2s ease-out both; }
-.anim-hit-flash { animation: hitFlashOverlay 0.22s ease-out both; }
-.anim-melee-lunge-up { animation: meleeLungeUp 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.anim-melee-lunge-down { animation: meleeLungeDown 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.anim-ranged-bolt-up { animation: rangedBoltUp 0.26s ease-out both; }
-.anim-ranged-bolt-down { animation: rangedBoltDown 0.26s ease-out both; }
-.anim-float-number { animation: floatNumberUp 0.68s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.anim-ghost-fade { animation: ghostFadeOut 0.36s ease-out both; }
-.anim-skill-burst { animation: skillBurstRing 0.32s ease-out both; }
-.anim-turn-banner { animation: turnBannerSlide 0.46s ease-out both; }
-.anim-base-hit { animation: baseHitPulse 0.28s ease-out both; }
+.anim-deploy-land { animation: deployLand calc(0.26s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-slot-flash { animation: slotPulseFlash calc(0.32s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-hit-shake { animation: hitShake calc(0.2s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-hit-flash { animation: hitFlashOverlay calc(0.22s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-melee-lunge-up { animation: meleeLungeUp calc(0.22s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-melee-lunge-down { animation: meleeLungeDown calc(0.22s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-ranged-bolt-up { animation: rangedBoltUp calc(0.26s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-ranged-bolt-down { animation: rangedBoltDown calc(0.26s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-float-number { animation: floatNumberUp calc(0.68s * var(--combat-anim-scale, 2)) cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-ghost-fade { animation: ghostFadeOut calc(0.36s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-skill-burst { animation: skillBurstRing calc(0.32s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-turn-banner { animation: turnBannerSlide calc(0.46s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-base-hit { animation: baseHitPulse calc(0.28s * var(--combat-anim-scale, 2)) ease-out both; }
 
 /* ---------- 攻击瞬间金色高光（攻击者叠加层） ---------- */
 @keyframes attackGlow {
@@ -247,7 +248,7 @@ b { color: #fff; }
   40% { opacity: 1; box-shadow: 0 0 16px rgba(229, 165, 43, 0.8), inset 0 0 12px rgba(255, 224, 130, 0.55); }
   100% { opacity: 0; box-shadow: 0 0 0 rgba(229, 165, 43, 0); }
 }
-.anim-attack-glow { animation: attackGlow 0.24s ease-out both; }
+.anim-attack-glow { animation: attackGlow calc(0.24s * var(--combat-anim-scale, 2)) ease-out both; }
 
 /* ---------- 5★/6★ 部署入场光柱 ---------- */
 @keyframes deployRarityBeam {
@@ -259,8 +260,8 @@ b { color: #fff; }
   0% { opacity: 0.85; transform: scale(0.7); }
   100% { opacity: 0; transform: scale(1.3); }
 }
-.anim-deploy-rarity-5 { animation: deployRarityBeam 0.42s ease-out both; }
-.anim-deploy-rarity-6 { animation: deployRarityBeam 0.5s ease-out both, deployRarityRing 0.5s ease-out both; }
+.anim-deploy-rarity-5 { animation: deployRarityBeam calc(0.42s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-deploy-rarity-6 { animation: deployRarityBeam calc(0.5s * var(--combat-anim-scale, 2)) ease-out both, deployRarityRing calc(0.5s * var(--combat-anim-scale, 2)) ease-out both; }
 
 /* ---------- 寻访揭示特效（4★ 快翻 / 5★ 金紫脉冲 / 6★ 爆发光柱） ---------- */
 @keyframes gachaRevealPop {

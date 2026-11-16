@@ -158,6 +158,10 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(startHtml).toContain('舟塔自走牌');
     expect(startHtml).toContain('罗德岛干员图鉴');
     expect(startHtml).toContain('干员寻访');
+    expect(startHtml).toContain('data-testid="rhodes-watermark"');
+    expect(startHtml).toContain('rhodes_island_light.png');
+    expect(startHtml).toContain('rhodes_island_dark.png');
+    expect(startHtml).toContain('prts_badge.svg');
     expect(startHtml).not.toContain('animate-pulse');
     expect(startHtml).not.toContain('招募');
     expect(startHtml).not.toContain('PROTOCOL');
@@ -184,9 +188,11 @@ describe('Phase 7 全面回归验收测试套件', () => {
         playerId="player_a"
         deckName={deckA.deck_name_zh}
         onConfirm={noopActionResult}
+        onLeave={noop}
       />,
     );
     expect(mulliganHtml).toContain('战术调度阶段');
+    expect(mulliganHtml).toContain('离开对局');
 
     const mulliganWaitingHtml = renderToString(
       <MulliganView
@@ -209,15 +215,25 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(recruitmentHtml).toContain('编制卡组');
 
     const battleHotseatHtml = renderToString(
-      <BattleView snapshot={battleSnap} controller={controller} humanPlayer={null} />,
+      <BattleView snapshot={battleSnap} controller={controller} humanPlayer={null} onExit={noop} />,
     );
     expect(battleHotseatHtml).toContain('玩家 A');
     expect(battleHotseatHtml).toContain('结束行动');
+    expect(battleHotseatHtml).toContain('data-testid="enemy-hud-panel"');
+    expect(battleHotseatHtml).toContain('data-testid="player-hand-dock"');
+    expect(battleHotseatHtml).toContain('prts_diamond.png');
+    expect(battleHotseatHtml).toContain('aria-label="投降"');
+    expect(battleHotseatHtml).toContain('aria-label="退出对局"');
+    expect(battleHotseatHtml).not.toContain('aria-label="战局菜单"');
+    expect(battleHotseatHtml).toContain('--combat-anim-scale:2');
+    expect(battleHotseatHtml).toContain('0.5x');
 
     const battleBotHtml = renderToString(
-      <BattleView snapshot={battleSnap} controller={controller} humanPlayer="player_a" />,
+      <BattleView snapshot={battleSnap} controller={controller} humanPlayer="player_a" onExit={noop} />,
     );
     expect(battleBotHtml).toContain('结束行动');
+    expect(battleBotHtml).toContain('投降');
+    expect(battleBotHtml).toContain('退出');
 
     const settlementHtml = renderToString(
       <SettlementView

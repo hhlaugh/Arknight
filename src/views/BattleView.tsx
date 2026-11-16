@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { ActionResult, LocalGameController, LocalGameSnapshot } from '../client/localGameController';
-import { LANE_LABEL } from '../client/gameData';
-import { CardView, cardDefinitionOf } from '../components/cards/CardView';
+import { LANE_LABEL, PLAYER_LABEL } from '../client/gameData';
+import { cardDefinitionOf } from '../components/cards/CardView';
 import { UnitView } from '../components/battle/UnitView';
 import type { UnitHighlight } from '../components/battle/UnitView';
 import { LogView } from '../components/battle/LogView';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
+import { Modal } from '../components/ui/Modal';
 import { TacticalBattleHud } from '../components/battle/TacticalBattleHud';
+import { PlayerHandDock } from '../components/battle/PlayerHandDock';
 import { TacticalDetailPanel } from '../components/battle/TacticalDetailPanel';
 import { CardPreviewPopover, type HoveredCardPreview } from '../components/battle/CardPreviewPopover';
 import {
@@ -67,9 +69,10 @@ interface BattleViewProps {
   /** 单人模式下由人类操作的玩家座位；null 表示本地热座（双方都是人）。 */
   readonly humanPlayer?: PlayerId | null;
   readonly networkStatus?: NetworkStatus | null;
+  readonly onExit?: () => void;
 }
 
-export function BattleView({ snapshot, controller, onDispatch, humanPlayer = null, networkStatus = null }: BattleViewProps) {
+export function BattleView({ snapshot, controller, onDispatch, humanPlayer = null, networkStatus = null, onExit }: BattleViewProps) {
   const state = snapshot.state;
   const actor = state.active_player_id;
   const canAct = !humanPlayer || actor === humanPlayer;
@@ -92,7 +95,12 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   const [dragOverSlot, setDragOverSlot] = useState<SlotCoords | null>(null);
   const [showLog, setShowLog] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<'surrender' | 'exit' | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const effectiveOnExit = onExit ?? networkStatus?.onLeaveRoom ?? null;
+  const surrenderActor: PlayerId = humanPlayer ?? actor;
+  const canSurrender = Boolean((controller || onDispatch) && state.phase !== 'finished' && state.phase !== 'mulligan');
 
   const combatAnim = useCombatAnimations({
     state,
@@ -245,9 +253,9 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     return null;
   }, [activeHandCardId, activeHandIsOperator, actor, dragOverSlot, hoveredSlot, hoveredUnitId, selectedDeployActions, selection, state]);
 
-  const dispatch = async (action: GameAction) => {
+  const dispatch = async (action: GameAction, actorOverride: PlayerId = actor) => {
     try {
-      const result = onDispatch ? await onDispatch(action) : controller?.dispatch(actor, action);
+      const result = onDispatch ? await onDispatch(action) : controller?.dispatch(actorOverride, action);
       if (result && !result.ok) {
         setError(result.reason ?? '操作不合法');
       } else {
@@ -648,15 +656,16 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   );
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#0d1016] text-[#e8e9e6] font-sans overflow-hidden select-none">
-      {/* 1. 顶部紧凑双翼 HUD */}
+    <div
+      className="flex flex-col h-screen w-full bg-[#0d1016] text-[#e8e9e6] font-sans overflow-hidden select-none"
+      style={{ '--combat-anim-scale': String(combatAnim.cssAnimScale) } as React.CSSProperties}
+    >
+      {/* 1. 顶部敌方阵地与战局控制 HUD */}
       <TacticalBattleHud
         state={state}
         actor={actor}
         bottomPlayer={bottomPlayer}
         topPlayer={topPlayer}
-        canAct={canAct}
-        isActionPhase={isActionPhase}
         hasPending={hasPending}
         isHotseat={isHotseat}
         networkStatus={networkStatus}
@@ -665,10 +674,10 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         onToggleLog={() => setShowLog((prev) => !prev)}
         showDetail={showDetail}
         onToggleDetail={() => setShowDetail((prev) => !prev)}
-        onEndActionPhase={() => dispatch({ type: 'end_action_phase' })}
+        onSurrender={canSurrender ? () => setConfirmDialog('surrender') : undefined}
+        onExit={effectiveOnExit ? () => setConfirmDialog('exit') : undefined}
         animSpeedMode={combatAnim.speedMode}
         onCycleAnimSpeed={combatAnim.cycleSpeedMode}
-        allyBaseDamageDelta={activeBeat?.baseDamage.ally ?? null}
         enemyBaseDamageDelta={activeBeat?.baseDamage.enemy ?? null}
         disableMotion={combatAnim.effectiveDisabled}
       />
@@ -697,7 +706,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       {hasPending && (
         <div className="px-3 sm:px-4 py-1.5 bg-[#1a2332] border-b border-[#3b4c66] flex items-center justify-between text-xs text-slate-200 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="w-2 h-2 bg-cyan-400" />
             <span className="text-[11px] sm:text-xs">回合开始支援：点击青色高亮友方干员充能 SP</span>
           </div>
           {canSkipPending && canAct && (
@@ -987,94 +996,45 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             </div>
           )}
 
-          {/* 底部紧凑手牌卡牌托盘 */}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-[#11151e] border-t border-[#252f3e] p-1.5 sm:p-2 shrink-0 flex flex-col gap-1 pb-safe"
-          >
-            <div className="flex items-center justify-between text-xs px-1">
-              <div className="flex items-center gap-1.5 font-mono">
-                <span className="px-1.5 py-0.2 bg-sky-500/20 border border-sky-500/40 text-sky-300 font-bold text-[10px]">
-                  {isHotseat ? (bottomPlayer === 'player_a' ? '玩家 A 手牌' : '玩家 B 手牌') : '手牌'} ({state.players[bottomPlayer].hand.length})
-                </span>
-                <span className="text-amber-400 font-bold text-xs ml-1">
-                  {state.players[bottomPlayer].cost} / 10 DP
-                </span>
-                {isMobile && (
-                  <span className="text-[9px] font-sans text-slate-400">· 长按看详情</span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-slate-400">
-                  余量: {state.players[bottomPlayer].deck.length}
-                </span>
-                {isMobile && isActionPhase && actor === bottomPlayer && canAct && !hasPending && (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => dispatch({ type: 'end_action_phase' })}
-                    className="text-[11px] px-2 py-0.5 font-bold shadow-xs animate-pulse"
-                  >
-                    结束行动
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Hand Cards Horizontal Scroll Container */}
-            <div
-              onScroll={() => setHoveredCard(null)}
-              className="flex items-center gap-2 overflow-x-auto pt-2 pb-1 px-1 min-h-[160px] max-h-[172px] content-start snap-x"
-            >
-              {state.players[bottomPlayer].hand.length === 0 ? (
-                <div className="w-full text-center py-6 text-xs text-slate-500 font-mono">
-                  （暂无手牌）
-                </div>
-              ) : (
-                state.players[bottomPlayer].hand.map((id) => {
-                  const def = cardDefinitionOf(state, id);
-                  const canInteractHand = isActionPhase && !hasPending && bottomPlayer === actor && canAct;
-                  const canDragCard = !isMobile && canInteractHand && def?.card_type === 'operator';
-                  return (
-                    <div key={id} className="snap-start shrink-0">
-                      <CardView
-                        state={state}
-                        instanceId={id}
-                        selected={selection === id}
-                        interactive={canInteractHand}
-                        draggable={canDragCard}
-                        onClick={() => onHandCardClick(id)}
-                        onLongPress={() => {
-                          setHoveredCard(null);
-                          setSelection(id);
-                          setShowDetail(true);
-                        }}
-                        onHoverStart={(rect) => {
-                          if (!isMobile && !draggingCardId) {
-                            setHoveredCard({ instanceId: id, rect });
-                          }
-                        }}
-                        onHoverEnd={() => {
-                          setHoveredCard((prev) => (prev?.instanceId === id ? null : prev));
-                        }}
-                        onDragStart={(e) => {
-                          setHoveredCard(null);
-                          setDraggingCardId(id);
-                          setSelection(id);
-                          e.dataTransfer.setData('text/plain', id);
-                          e.dataTransfer.effectAllowed = 'move';
-                        }}
-                        onDragEnd={() => {
-                          setDraggingCardId(null);
-                          setDragOverSlot(null);
-                        }}
-                      />
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
+          {/* 底部统一己方指挥面板与手牌托盘 */}
+          <PlayerHandDock
+            state={state}
+            bottomPlayer={bottomPlayer}
+            actor={actor}
+            canAct={canAct}
+            isActionPhase={isActionPhase}
+            hasPending={hasPending}
+            isHotseat={isHotseat}
+            isMobile={isMobile}
+            selection={selection}
+            draggingCardId={draggingCardId}
+            allyBaseDamageDelta={activeBeat?.baseDamage.ally ?? null}
+            disableMotion={combatAnim.effectiveDisabled}
+            onHandCardClick={onHandCardClick}
+            onLongPressCard={(id) => {
+              setSelection(id);
+              setShowDetail(true);
+            }}
+            onHoverCard={(preview) => {
+              if (preview) {
+                setHoveredCard(preview);
+              } else {
+                setHoveredCard(null);
+              }
+            }}
+            onDragStartCard={(id, e) => {
+              setHoveredCard(null);
+              setDraggingCardId(id);
+              setSelection(id);
+              e.dataTransfer.setData('text/plain', id);
+              e.dataTransfer.effectAllowed = 'move';
+            }}
+            onDragEndCard={() => {
+              setDraggingCardId(null);
+              setDragOverSlot(null);
+            }}
+            onEndActionPhase={() => dispatch({ type: 'end_action_phase' })}
+          />
         </main>
 
         {!isMobile && showDetail && (
@@ -1145,7 +1105,79 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         </BottomSheet>
       )}
 
-      {/* 7. 浮动错误提示 */}
+      {/* 7. 投降二次确认弹窗 */}
+      <Modal
+        isOpen={confirmDialog === 'surrender'}
+        onClose={() => setConfirmDialog(null)}
+        title="确认投降"
+        codeName="SYS.SURRENDER"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmDialog(null)}>
+              继续作战
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              cornerCut
+              onClick={() => {
+                setConfirmDialog(null);
+                void dispatch({ type: 'surrender' }, surrenderActor);
+              }}
+            >
+              确认投降
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-2 text-xs text-slate-200 leading-relaxed">
+          <p className="m-0">
+            {isHotseat
+              ? `当前行动方【${PLAYER_LABEL[surrenderActor]}】将宣告撤退，直接判定对方获胜并进入战后结算页面。`
+              : '宣告撤退将直接判定我方战败，并立即进入作战结算报告。'}
+          </p>
+          <p className="m-0 text-slate-400">该操作不可撤销，请确认是否立即结束推演。</p>
+        </div>
+      </Modal>
+
+      {/* 9. 退出对局二次确认弹窗 */}
+      <Modal
+        isOpen={confirmDialog === 'exit'}
+        onClose={() => setConfirmDialog(null)}
+        title="确认退出对局"
+        codeName="SYS.EXIT"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmDialog(null)}>
+              继续作战
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              cornerCut
+              onClick={() => {
+                setConfirmDialog(null);
+                effectiveOnExit?.();
+              }}
+            >
+              确认退出
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-2 text-xs text-slate-200 leading-relaxed">
+          <p className="m-0">
+            退出将立即中止当前对局并返回主菜单，不会保留当前战局进度或发放战后奖励。
+          </p>
+          {canSurrender && (
+            <p className="m-0 text-slate-400">如需认输并查看战报结算，请使用「投降」功能。</p>
+          )}
+        </div>
+      </Modal>
+
+      {/* 10. 浮动错误提示 */}
       {error && (
         <div
           role="alert"

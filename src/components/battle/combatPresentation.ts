@@ -7,7 +7,9 @@ import type {
   Position,
 } from '../../game/types';
 
-export type AnimationSpeedMode = 'normal' | 'fast' | 'off';
+export type AnimationSpeedMode = 'slow' | 'normal' | 'fast' | 'off';
+
+export const DEFAULT_ANIMATION_SPEED_MODE: AnimationSpeedMode = 'slow';
 
 export type SlotKey = `${PlayerId}:${LaneId}:${Position}`;
 
@@ -107,8 +109,16 @@ export function captureBoardPositions(state: GameState): Map<CardInstanceId, Uni
 
 export function getBeatDurationMs(baseMs: number, mode: AnimationSpeedMode): number {
   if (mode === 'off') return 0;
+  if (mode === 'slow') return baseMs * 2;
   if (mode === 'fast') return Math.max(80, Math.round(baseMs * 0.5));
   return baseMs;
+}
+
+export function getCssAnimationScale(mode: AnimationSpeedMode): number {
+  if (mode === 'slow') return 2;
+  if (mode === 'fast') return 0.5;
+  if (mode === 'off') return 0;
+  return 1;
 }
 
 interface MutableBeatBuilder {

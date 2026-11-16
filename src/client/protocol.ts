@@ -32,6 +32,7 @@ export interface ActionAck {
 
 const ACTION_TYPES: ReadonlySet<string> = new Set([
   'end_action_phase',
+  'surrender',
   'play_card',
   'deploy_operator',
   'withdraw_operator',
@@ -62,6 +63,7 @@ export function isActionRequest(value: unknown): value is ActionRequest {
   const hasOptionalTarget = fields.target_instance_id === undefined || isNonEmptyString(fields.target_instance_id);
   switch (fields.type) {
     case 'end_action_phase':
+    case 'surrender':
       return true;
     case 'play_card':
     case 'withdraw_operator':

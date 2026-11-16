@@ -3,22 +3,24 @@ import type { CardInstanceId, CombatLogEvent, GameState, PlayerId } from '../gam
 import {
   buildPresentationBeats,
   captureBoardPositions,
+  DEFAULT_ANIMATION_SPEED_MODE,
+  getCssAnimationScale,
   type AnimationSpeedMode,
   type PresentationBeat,
   type UnitSlotLocation,
 } from '../components/battle/combatPresentation';
 
-const ANIM_SPEED_STORAGE_KEY = 'ark_tactical_anim_speed';
+const ANIM_SPEED_STORAGE_KEY = 'ark_tactical_anim_speed_v2';
 
 function readStoredSpeedMode(): AnimationSpeedMode {
-  if (typeof window === 'undefined') return 'normal';
+  if (typeof window === 'undefined') return DEFAULT_ANIMATION_SPEED_MODE;
   try {
     const val = window.localStorage.getItem(ANIM_SPEED_STORAGE_KEY);
-    if (val === 'normal' || val === 'fast' || val === 'off') return val;
+    if (val === 'slow' || val === 'normal' || val === 'fast' || val === 'off') return val;
   } catch {
     // 忽略存储读取异常
   }
-  return 'normal';
+  return DEFAULT_ANIMATION_SPEED_MODE;
 }
 
 function usePrefersReducedMotion(): boolean {
@@ -47,6 +49,7 @@ interface UseCombatAnimationsParams {
 
 export interface CombatAnimationsHandle {
   readonly speedMode: AnimationSpeedMode;
+  readonly cssAnimScale: number;
   readonly setSpeedMode: (mode: AnimationSpeedMode) => void;
   readonly cycleSpeedMode: () => void;
   readonly effectiveDisabled: boolean;
@@ -90,7 +93,7 @@ export function useCombatAnimations({
   }, []);
 
   const cycleSpeedMode = useCallback(() => {
-    const order: readonly AnimationSpeedMode[] = ['normal', 'fast', 'off'];
+    const order: readonly AnimationSpeedMode[] = ['slow', 'normal', 'fast', 'off'];
     const idx = order.indexOf(speedMode);
     const next = order[(idx + 1) % order.length];
     setSpeedMode(next);
@@ -187,6 +190,7 @@ export function useCombatAnimations({
 
   return {
     speedMode,
+    cssAnimScale: effectiveDisabled ? 0 : getCssAnimationScale(speedMode),
     setSpeedMode,
     cycleSpeedMode,
     effectiveDisabled,

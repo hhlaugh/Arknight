@@ -1023,7 +1023,43 @@ export function advancePhase(state: GameState): EngineResult<GameState> {
   return { ok: true, value: nextState };
 }
 
+function surrenderMatch(state: GameState, actorId: PlayerId): EngineResult<GameState> {
+  if (!state.players[actorId]) {
+    return { ok: false, value: state, reason: `找不到玩家 ${actorId}。` };
+  }
+  if (state.phase === 'finished') {
+    return { ok: false, value: state, reason: '对局已经结束。' };
+  }
+  if (state.phase === 'mulligan') {
+    return { ok: false, value: state, reason: '起手换牌阶段尚未正式交锋，请直接离开对局。' };
+  }
+  const winner: PlayerId = actorId === 'player_a' ? 'player_b' : 'player_a';
+  const actorLabel = actorId === 'player_a' ? '玩家 A' : '玩家 B';
+  const winnerLabel = winner === 'player_a' ? '玩家 A' : '玩家 B';
+  const logged = addCombatLog(state, {
+    type: 'effect_triggered',
+    source_player_id: actorId,
+    target_player_id: winner,
+    action_type: 'surrender',
+    detail: `${actorLabel} 主动宣告撤退（投降），由 ${winnerLabel} 获胜。`,
+  });
+  return {
+    ok: true,
+    value: {
+      ...logged,
+      phase: 'finished',
+      winner,
+      pending_effect_choices: [],
+      turn_start_prepared: false,
+      state_version: state.state_version + 1,
+    },
+  };
+}
+
 export function reduceGameAction(state: GameState, actorId: PlayerId, action: GameAction): EngineResult<GameState> {
+  if (action.type === 'surrender') {
+    return surrenderMatch(state, actorId);
+  }
   if (state.phase === 'turn_start' && state.turn_start_prepared) {
     if (actorId !== state.active_player_id) return { ok: false, value: state, reason: '只有当前回合玩家可以处理回合开始选择。' };
     if (action.type !== 'resolve_pending_choice') return { ok: false, value: state, reason: '必须先完成回合开始的支援效果选择。' };

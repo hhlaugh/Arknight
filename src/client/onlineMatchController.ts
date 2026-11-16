@@ -205,9 +205,12 @@ export class OnlineMatchController {
             ...this.roomState,
             guest: { ...this.roomState.guest, connected: false },
           };
-          this.opponentConnected = false;
-          this.publish();
         }
+        this.opponentConnected = false;
+        if (this.inGame) {
+          this.closedReason = 'GUEST_LEFT';
+        }
+        this.publish();
       }
     } else {
       // 访客端处理消息
@@ -563,7 +566,11 @@ export class OnlineMatchController {
   }
 
   leaveRoom(): void {
-    this.sendP2P('room:leave', {});
+    if (this.seat === 'host') {
+      this.sendP2P('room:closed', { reason: 'HOST_LEFT' });
+    } else if (this.seat === 'guest') {
+      this.sendP2P('room:leave', {});
+    }
     this.resetRoom();
   }
 

@@ -123,6 +123,8 @@ function describeAction(action: GameAction): string {
       return `resolve ${action.source_instance_id}${action.target_instance_id ? ` → ${action.target_instance_id}` : ''}`;
     case 'end_action_phase':
       return 'end action phase';
+    case 'surrender':
+      return 'surrender';
   }
 }
 
@@ -183,6 +185,9 @@ export class BotPlayer {
     scored.sort((a, b) => b.score - a.score);
     this.recordHash(hash);
     const best = scored[0];
+    if (!best) {
+      return this.safeFallback(state, 'empty-scored');
+    }
     this.log?.(`[bot:${this.player}] turn${state.turn_number} ${mode} → ${describeAction(best.action)} score=${best.score.toFixed(2)} considered=${scored.length}`);
     return best.action;
   }
@@ -214,7 +219,7 @@ export class BotPlayer {
     const out: ScoredAction[] = [];
     let scored = 0;
     for (const action of candidates) {
-      if (scored >= this.watchdog.maxScoredActions || (scored % 64 === 0 && Date.now() > deadline)) {
+      if (scored >= this.watchdog.maxScoredActions || (scored > 0 && scored % 64 === 0 && Date.now() > deadline)) {
         this.telemetryInternal.watchdogStops += 1;
         this.log?.(`[bot:${this.player}] watchdog：单次决策预算用尽（已评分 ${scored} 个动作）。`);
         break;
@@ -229,6 +234,8 @@ export class BotPlayer {
     switch (action.type) {
       case 'end_action_phase':
         return 0;
+      case 'surrender':
+        return -9999;
       case 'resolve_pending_choice':
         return this.scorePendingChoice(state, action);
       case 'deploy_operator':
