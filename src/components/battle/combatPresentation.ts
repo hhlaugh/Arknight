@@ -1,10 +1,14 @@
 import type {
+  BasePoints,
+  CardInstance,
   CardInstanceId,
   CombatLogEvent,
   GameState,
+  HpValue,
   LaneId,
   PlayerId,
   Position,
+  SpValue,
 } from '../../game/types';
 
 export type AnimationSpeedMode = 'slow' | 'normal' | 'fast' | 'off';
@@ -45,7 +49,11 @@ export interface LaneStrikeCue {
   readonly direction: 'up' | 'down';
   readonly attackerSlotKey: SlotKey;
   readonly targetSlotKey?: SlotKey;
+  readonly targetHalf?: PlayerId;
+  readonly targetLane?: LaneId;
   readonly toBase: boolean;
+  readonly kind?: 'attack' | 'skill' | 'heal';
+  readonly phase: 'strike' | 'impact';
 }
 
 export interface TurnBannerCue {
@@ -57,6 +65,8 @@ export interface TurnBannerCue {
 export interface PresentationBeat {
   readonly id: string;
   readonly durationMs: number;
+  readonly phase: 'strike' | 'impact' | 'deploy' | 'withdraw' | 'skill' | 'turn';
+  readonly visualState?: GameState;
   readonly deployedSlots: readonly SlotKey[];
   readonly deployedUnits: Readonly<Record<CardInstanceId, boolean>>;
   readonly attackingUnits: Readonly<Record<CardInstanceId, 'up' | 'down'>>;
@@ -81,7 +91,7 @@ export interface UnitAnimationState {
   readonly disableMotion?: boolean;
 }
 
-const MAX_QUEUED_BEATS = 10;
+export const MAX_QUEUED_BEATS = 18;
 
 export function makeSlotKey(half: PlayerId, lane: LaneId, position: Position): SlotKey {
   return `${half}:${lane}:${position}`;
@@ -121,9 +131,203 @@ export function getCssAnimationScale(mode: AnimationSpeedMode): number {
   return 1;
 }
 
+interface MutableVisualCursor {
+  players: {
+    player_a: GameState['players']['player_a'];
+    player_b: GameState['players']['player_b'];
+  };
+  card_instances: Record<CardInstanceId, CardInstance>;
+  readonly templateState: GameState;
+}
+
+function createVisualCursor(prevState: GameState, nextState: GameState): MutableVisualCursor {
+  const clonedInstances: Record<CardInstanceId, CardInstance> = {};
+  for (const [id, inst] of Object.entries(nextState.card_instances) as [CardInstanceId, CardInstance][]) {
+    clonedInstances[id] = inst;
+  }
+  // 还原双方在上一状态中仍在场上的单位及其血量/护盾/SP，保证攻击命中前不提前剧透血量变化与退场
+  for (const [id, prevInst] of Object.entries(prevState.card_instances) as [CardInstanceId, CardInstance][]) {
+    if (prevInst.zone === 'board' && prevInst.operator_combat) {
+      clonedInstances[id] = {
+        ...prevInst,
+        operator_combat: {
+          ...prevInst.operator_combat,
+          current_atk_modifiers: [...prevInst.operator_combat.current_atk_modifiers],
+          statuses: [...prevInst.operator_combat.statuses],
+          equipment_ids: [...prevInst.operator_combat.equipment_ids],
+        },
+        operator_lifecycle: prevInst.operator_lifecycle ? { ...prevInst.operator_lifecycle } : undefined,
+      };
+    }
+  }
+
+  return {
+    players: {
+      player_a: {
+        ...nextState.players.player_a,
+        base_points: prevState.players.player_a.base_points,
+      },
+      player_b: {
+        ...nextState.players.player_b,
+        base_points: prevState.players.player_b.base_points,
+      },
+    },
+    card_instances: clonedInstances,
+    templateState: nextState,
+  };
+}
+
+function snapshotVisualCursor(cursor: MutableVisualCursor): GameState {
+  const instancesCopy: Record<CardInstanceId, CardInstance> = {};
+  for (const [id, inst] of Object.entries(cursor.card_instances) as [CardInstanceId, CardInstance][]) {
+    instancesCopy[id] = inst.operator_combat
+      ? {
+          ...inst,
+          operator_combat: {
+            ...inst.operator_combat,
+            current_atk_modifiers: [...inst.operator_combat.current_atk_modifiers],
+            statuses: [...inst.operator_combat.statuses],
+            equipment_ids: [...inst.operator_combat.equipment_ids],
+          },
+        }
+      : inst;
+  }
+
+  return {
+    ...cursor.templateState,
+    players: {
+      player_a: { ...cursor.players.player_a },
+      player_b: { ...cursor.players.player_b },
+    },
+    card_instances: instancesCopy,
+  };
+}
+
+function applyEventToCursor(cursor: MutableVisualCursor, event: CombatLogEvent, nextState: GameState): void {
+  if (event.type === 'unit_deployed' && event.source_instance_id) {
+    const finalInst = nextState.card_instances[event.source_instance_id];
+    if (finalInst) {
+      cursor.card_instances[event.source_instance_id] = finalInst;
+    }
+    return;
+  }
+
+  if (event.type === 'unit_withdrawn' && event.source_instance_id) {
+    const finalInst = nextState.card_instances[event.source_instance_id];
+    if (finalInst) {
+      cursor.card_instances[event.source_instance_id] = finalInst;
+    } else {
+      const prev = cursor.card_instances[event.source_instance_id];
+      if (prev) {
+        cursor.card_instances[event.source_instance_id] = {
+          ...prev,
+          zone: 'hand',
+          board_half: null,
+          lane: null,
+          position: null,
+        };
+      }
+    }
+    return;
+  }
+
+  if (event.type === 'shield_absorbed' && event.target_instance_id && (event.amount ?? 0) > 0) {
+    const target = cursor.card_instances[event.target_instance_id];
+    if (target?.operator_combat) {
+      cursor.card_instances[event.target_instance_id] = {
+        ...target,
+        operator_combat: {
+          ...target.operator_combat,
+          shield: Math.max(0, target.operator_combat.shield - (event.amount ?? 0)),
+        },
+      };
+    }
+    return;
+  }
+
+  if (event.type === 'damage_resolved' && event.target_instance_id) {
+    const target = cursor.card_instances[event.target_instance_id];
+    const dmg = event.amount ?? 0;
+    if (target?.operator_combat) {
+      cursor.card_instances[event.target_instance_id] = {
+        ...target,
+        operator_combat: {
+          ...target.operator_combat,
+          current_hp: Math.max(0, target.operator_combat.current_hp - dmg) as HpValue,
+        },
+      };
+    }
+    return;
+  }
+
+  if (event.type === 'healed' && event.target_instance_id && (event.amount ?? 0) > 0) {
+    const target = cursor.card_instances[event.target_instance_id];
+    const def = target ? cursor.templateState.card_definitions[target.card_id] : undefined;
+    const maxHp = def?.hp ?? 99;
+    if (target?.operator_combat) {
+      cursor.card_instances[event.target_instance_id] = {
+        ...target,
+        operator_combat: {
+          ...target.operator_combat,
+          current_hp: Math.min(maxHp, target.operator_combat.current_hp + (event.amount ?? 0)) as HpValue,
+        },
+      };
+    }
+    return;
+  }
+
+  if (event.type === 'sp_gained' && event.target_instance_id && (event.amount ?? 0) > 0) {
+    const target = cursor.card_instances[event.target_instance_id];
+    const def = target ? cursor.templateState.card_definitions[target.card_id] : undefined;
+    const maxSp = def?.max_sp ?? 99;
+    if (target?.operator_combat) {
+      cursor.card_instances[event.target_instance_id] = {
+        ...target,
+        operator_combat: {
+          ...target.operator_combat,
+          current_sp: Math.min(maxSp, target.operator_combat.current_sp + (event.amount ?? 0)) as SpValue,
+        },
+      };
+    }
+    return;
+  }
+
+  if (event.type === 'unit_defeated' && event.target_instance_id) {
+    const finalInst = nextState.card_instances[event.target_instance_id];
+    if (finalInst && finalInst.zone !== 'board') {
+      cursor.card_instances[event.target_instance_id] = finalInst;
+    } else {
+      const target = cursor.card_instances[event.target_instance_id];
+      if (target) {
+        cursor.card_instances[event.target_instance_id] = {
+          ...target,
+          zone: 'discard',
+          board_half: null,
+          lane: null,
+          position: null,
+        };
+      }
+    }
+    return;
+  }
+
+  if (event.type === 'base_damaged') {
+    const defender = event.target_player_id ?? event.player_id;
+    const dmg = event.amount ?? 0;
+    if (defender && dmg > 0) {
+      cursor.players[defender] = {
+        ...cursor.players[defender],
+        base_points: Math.max(0, cursor.players[defender].base_points - dmg) as BasePoints,
+      };
+    }
+  }
+}
+
 interface MutableBeatBuilder {
   id: string;
   durationMs: number;
+  phase: PresentationBeat['phase'];
+  visualState?: GameState;
   deployedSlots: Set<SlotKey>;
   deployedUnits: Record<CardInstanceId, boolean>;
   attackingUnits: Record<CardInstanceId, 'up' | 'down'>;
@@ -137,10 +341,15 @@ interface MutableBeatBuilder {
   hasContent: boolean;
 }
 
-function createMutableBeat(id: string, durationMs = 340): MutableBeatBuilder {
+function createMutableBeat(
+  id: string,
+  durationMs = 460,
+  phase: PresentationBeat['phase'] = 'impact',
+): MutableBeatBuilder {
   return {
     id,
     durationMs,
+    phase,
     deployedSlots: new Set<SlotKey>(),
     deployedUnits: {},
     attackingUnits: {},
@@ -158,6 +367,8 @@ function freezeBeat(builder: MutableBeatBuilder): PresentationBeat {
   return {
     id: builder.id,
     durationMs: builder.durationMs,
+    phase: builder.phase,
+    visualState: builder.visualState,
     deployedSlots: Array.from(builder.deployedSlots),
     deployedUnits: builder.deployedUnits,
     attackingUnits: builder.attackingUnits,
@@ -173,6 +384,8 @@ function freezeBeat(builder: MutableBeatBuilder): PresentationBeat {
 
 /**
  * 纯函数演出适配层：仅消费真实引擎 CombatLogEvent 与状态快照，绝不修改或延迟任何游戏规则。
+ * 采用「先路径攻击演出（保持受击前 HP）→ 后命中扣血与退场（更新受击后 HP）」两段式节拍，
+ * 让玩家清晰看清每次攻击路径并避免在攻击前提前显示扣血结果。
  */
 export function buildPresentationBeats(params: {
   readonly prevState: GameState | null;
@@ -194,13 +407,18 @@ export function buildPresentationBeats(params: {
     return nextPositions.get(id) ?? prevPositions.get(id);
   };
 
+  const cursor = prevState ? createVisualCursor(prevState, nextState) : null;
   const beats: MutableBeatBuilder[] = [];
-  let current = createMutableBeat(`beat-init-${nextState.state_version}`, 340);
+  let current = createMutableBeat(`beat-init-${nextState.state_version}`, 440, 'impact');
+  let activeStrikeCue: LaneStrikeCue | null = null;
 
   const flushCurrent = () => {
     if (current.hasContent) {
+      if (cursor && !current.visualState) {
+        current.visualState = snapshotVisualCursor(cursor);
+      }
       beats.push(current);
-      current = createMutableBeat(`beat-${nextState.state_version}-${beats.length}`, 350);
+      current = createMutableBeat(`beat-${nextState.state_version}-${beats.length}`, 460, 'impact');
     }
   };
 
@@ -208,31 +426,50 @@ export function buildPresentationBeats(params: {
     const seqId = `seq-${event.sequence}`;
 
     if (event.type === 'attack_declared') {
-      // 每次新的 attack_declared 开启一个新的交锋节拍，形成清晰的依次结算节奏
       if (current.hasContent) {
         flushCurrent();
       }
-      current.durationMs = 360;
+      activeStrikeCue = null;
+
       const attackerLoc = resolveLoc(event.source_instance_id);
       const targetLoc = resolveLoc(event.target_instance_id);
       if (attackerLoc && event.source_instance_id) {
         const direction: 'up' | 'down' = attackerLoc.half === bottomPlayer ? 'up' : 'down';
-        current.attackingUnits[event.source_instance_id] = direction;
-        current.laneStrikes.push({
+        const enemyHalf: PlayerId = attackerLoc.half === 'player_a' ? 'player_b' : 'player_a';
+        const baseCue: LaneStrikeCue = {
           id: `strike-${seqId}`,
           lane: attackerLoc.lane,
           attackType: attackerLoc.attackType,
           direction,
           attackerSlotKey: makeSlotKey(attackerLoc.half, attackerLoc.lane, attackerLoc.position),
           targetSlotKey: targetLoc ? makeSlotKey(targetLoc.half, targetLoc.lane, targetLoc.position) : undefined,
+          targetHalf: targetLoc?.half ?? enemyHalf,
+          targetLane: targetLoc?.lane ?? attackerLoc.lane,
           toBase: !event.target_instance_id,
-        });
-        current.hasContent = true;
+          kind: 'attack',
+          phase: 'strike',
+        };
+
+        // 第 1 拍：攻击路径发射/突进阶段（此时 visualState 保持受击前 HP，不剧透扣血）
+        const strikeBeat = createMutableBeat(`beat-strike-${seqId}`, 520, 'strike');
+        if (cursor) {
+          strikeBeat.visualState = snapshotVisualCursor(cursor);
+        }
+        strikeBeat.attackingUnits[event.source_instance_id] = direction;
+        strikeBeat.laneStrikes.push(baseCue);
+        strikeBeat.hasContent = true;
+        beats.push(strikeBeat);
+
+        // 第 2 拍：准备命中阶段（后续伤害、护盾、退场事件将应用到 cursor 并附带在 impactBeat 上）
+        activeStrikeCue = { ...baseCue, phase: 'impact' };
+        current = createMutableBeat(`beat-impact-${seqId}`, 480, 'impact');
+        current.laneStrikes.push(activeStrikeCue);
       }
       continue;
     }
 
     if (event.type === 'unit_deployed') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const targetId = event.source_instance_id;
       const loc = resolveLoc(targetId);
       const slotKey =
@@ -242,6 +479,7 @@ export function buildPresentationBeats(params: {
             ? makeSlotKey(event.source_player_id, event.lane, event.position)
             : undefined;
       if (slotKey) {
+        current.phase = 'deploy';
         current.deployedSlots.add(slotKey);
         if (targetId) current.deployedUnits[targetId] = true;
         current.floatingPopups.push({
@@ -251,13 +489,14 @@ export function buildPresentationBeats(params: {
           slotKey,
           unitId: targetId,
         });
-        current.durationMs = Math.max(current.durationMs, 320);
+        current.durationMs = Math.max(current.durationMs, 380);
         current.hasContent = true;
       }
       continue;
     }
 
     if (event.type === 'unit_withdrawn') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const targetId = event.source_instance_id;
       const loc = resolveLoc(targetId);
       const slotKey =
@@ -267,6 +506,7 @@ export function buildPresentationBeats(params: {
             ? makeSlotKey(event.source_player_id, event.lane, event.position)
             : undefined;
       if (slotKey) {
+        current.phase = 'withdraw';
         current.ghostCues.push({
           id: `ghost-${seqId}`,
           slotKey,
@@ -280,7 +520,7 @@ export function buildPresentationBeats(params: {
           slotKey,
           unitId: targetId,
         });
-        current.durationMs = Math.max(current.durationMs, 340);
+        current.durationMs = Math.max(current.durationMs, 400);
         current.hasContent = true;
       }
       continue;
@@ -289,6 +529,41 @@ export function buildPresentationBeats(params: {
     if (event.type === 'skill_activated' || event.type === 'reaction_triggered' || event.type === 'effect_triggered') {
       const srcLoc = resolveLoc(event.source_instance_id);
       const tgtLoc = resolveLoc(event.target_instance_id);
+      if (event.source_instance_id && srcLoc && tgtLoc && event.target_instance_id !== event.source_instance_id && !activeStrikeCue) {
+        // 若技能有明确的跨格目标，先播一段技能光束指向目标，再结算效果
+        if (current.hasContent) {
+          flushCurrent();
+        }
+        const castBeat = createMutableBeat(`beat-skill-cast-${seqId}`, 440, 'strike');
+        if (cursor) {
+          castBeat.visualState = snapshotVisualCursor(cursor);
+        }
+        castBeat.skillUnits[event.source_instance_id] = true;
+        castBeat.laneStrikes.push({
+          id: `skill-path-${seqId}`,
+          lane: srcLoc.lane,
+          attackType: 'ranged',
+          direction: srcLoc.half === bottomPlayer ? 'up' : 'down',
+          attackerSlotKey: makeSlotKey(srcLoc.half, srcLoc.lane, srcLoc.position),
+          targetSlotKey: makeSlotKey(tgtLoc.half, tgtLoc.lane, tgtLoc.position),
+          targetHalf: tgtLoc.half,
+          targetLane: tgtLoc.lane,
+          toBase: false,
+          kind: 'skill',
+          phase: 'strike',
+        });
+        castBeat.floatingPopups.push({
+          id: `pop-skill-${seqId}`,
+          kind: 'skill',
+          label: event.skill_name ? `⚡ ${event.skill_name}` : '⚡ 效果',
+          slotKey: makeSlotKey(srcLoc.half, srcLoc.lane, srcLoc.position),
+          unitId: event.source_instance_id,
+        });
+        castBeat.hasContent = true;
+        beats.push(castBeat);
+        continue;
+      }
+
       if (event.source_instance_id && srcLoc) {
         current.skillUnits[event.source_instance_id] = true;
         current.floatingPopups.push({
@@ -304,11 +579,12 @@ export function buildPresentationBeats(params: {
         current.skillUnits[event.target_instance_id] = true;
         current.hasContent = true;
       }
-      current.durationMs = Math.max(current.durationMs, 350);
+      current.durationMs = Math.max(current.durationMs, 420);
       continue;
     }
 
     if (event.type === 'shield_absorbed') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const loc = resolveLoc(event.target_instance_id);
       if (loc && event.target_instance_id && (event.amount ?? 0) > 0) {
         current.floatingPopups.push({
@@ -324,6 +600,7 @@ export function buildPresentationBeats(params: {
     }
 
     if (event.type === 'damage_resolved') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const loc = resolveLoc(event.target_instance_id);
       if (loc && event.target_instance_id) {
         current.hitUnits[event.target_instance_id] = true;
@@ -337,13 +614,14 @@ export function buildPresentationBeats(params: {
             unitId: event.target_instance_id,
           });
         }
-        current.durationMs = Math.max(current.durationMs, 380);
+        current.durationMs = Math.max(current.durationMs, 480);
         current.hasContent = true;
       }
       continue;
     }
 
     if (event.type === 'healed') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const loc = resolveLoc(event.target_instance_id);
       if (loc && event.target_instance_id && (event.amount ?? 0) > 0) {
         current.floatingPopups.push({
@@ -353,13 +631,14 @@ export function buildPresentationBeats(params: {
           slotKey: makeSlotKey(loc.half, loc.lane, loc.position),
           unitId: event.target_instance_id,
         });
-        current.durationMs = Math.max(current.durationMs, 360);
+        current.durationMs = Math.max(current.durationMs, 440);
         current.hasContent = true;
       }
       continue;
     }
 
     if (event.type === 'sp_gained') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const loc = resolveLoc(event.target_instance_id);
       if (loc && event.target_instance_id && (event.amount ?? 0) > 0) {
         current.floatingPopups.push({
@@ -396,6 +675,7 @@ export function buildPresentationBeats(params: {
     }
 
     if (event.type === 'unit_defeated') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const loc = resolveLoc(event.target_instance_id);
       if (loc) {
         const slotKey = makeSlotKey(loc.half, loc.lane, loc.position);
@@ -405,13 +685,14 @@ export function buildPresentationBeats(params: {
           kind: 'defeat',
           name: event.target_name ?? loc.name,
         });
-        current.durationMs = Math.max(current.durationMs, 400);
+        current.durationMs = Math.max(current.durationMs, 500);
         current.hasContent = true;
       }
       continue;
     }
 
     if (event.type === 'base_damaged') {
+      if (cursor) applyEventToCursor(cursor, event, nextState);
       const defender = event.target_player_id ?? event.player_id;
       const dmg = event.amount ?? 0;
       if (defender && dmg > 0) {
@@ -420,7 +701,7 @@ export function buildPresentationBeats(params: {
         } else {
           current.baseDamage.enemy = (current.baseDamage.enemy ?? 0) + dmg;
         }
-        current.durationMs = Math.max(current.durationMs, 420);
+        current.durationMs = Math.max(current.durationMs, 500);
         current.hasContent = true;
       }
     }
@@ -434,7 +715,8 @@ export function buildPresentationBeats(params: {
     const topPlayer: PlayerId = bottomPlayer === 'player_a' ? 'player_b' : 'player_a';
     const enemyDiff = prevState.players[topPlayer].base_points - nextState.players[topPlayer].base_points;
     if (allyDiff > 0 || enemyDiff > 0) {
-      const fallback = createMutableBeat(`beat-base-${nextState.state_version}`, 400);
+      const fallback = createMutableBeat(`beat-base-${nextState.state_version}`, 480, 'impact');
+      fallback.visualState = nextState;
       if (allyDiff > 0) fallback.baseDamage.ally = allyDiff;
       if (enemyDiff > 0) fallback.baseDamage.enemy = enemyDiff;
       fallback.hasContent = true;
@@ -450,7 +732,8 @@ export function buildPresentationBeats(params: {
     (prevState.active_player_id !== nextState.active_player_id || prevState.turn_number !== nextState.turn_number);
 
   if (turnSwitched) {
-    const bannerBeat = createMutableBeat(`beat-turn-${nextState.state_version}`, 480);
+    const bannerBeat = createMutableBeat(`beat-turn-${nextState.state_version}`, 520, 'turn');
+    bannerBeat.visualState = nextState;
     bannerBeat.turnBanner = {
       id: `turn-${nextState.turn_number}-${nextState.active_player_id}-${nextState.state_version}`,
       actor: nextState.active_player_id,
@@ -472,7 +755,9 @@ export function buildPresentationBeats(params: {
     const mergedEnemyBase = tail.reduce((s, b) => s + (b.baseDamage.enemy ?? 0), 0);
     head.push({
       id: `beat-coalesced-${nextState.state_version}`,
-      durationMs: 420,
+      durationMs: 480,
+      phase: 'impact',
+      visualState: nextState,
       deployedSlots: tail.flatMap((b) => b.deployedSlots),
       deployedUnits: Object.assign({}, ...tail.map((b) => b.deployedUnits)),
       attackingUnits: Object.assign({}, ...tail.map((b) => b.attackingUnits)),

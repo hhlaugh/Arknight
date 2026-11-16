@@ -34,9 +34,9 @@ const SPEED_LABEL: Record<AnimationSpeedMode, { short: string; title: string }> 
 
 /**
  * 顶部战局与敌方阵地 HUD (TacticalBattleHud)
- * 空间对应原则：
- * - 顶部栏专注展示【回合/阶段状态 + PRTS 标识】、【正对敌方半场的敌方基地 HP/DP/手牌余量】与【系统控制区】
- * - 我方基地 HP、可用 DP 费用槽、手牌与「结束行动」统一收敛至棋盘下方的 PlayerHandDock
+ * 采用响应式 CSS Grid 三分区布局：
+ * - 桌面端：`grid-cols-[1fr_auto_1fr]` 让敌方基地状态精确居中对齐上方棋盘，左右分列回合信息与系统控制
+ * - 移动端：`grid-cols-[1fr_auto]` 首行紧凑展示回合与系统控制，次行全宽展示敌方基地 HP/DP/手牌余量，绝不挤出或遮挡战场
  */
 export function TacticalBattleHud({
   state,
@@ -90,19 +90,20 @@ export function TacticalBattleHud({
   );
 
   const enemyHit = enemyBaseDamageDelta !== null && enemyBaseDamageDelta > 0;
+  const enemyHpPct = Math.max(0, Math.min(100, (playerEnemy.base_points / 10) * 100));
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 px-2.5 sm:px-4 py-1.5 bg-[#0d1016] border-b border-[#232d3d] text-[#e8e9e6] shadow-md z-30 shrink-0 select-none min-h-[48px]">
-      {/* 1. 左侧：PRTS 官方菱形徽记 + 回合轮次与阶段状态 */}
-      <div className="flex items-center gap-2 shrink-0">
+    <header className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-x-2 gap-y-1 px-2 sm:px-3.5 py-1 sm:py-1.5 bg-[#0d1016] border-b border-[#232d3d] text-[#e8e9e6] shadow-md z-30 shrink-0 select-none">
+      {/* 1. 左区：PRTS 官方菱形徽记 + 回合轮次与阶段状态 */}
+      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 justify-self-start">
         <img
           src="./assets/arknights/logos/prts_diamond.png"
           alt="PRTS"
           referrerPolicy="no-referrer"
-          className="w-5 h-5 shrink-0 object-contain opacity-90 hidden xs:inline-block sm:inline-block"
+          className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 object-contain opacity-90"
         />
-        <div className="flex items-center gap-1.5 font-mono tabular-nums shrink-0">
-          <span className="w-1 h-4 bg-[#e5a52b]" />
+        <div className="flex items-center gap-1 font-mono tabular-nums shrink-0">
+          <span className="w-1 h-3.5 sm:h-4 bg-[#e5a52b]" />
           <span className="font-black text-xs sm:text-sm tracking-widest text-white">
             T{String(state.turn_number).padStart(2, '0')}
           </span>
@@ -111,23 +112,23 @@ export function TacticalBattleHud({
         <div className="shrink-0">{phaseBadge}</div>
 
         {networkStatus?.isOnline ? (
-          <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono text-slate-400">
+          <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono text-slate-400 whitespace-nowrap">
             <span className={`w-2 h-2 rounded-full ${networkStatus.opponentConnected ? 'bg-emerald-400' : 'bg-rose-400'}`} />
             <span>房号 {networkStatus.roomCode}</span>
           </div>
         ) : (
           seed !== undefined && (
-            <span className="text-[10px] font-mono text-slate-500 hidden 2xl:inline tabular-nums">
+            <span className="text-[10px] font-mono text-slate-500 hidden 2xl:inline tabular-nums whitespace-nowrap">
               SEED:{seed}
             </span>
           )
         )}
       </div>
 
-      {/* 2. 中央：敌方基地状态面板（直接对应棋盘上方敌方防线） */}
+      {/* 2. 中区（移动端占第二行全宽，桌面端居正中）：敌方基地状态面板 */}
       <div
         data-testid="enemy-hud-panel"
-        className={`relative flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3.5 py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
+        className={`col-span-2 md:col-span-1 order-3 md:order-2 justify-self-stretch md:justify-self-center relative flex items-center justify-between md:justify-center gap-2 sm:gap-3 px-2 sm:px-3.5 py-0.5 sm:py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
           enemyHit
             ? `border-amber-400 ring-2 ring-amber-400/70 ${disableMotion ? '' : 'anim-base-hit'}`
             : isEnemyTurn
@@ -136,66 +137,77 @@ export function TacticalBattleHud({
         }`}
         style={{ clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)' }}
       >
-        <span className="px-1.5 py-0.2 bg-rose-600 text-white font-black text-[10px] sm:text-xs tracking-wider shrink-0 uppercase">
-          {isHotseat ? (
-            <>
-              <span className="hidden sm:inline">{topPlayer === 'player_a' ? '玩家 A (等待中)' : '玩家 B (等待中)'}</span>
-              <span className="sm:hidden">{topPlayer === 'player_a' ? '玩家 A' : '玩家 B'}</span>
-            </>
-          ) : (
-            <>
-              <span className="hidden sm:inline">敌方基地</span>
-              <span className="sm:hidden">敌方</span>
-            </>
-          )}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="px-1.5 py-0.2 bg-rose-600 text-white font-black text-[10px] sm:text-xs tracking-wider shrink-0 uppercase whitespace-nowrap">
+            {isHotseat ? (
+              <>
+                <span className="hidden sm:inline">{topPlayer === 'player_a' ? '玩家 A (等待中)' : '玩家 B (等待中)'}</span>
+                <span className="sm:hidden">{topPlayer === 'player_a' ? '玩家 A' : '玩家 B'}</span>
+              </>
+            ) : (
+              <>
+                <span className="hidden sm:inline">敌方基地</span>
+                <span className="sm:hidden">敌方</span>
+              </>
+            )}
+          </span>
 
-        {/* 敌方基地生命值 */}
-        <div className="relative flex items-baseline gap-1 font-mono tabular-nums">
-          <span className="text-[10px] text-rose-400 font-bold">HP</span>
-          <strong className={`text-base sm:text-xl font-black leading-none ${enemyHit ? 'text-amber-300' : 'text-rose-400'}`}>
-            {playerEnemy.base_points}
-          </strong>
-          <span className="text-[10px] text-slate-500">/10</span>
-          {enemyHit && !disableMotion && (
-            <span
-              aria-hidden="true"
-              className="absolute -bottom-4 right-0 px-1 py-0.2 bg-amber-950/95 border border-amber-400 text-amber-200 font-mono font-black text-[10px] pointer-events-none z-50 anim-float-number"
-            >
-              -{enemyBaseDamageDelta}
+          {/* 敌方基地生命值 + 紧凑进度条 */}
+          <div className="relative flex items-center gap-1.5 font-mono tabular-nums">
+            <div className="flex items-baseline gap-0.5 sm:gap-1">
+              <span className="text-[10px] text-rose-400 font-bold">HP</span>
+              <strong className={`text-sm sm:text-xl font-black leading-none ${enemyHit ? 'text-amber-300' : 'text-rose-400'}`}>
+                {playerEnemy.base_points}
+              </strong>
+              <span className="text-[10px] text-slate-500">/10</span>
+            </div>
+            <div className="hidden sm:block w-14 h-1.5 bg-rose-950/80 border border-rose-900/70 overflow-hidden" aria-hidden="true">
+              <div
+                className="h-full bg-rose-500 transition-[width] duration-300"
+                style={{ width: `${enemyHpPct}%` }}
+              />
+            </div>
+            {enemyHit && !disableMotion && (
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-4 right-0 px-1 py-0.2 bg-amber-950/95 border border-amber-400 text-amber-200 font-mono font-black text-[10px] pointer-events-none z-50 anim-float-number"
+              >
+                -{enemyBaseDamageDelta}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-2.5 font-mono tabular-nums">
+          <span className="h-3 w-px bg-rose-900/60 hidden sm:inline-block" aria-hidden="true" />
+          {/* 敌方可用 DP */}
+          <div className="flex items-baseline gap-0.5 sm:gap-1 text-xs sm:text-sm">
+            <span className="text-[10px] text-rose-300/80 font-bold">DP</span>
+            <strong className="font-black text-rose-300 leading-none">{playerEnemy.cost}</strong>
+            <span className="text-[10px] text-rose-500/70">/10</span>
+          </div>
+
+          <span className="h-3 w-px bg-rose-900/60" aria-hidden="true" />
+
+          {/* 敌方手牌与牌库余量 */}
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-slate-400 whitespace-nowrap">
+            <span>
+              <span className="hidden sm:inline">手牌 </span>
+              <span className="sm:hidden">手</span>
+              <strong className="text-slate-200">{playerEnemy.hand.length}</strong>
             </span>
-          )}
-        </div>
-
-        <span className="h-3.5 w-px bg-rose-900/60" aria-hidden="true" />
-
-        {/* 敌方可用 DP */}
-        <div className="flex items-baseline gap-1 font-mono tabular-nums text-xs sm:text-sm">
-          <span className="text-[10px] text-rose-300/80 font-bold">DP</span>
-          <strong className="font-black text-rose-300 leading-none">{playerEnemy.cost}</strong>
-          <span className="text-[10px] text-rose-500/70 hidden sm:inline">/10</span>
-        </div>
-
-        <span className="h-3.5 w-px bg-rose-900/60 hidden sm:inline-block" aria-hidden="true" />
-
-        {/* 敌方手牌与牌库余量 */}
-        <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono tabular-nums text-slate-400">
-          <span>
-            <span className="hidden sm:inline">手牌 </span>
-            <span className="sm:hidden">手</span>
-            <strong className="text-slate-200">{playerEnemy.hand.length}</strong>
-          </span>
-          <span className="hidden sm:inline">·</span>
-          <span>
-            <span className="hidden sm:inline">牌库 </span>
-            <span className="sm:hidden">库</span>
-            <strong className="text-slate-200">{playerEnemy.deck.length}</strong>
-          </span>
+            <span>·</span>
+            <span>
+              <span className="hidden sm:inline">牌库 </span>
+              <span className="sm:hidden">库</span>
+              <strong className="text-slate-200">{playerEnemy.deck.length}</strong>
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* 3. 右侧：倍速、日志、档案与投降/退出操作 */}
-      <div className="flex items-center gap-1 shrink-0">
+      {/* 3. 右区：倍速、日志、档案与投降/退出操作 */}
+      <div className="order-2 md:order-3 justify-self-end flex items-center gap-1 shrink-0">
         {onCycleAnimSpeed && (
           <Button
             variant={animSpeedMode === 'off' ? 'ghost' : 'secondary'}
@@ -218,7 +230,7 @@ export function TacticalBattleHud({
           title={showLog ? '关闭战斗日志' : '打开战斗日志'}
           className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 whitespace-nowrap"
         >
-          📜<span className="hidden md:inline ml-1">日志</span>
+          📜<span className="hidden lg:inline ml-1">日志</span>
         </Button>
 
         <Button
@@ -228,7 +240,7 @@ export function TacticalBattleHud({
           title={showDetail ? '关闭干员档案' : '查看干员档案'}
           className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 whitespace-nowrap"
         >
-          🔍<span className="hidden md:inline ml-1">档案</span>
+          🔍<span className="hidden lg:inline ml-1">档案</span>
         </Button>
 
         {(onSurrender || onExit) && (

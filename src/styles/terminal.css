@@ -174,34 +174,34 @@ b { color: #fff; }
 
 @keyframes meleeLungeUp {
   0% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(-13px) scale(1.06); }
-  70% { transform: translateY(-2px) scale(1.01); }
+  38% { transform: translateY(-15px) scale(1.07); }
+  72% { transform: translateY(-3px) scale(1.02); }
   100% { transform: translateY(0) scale(1); }
 }
 
 @keyframes meleeLungeDown {
   0% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(13px) scale(1.06); }
-  70% { transform: translateY(2px) scale(1.01); }
+  38% { transform: translateY(15px) scale(1.07); }
+  72% { transform: translateY(3px) scale(1.02); }
   100% { transform: translateY(0) scale(1); }
 }
 
 @keyframes rangedBoltUp {
-  0% { opacity: 0; transform: translateY(18px) scaleY(0.5); }
+  0% { opacity: 0; transform: translateY(20px) scaleY(0.5); }
   25% { opacity: 1; transform: translateY(4px) scaleY(1.1); }
   100% { opacity: 0; transform: translateY(-28px) scaleY(0.8); }
 }
 
 @keyframes rangedBoltDown {
-  0% { opacity: 0; transform: translateY(-18px) scaleY(0.5); }
+  0% { opacity: 0; transform: translateY(-20px) scaleY(0.5); }
   25% { opacity: 1; transform: translateY(-4px) scaleY(1.1); }
   100% { opacity: 0; transform: translateY(28px) scaleY(0.8); }
 }
 
 @keyframes floatNumberUp {
   0% { opacity: 0; transform: translateY(6px) scale(0.88); }
-  20% { opacity: 1; transform: translateY(-2px) scale(1.05); }
-  75% { opacity: 1; transform: translateY(-16px) scale(1); }
+  20% { opacity: 1; transform: translateY(-2px) scale(1.06); }
+  78% { opacity: 1; transform: translateY(-16px) scale(1); }
   100% { opacity: 0; transform: translateY(-24px) scale(0.96); }
 }
 
@@ -228,27 +228,67 @@ b { color: #fff; }
   100% { transform: scale(1); }
 }
 
-.anim-deploy-land { animation: deployLand calc(0.26s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
-.anim-slot-flash { animation: slotPulseFlash calc(0.32s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-hit-shake { animation: hitShake calc(0.2s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-hit-flash { animation: hitFlashOverlay calc(0.22s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-melee-lunge-up { animation: meleeLungeUp calc(0.22s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
-.anim-melee-lunge-down { animation: meleeLungeDown calc(0.22s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
-.anim-ranged-bolt-up { animation: rangedBoltUp calc(0.26s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-ranged-bolt-down { animation: rangedBoltDown calc(0.26s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-float-number { animation: floatNumberUp calc(0.68s * var(--combat-anim-scale, 2)) cubic-bezier(0.16, 1, 0.3, 1) both; }
-.anim-ghost-fade { animation: ghostFadeOut calc(0.36s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-skill-burst { animation: skillBurstRing calc(0.32s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-turn-banner { animation: turnBannerSlide calc(0.46s * var(--combat-anim-scale, 2)) ease-out both; }
-.anim-base-hit { animation: baseHitPulse calc(0.28s * var(--combat-anim-scale, 2)) ease-out both; }
+@keyframes pathDraw {
+  0% { stroke-dashoffset: 1000; opacity: 0.25; }
+  35% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0.95; }
+}
+
+@keyframes pathFlow {
+  0% { stroke-dashoffset: 36; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes reticleLock {
+  0% { opacity: 0; transform: scale(1.38); }
+  45% { opacity: 1; transform: scale(0.96); }
+  100% { opacity: 0.9; transform: scale(1); }
+}
+
+@keyframes impactBurst {
+  0% { opacity: 0.95; transform: scale(0.45); }
+  100% { opacity: 0; transform: scale(1.45); }
+}
+
+.anim-deploy-land { animation: deployLand calc(0.32s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-slot-flash { animation: slotPulseFlash calc(0.38s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-hit-shake { animation: hitShake calc(0.34s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-hit-flash { animation: hitFlashOverlay calc(0.36s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-melee-lunge-up { animation: meleeLungeUp calc(0.42s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-melee-lunge-down { animation: meleeLungeDown calc(0.42s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-ranged-bolt-up { animation: rangedBoltUp calc(0.46s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-ranged-bolt-down { animation: rangedBoltDown calc(0.46s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-float-number { animation: floatNumberUp calc(0.84s * var(--combat-anim-scale, 2)) cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-ghost-fade { animation: ghostFadeOut calc(0.45s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-skill-burst { animation: skillBurstRing calc(0.42s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-turn-banner { animation: turnBannerSlide calc(0.52s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-base-hit { animation: baseHitPulse calc(0.40s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-path-draw {
+  stroke-dasharray: 1000;
+  animation: pathDraw calc(0.44s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-path-flow {
+  stroke-dasharray: 10 8;
+  animation: pathFlow calc(0.42s * var(--combat-anim-scale, 2)) linear infinite;
+}
+.anim-reticle-lock {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: reticleLock calc(0.36s * var(--combat-anim-scale, 2)) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-impact-burst {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: impactBurst calc(0.42s * var(--combat-anim-scale, 2)) ease-out both;
+}
 
 /* ---------- 攻击瞬间金色高光（攻击者叠加层） ---------- */
 @keyframes attackGlow {
   0% { opacity: 0; box-shadow: 0 0 0 rgba(229, 165, 43, 0); }
-  40% { opacity: 1; box-shadow: 0 0 16px rgba(229, 165, 43, 0.8), inset 0 0 12px rgba(255, 224, 130, 0.55); }
+  40% { opacity: 1; box-shadow: 0 0 18px rgba(229, 165, 43, 0.85), inset 0 0 12px rgba(255, 224, 130, 0.6); }
   100% { opacity: 0; box-shadow: 0 0 0 rgba(229, 165, 43, 0); }
 }
-.anim-attack-glow { animation: attackGlow calc(0.24s * var(--combat-anim-scale, 2)) ease-out both; }
+.anim-attack-glow { animation: attackGlow calc(0.42s * var(--combat-anim-scale, 2)) ease-out both; }
 
 /* ---------- 5★/6★ 部署入场光柱 ---------- */
 @keyframes deployRarityBeam {
@@ -337,6 +377,10 @@ b { color: #fff; }
   .anim-turn-banner,
   .anim-base-hit,
   .anim-attack-glow,
+  .anim-path-draw,
+  .anim-path-flow,
+  .anim-reticle-lock,
+  .anim-impact-burst,
   .anim-deploy-rarity-5,
   .anim-deploy-rarity-6,
   .gacha-reveal-4,

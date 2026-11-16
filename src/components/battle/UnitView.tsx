@@ -129,10 +129,10 @@ export function UnitView({
                 : animState?.skillFlash
                   ? 'border-cyan-400 ring-1 ring-cyan-400/70 z-20'
                   : 'border-[#36424e] hover:border-[#526475] hover:bg-[#1e252e]'
-      } ${motionClass} w-full h-[82px]`}
+      } ${motionClass} w-full h-[66px] sm:h-[74px] lg:h-[82px]`}
     >
       {/* 内部裁切内容容器（保证立绘/血条不溢出，同时允许上方浮动跳字完整浮现） */}
-      <div className="relative flex flex-col justify-between w-full h-full p-1.5 pl-2 overflow-hidden">
+      <div className="relative flex flex-col justify-between w-full h-full p-1 sm:p-1.5 pl-1.5 sm:pl-2 overflow-hidden">
         {/* 左侧稀有度竖向导轨 */}
         <div
           className="absolute left-0 top-0 bottom-0 w-[3px] pointer-events-none"

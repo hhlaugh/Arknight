@@ -158,7 +158,7 @@ export function useCombatAnimations({
       // 保留合理上限以防连续快速操作堆积卡顿
       setQueue((prev) => {
         const combined = [...prev, ...newBeats];
-        return combined.length > 10 ? combined.slice(combined.length - 10) : combined;
+        return combined.length > 18 ? combined.slice(combined.length - 18) : combined;
       });
     }
   }, [state, logHistory, bottomPlayer, speedMode, effectiveDisabled]);

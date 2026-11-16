@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ActionResult, LocalGameController, LocalGameSnapshot } from '../client/localGameController';
 import { LANE_LABEL, PLAYER_LABEL } from '../client/gameData';
 import { cardDefinitionOf } from '../components/cards/CardView';
@@ -12,6 +12,7 @@ import { Modal } from '../components/ui/Modal';
 import { TacticalBattleHud } from '../components/battle/TacticalBattleHud';
 import { PlayerHandDock } from '../components/battle/PlayerHandDock';
 import { TacticalDetailPanel } from '../components/battle/TacticalDetailPanel';
+import { AttackPathOverlay, type Point2D } from '../components/battle/AttackPathOverlay';
 import { CardPreviewPopover, type HoveredCardPreview } from '../components/battle/CardPreviewPopover';
 import {
   getInvalidCardReason,
@@ -108,6 +109,46 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     bottomPlayer,
   });
   const activeBeat = combatAnim.activeBeat;
+  // 演出进行期间使用 activeBeat.visualState 展示血量/护盾/退场，保证“先轨迹攻击、后扣血结算”
+  const displayState = activeBeat?.visualState ?? state;
+
+  const boardGridRef = useRef<HTMLDivElement>(null);
+  const slotElRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [boardGeometry, setBoardGeometry] = useState<{
+    boardSize: { width: number; height: number };
+    slotCenters: Record<string, Point2D>;
+  }>({
+    boardSize: { width: 0, height: 0 },
+    slotCenters: {},
+  });
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const gridEl = boardGridRef.current;
+      if (!gridEl) return;
+      const gridRect = gridEl.getBoundingClientRect();
+      if (gridRect.width <= 0 || gridRect.height <= 0) return;
+
+      const centers: Record<string, Point2D> = {};
+      for (const [key, el] of Object.entries(slotElRefs.current)) {
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.width <= 0 && rect.height <= 0) continue;
+        centers[key] = {
+          x: rect.left - gridRect.left + rect.width / 2,
+          y: rect.top - gridRect.top + rect.height / 2,
+        };
+      }
+      setBoardGeometry({
+        boardSize: { width: gridRect.width, height: gridRect.height },
+        slotCenters: centers,
+      });
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [activeBeat?.id, showLog, showDetail, isMobile, isLandscape]);
 
   useEffect(() => {
     setSelection(null);
@@ -215,13 +256,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
 
   const boardMap = useMemo(() => {
     const map = new Map<string, CardInstance>();
-    for (const instance of Object.values(state.card_instances)) {
+    for (const instance of Object.values(displayState.card_instances)) {
       if (instance.zone === 'board' && instance.board_half && instance.lane && instance.position) {
         map.set(`${instance.board_half}:${instance.lane}:${instance.position}`, instance);
       }
     }
     return map;
-  }, [state.card_instances]);
+  }, [displayState.card_instances]);
 
   // 攻击范围与目标锁定预览
   const attackPreview = useMemo(() => {
@@ -254,6 +295,9 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   }, [activeHandCardId, activeHandIsOperator, actor, dragOverSlot, hoveredSlot, hoveredUnitId, selectedDeployActions, selection, state]);
 
   const dispatch = async (action: GameAction, actorOverride: PlayerId = actor) => {
+    if (combatAnim.isPlaying) {
+      combatAnim.skipAll();
+    }
     try {
       const result = onDispatch ? await onDispatch(action) : controller?.dispatch(actorOverride, action);
       if (result && !result.ok) {
@@ -463,6 +507,9 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       return (
         <div
           key={key}
+          ref={(el) => {
+            slotElRefs.current[slotKey] = el;
+          }}
           role="button"
           tabIndex={isDeployTarget ? 0 : -1}
           aria-label={`${LANE_LABEL[lane]}${posName}${isDeployTarget ? ' 可部署' : ''}`}
@@ -519,7 +566,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               if (reason) setError(reason);
             }
           }}
-          className={`relative flex items-center justify-center h-[76px] sm:h-[82px] border transition-all duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+          className={`relative flex items-center justify-center h-[66px] sm:h-[74px] lg:h-[82px] border transition-all duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
             isDeployTarget
               ? isSlotHovered
                 ? 'border-[#f59e0b] bg-amber-500/35 ring-2 ring-[#f59e0b] shadow-[0_0_16px_rgba(245,158,11,0.55)] cursor-pointer'
@@ -619,9 +666,15 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     };
 
     return (
-      <div key={instance.card_instance_id} className="relative">
+      <div
+        key={instance.card_instance_id}
+        ref={(el) => {
+          slotElRefs.current[slotKey] = el;
+        }}
+        className="relative"
+      >
         <UnitView
-          state={state}
+          state={displayState}
           instance={instance}
           highlight={highlight}
           animState={unitAnimState}
@@ -655,14 +708,116 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       !hasPending,
   );
 
+  const selectionPromptContent =
+    selectedInstance || attackPreview ? (
+      <>
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <span className="w-1.5 h-3.5 bg-[#e5a52b] shrink-0" />
+          {selectedInstance ? (
+            <span className="truncate text-[11px] sm:text-xs">
+              <strong>{selectedDefinition?.card_name_zh}</strong>
+              {selectedInstance.zone === 'hand' ? (
+                selectedDeployActions.length > 0 ? (
+                  <span className="text-slate-200">
+                    {' '}· 点击或拖放至高亮黄色格子部署（{selectedDefinition?.cost ?? 0} DP）
+                  </span>
+                ) : selectedPlayActions.length > 0 ? (
+                  <span className="text-cyan-300"> · 点击青色高亮目标或右侧直接使用</span>
+                ) : (
+                  <span className="text-rose-300">
+                    {' '}· {getInvalidCardReason(state, actor, selectedInstance.card_instance_id) ?? '当前无法使用'}
+                  </span>
+                )
+              ) : attackPreview ? (
+                <span className="text-slate-200">
+                  {' '}· ⚔ 预计攻击：
+                  {attackPreviewTargetName ? (
+                    <strong className="text-rose-300">
+                      {attackPreview.tauntBlocked ? `【${attackPreviewTargetName}】(嘲讽)` : `【${attackPreviewTargetName}】`}
+                    </strong>
+                  ) : (
+                    <strong className="text-rose-300">对方基地</strong>
+                  )}
+                  {attackPreview.cannotAttackReason && (
+                    <span className="text-slate-400 ml-1.5">({attackPreview.cannotAttackReason})</span>
+                  )}
+                </span>
+              ) : (
+                <span className="text-slate-300"> · 战场编队干员</span>
+              )}
+            </span>
+          ) : (
+            attackPreview && (
+              <span className="truncate text-[11px] sm:text-xs text-slate-200">
+                ⚔ 索敌预演：
+                {attackPreviewTargetName ? (
+                  <strong className="text-rose-300">
+                    {attackPreview.tauntBlocked ? `【${attackPreviewTargetName}】(嘲讽拦截)` : `【${attackPreviewTargetName}】`}
+                  </strong>
+                ) : (
+                  <strong className="text-rose-300">对方基地</strong>
+                )}
+                {attackPreview.cannotAttackReason && (
+                  <span className="text-slate-400 ml-1.5">· {attackPreview.cannotAttackReason}</span>
+                )}
+              </span>
+            )
+          )}
+        </div>
+
+        {selectedInstance && (
+          <div className="flex items-center gap-1.5 shrink-0">
+            {canQuickActOnSelectedUnit && selectedDefinition?.effect_trigger === 'active' && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleQuickSkillClick}
+                className="px-2 py-0.5 text-[10px] min-h-[26px]"
+              >
+                ⚡ 技能
+              </Button>
+            )}
+            {canQuickActOnSelectedUnit && (
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={handleQuickWithdrawClick}
+                className="px-2 py-0.5 text-[10px] min-h-[26px]"
+              >
+                ↩ 撤离
+              </Button>
+            )}
+            {isMobile && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowDetail(true)}
+                className="px-2 py-0.5 text-[10px] min-h-[26px]"
+              >
+                详情档案
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelection(null)}
+              className="text-slate-400 hover:text-white px-1.5 py-0.5 text-[10px] min-h-[26px]"
+            >
+              ✕ 取消
+            </Button>
+          </div>
+        )}
+      </>
+    ) : null;
+
   return (
     <div
-      className="flex flex-col h-screen w-full bg-[#0d1016] text-[#e8e9e6] font-sans overflow-hidden select-none"
+      className="grid grid-rows-[auto_auto_minmax(0,1fr)] h-[100dvh] w-full bg-[#0d1016] text-[#e8e9e6] font-sans overflow-hidden select-none"
       style={{ '--combat-anim-scale': String(combatAnim.cssAnimScale) } as React.CSSProperties}
     >
       {/* 1. 顶部敌方阵地与战局控制 HUD */}
       <TacticalBattleHud
-        state={state}
+        state={displayState}
         actor={actor}
         bottomPlayer={bottomPlayer}
         topPlayer={topPlayer}
@@ -682,53 +837,54 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         disableMotion={combatAnim.effectiveDisabled}
       />
 
-      {/* 2. 移动端竖屏建议横屏轻量提示条 */}
-      {isMobile && !isLandscape && !dismissedOrientationTip && (
-        <div className="px-3 py-1 bg-sky-950/90 border-b border-sky-500/40 text-sky-300 text-[11px] flex items-center justify-between shrink-0 z-20">
-          <span>💡 提示：将手机横屏可获得更宽阔的战术交锋视野</span>
-          <button
-            type="button"
-            onClick={() => setDismissedOrientationTip(true)}
-            className="text-slate-400 hover:text-white px-1.5 font-bold"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {/* 3. 网络中断或回合前待决提示条 */}
-      {networkStatus?.pausedForGuest && (
-        <div className="px-4 py-1.5 bg-amber-950/90 border-b border-amber-500/60 text-amber-300 text-xs flex items-center justify-center gap-2 shrink-0">
-          <span>⏸️ 访客网络已断开，对局已自动暂停，等待重连（宽限期 120 秒）…</span>
-        </div>
-      )}
-
-      {hasPending && (
-        <div className="px-3 sm:px-4 py-1.5 bg-[#1a2332] border-b border-[#3b4c66] flex items-center justify-between text-xs text-slate-200 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-cyan-400" />
-            <span className="text-[11px] sm:text-xs">回合开始支援：点击青色高亮友方干员充能 SP</span>
-          </div>
-          {canSkipPending && canAct && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() =>
-                dispatch({
-                  type: 'resolve_pending_choice',
-                  source_instance_id: state.pending_effect_choices[0]?.source_instance_id ?? '',
-                })
-              }
-              className="text-[11px] px-2 py-0.5"
+      {/* 2. 系统提示与待决响应横幅区（无提示时自动折叠为 0px） */}
+      <div className="shrink-0">
+        {isMobile && !isLandscape && !dismissedOrientationTip && (
+          <div className="px-3 py-1 bg-sky-950/90 border-b border-sky-500/40 text-sky-300 text-[11px] flex items-center justify-between z-20">
+            <span>💡 提示：将手机横屏可获得更宽阔的战术交锋视野</span>
+            <button
+              type="button"
+              onClick={() => setDismissedOrientationTip(true)}
+              className="text-slate-400 hover:text-white px-1.5 font-bold"
             >
-              跳过充能
-            </Button>
-          )}
-        </div>
-      )}
+              ✕
+            </button>
+          </div>
+        )}
 
-      {/* 4. 核心三栏桌面工作区 / 移动端自适应战场 */}
-      <div className="flex flex-1 overflow-hidden relative">
+        {networkStatus?.pausedForGuest && (
+          <div className="px-4 py-1.5 bg-amber-950/90 border-b border-amber-500/60 text-amber-300 text-xs flex items-center justify-center gap-2">
+            <span>⏸️ 访客网络已断开，对局已自动暂停，等待重连（宽限期 120 秒）…</span>
+          </div>
+        )}
+
+        {hasPending && (
+          <div className="px-3 sm:px-4 py-1.5 bg-[#1a2332] border-b border-[#3b4c66] flex items-center justify-between text-xs text-slate-200">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-cyan-400" />
+              <span className="text-[11px] sm:text-xs">回合开始支援：点击青色高亮友方干员充能 SP</span>
+            </div>
+            {canSkipPending && canAct && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() =>
+                  dispatch({
+                    type: 'resolve_pending_choice',
+                    source_instance_id: state.pending_effect_choices[0]?.source_instance_id ?? '',
+                  })
+                }
+                className="text-[11px] px-2 py-0.5"
+              >
+                跳过充能
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 3. 核心三栏桌面工作区 / 移动端自适应战场 */}
+      <div className="flex min-h-0 overflow-hidden relative">
         {!isMobile && showLog && (
           <aside className="w-80 border-r border-[#242e3d] bg-[#121620] flex flex-col shrink-0 overflow-hidden shadow-lg z-20">
             <Panel
@@ -749,17 +905,17 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           </aside>
         )}
 
-        {/* 中栏：战术棋盘主战场 + 紧凑手牌区（点击空白区域取消选中） */}
+        {/* 中栏：CSS Grid 战场主舞台 + 整合手牌指挥托盘（点击空白区域取消选中） */}
         <main
-          className="relative flex-1 flex flex-col justify-between bg-[#0a0d12] overflow-hidden min-w-[320px]"
+          className="relative flex-1 min-w-0 min-h-0 grid grid-rows-[minmax(0,1fr)_auto] bg-[#0a0d12] overflow-hidden"
           onClick={clearNonModalSelection}
         >
-          {/* Phase 6: 非阻塞回合切换横幅 & 多段演出快捷跳过 */}
+          {/* 非阻塞回合切换横幅 & 多段演出快捷跳过 */}
           {!combatAnim.effectiveDisabled && activeBeat?.turnBanner && (
             <div
               key={activeBeat.turnBanner.id}
               aria-live="polite"
-              className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 z-40 px-4 py-1.5 bg-[#121923]/95 border border-[#e5a52b] shadow-[0_6px_24px_rgba(0,0,0,0.65)] flex items-center gap-2 anim-turn-banner"
+              className="pointer-events-none absolute top-2.5 left-1/2 -translate-x-1/2 z-40 px-4 py-1.5 bg-[#121923]/95 border border-[#e5a52b] shadow-[0_6px_24px_rgba(0,0,0,0.65)] flex items-center gap-2 anim-turn-banner"
               style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
             >
               <span className="w-1.5 h-3.5 bg-[#e5a52b]" />
@@ -790,215 +946,91 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             </button>
           )}
 
-          {/* 中央三路交锋推演棋盘 */}
-          <div className="flex-1 flex flex-col justify-center items-center px-1.5 sm:px-4 py-1 overflow-hidden">
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5 w-full max-w-4xl">
-              {LANES.map((lane) => {
-                const isDirectBaseLane = Boolean(attackPreview?.attacksBase && attackPreview.lane === lane);
-                const laneStrike = activeBeat?.laneStrikes.find((s) => s.lane === lane);
-                return (
-                  <div
-                    key={lane}
-                    className={`relative flex flex-col bg-[#11161f] border overflow-hidden shadow-md transition-colors duration-150 ${
-                      laneStrike
-                        ? laneStrike.toBase
-                          ? 'border-rose-500/80'
-                          : 'border-amber-500/70'
-                        : 'border-[#263140]'
-                    }`}
-                    style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
-                  >
-                    {/* Phase 6: 航道攻击轻量弹道 / 近战突击指示（纯 CSS + SVG，不阻挡点击） */}
-                    {!combatAnim.effectiveDisabled && laneStrike && (
-                      <div
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 flex items-center justify-center z-30"
-                      >
-                        {laneStrike.attackType === 'ranged' ? (
-                          <div
-                            className={`flex flex-col items-center ${
-                              laneStrike.direction === 'up' ? 'anim-ranged-bolt-up' : 'anim-ranged-bolt-down'
-                            }`}
-                          >
-                            <svg width="24" height="54" viewBox="0 0 24 54" className="drop-shadow-[0_0_8px_rgba(56,189,248,0.85)]">
-                              {laneStrike.direction === 'up' ? (
-                                <>
-                                  <line x1="12" y1="50" x2="12" y2="10" stroke="#38bdf8" strokeWidth="3" strokeLinecap="square" />
-                                  <polygon points="12,2 5,15 19,15" fill="#e5a52b" />
-                                </>
-                              ) : (
-                                <>
-                                  <line x1="12" y1="4" x2="12" y2="44" stroke="#fb7185" strokeWidth="3" strokeLinecap="square" />
-                                  <polygon points="12,52 5,39 19,39" fill="#f59e0b" />
-                                </>
-                              )}
-                            </svg>
-                          </div>
+          {/* 中央三路交锋推演棋盘（短屏/横屏下可平稳滚动，绝不被底部托盘遮挡） */}
+          <div className="relative min-h-0 overflow-y-auto overscroll-contain flex flex-col items-center px-1.5 sm:px-4 py-1.5 sm:py-2">
+            <div ref={boardGridRef} className="relative my-auto w-full max-w-4xl">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5 w-full">
+                {LANES.map((lane) => {
+                  const isDirectBaseLane = Boolean(attackPreview?.attacksBase && attackPreview.lane === lane);
+                  const laneStrike = activeBeat?.laneStrikes.find((s) => s.lane === lane || s.targetLane === lane);
+                  return (
+                    <div
+                      key={lane}
+                      className={`relative flex flex-col bg-[#11161f] border overflow-hidden shadow-md transition-colors duration-150 ${
+                        laneStrike
+                          ? laneStrike.toBase
+                            ? 'border-rose-500/80'
+                            : laneStrike.kind === 'skill'
+                              ? 'border-cyan-400/80'
+                              : 'border-amber-500/75'
+                          : 'border-[#263140]'
+                      }`}
+                      style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
+                    >
+                      {/* 航道路口标头 */}
+                      <div className="px-2 py-0.5 sm:py-1 bg-[#151b24] border-b border-[#242f3d] flex items-center justify-between text-xs">
+                        <span className="font-bold text-white tracking-wide text-[11px] sm:text-xs">{LANE_LABEL[lane]}</span>
+                        {isDirectBaseLane ? (
+                          <span className="text-[9px] font-mono font-bold text-rose-300 bg-rose-950/90 border border-rose-500/60 px-1">
+                            ⚔ 直击基地
+                          </span>
                         ) : (
-                          <div className="px-2 py-0.5 bg-amber-500/20 border border-amber-400/80 text-amber-200 font-mono font-black text-[11px] anim-slot-flash">
-                            {laneStrike.toBase ? '⚔ 直击基地' : '⚔ 交锋'}
-                          </div>
+                          <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+                            {lane}
+                          </span>
                         )}
                       </div>
-                    )}
 
-                    {/* 航道路口标头 */}
-                    <div className="px-2 py-0.5 sm:py-1 bg-[#151b24] border-b border-[#242f3d] flex items-center justify-between text-xs">
-                      <span className="font-bold text-white tracking-wide text-[11px] sm:text-xs">{LANE_LABEL[lane]}</span>
-                      {isDirectBaseLane ? (
-                        <span className="text-[9px] font-mono font-bold text-rose-300 bg-rose-950/90 border border-rose-500/60 px-1">
-                          ⚔ 直击基地
+                      {/* 敌方战区 (上方后排 + 前排) */}
+                      <div className="px-1.5 py-0.2 sm:py-0.5 bg-rose-950/40 border-b border-rose-900/40 flex items-center justify-between text-[9px] sm:text-[10px] font-mono font-bold text-rose-300">
+                        <span>{isHotseat ? (topPlayer === 'player_a' ? '🔴 玩家 A 防线' : '🔴 玩家 B 防线') : '🔴 敌方战区'}</span>
+                        <span className="text-[8px] sm:text-[9px] text-rose-400/80">后排/前锋</span>
+                      </div>
+                      <div className={`p-1 sm:p-1.5 space-y-1 bg-[#180e12]/60 border-b border-rose-900/30 ${actor === topPlayer ? 'bg-rose-950/20' : ''}`}>
+                        {renderSlot(topPlayer, lane, 'back')}
+                        {renderSlot(topPlayer, lane, 'front')}
+                      </div>
+
+                      {/* 三路阻挡与交锋核心线 */}
+                      <div className="relative py-0.5 sm:py-1 px-2 bg-[#0f131a] border-y border-[#2d3848] flex items-center justify-center gap-1.5 select-none">
+                        <div className="flex-1 h-[1px] sm:h-[1.5px] bg-gradient-to-r from-transparent via-[#45556d] to-transparent" />
+                        <span className="text-[9px] sm:text-[10px] font-mono font-bold text-[#e5a52b] tracking-wider flex items-center gap-1">
+                          <span>⚔</span>
+                          <span>{isDirectBaseLane ? '无阻挡直击' : '交锋阻挡'}</span>
                         </span>
-                      ) : (
-                        <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                          {lane}
-                        </span>
-                      )}
-                    </div>
+                        <div className="flex-1 h-[1px] sm:h-[1.5px] bg-gradient-to-r from-transparent via-[#45556d] to-transparent" />
+                      </div>
 
-                    {/* 敌方战区 (上方后排 + 前排) */}
-                    <div className="px-1.5 py-0.2 sm:py-0.5 bg-rose-950/40 border-b border-rose-900/40 flex items-center justify-between text-[9px] sm:text-[10px] font-mono font-bold text-rose-300">
-                      <span>{isHotseat ? (topPlayer === 'player_a' ? '🔴 玩家 A 防线' : '🔴 玩家 B 防线') : '🔴 敌方战区'}</span>
-                      <span className="text-[8px] sm:text-[9px] text-rose-400/80">后排/前锋</span>
+                      {/* 己方战区 (下方前排 + 后排) */}
+                      <div className={`p-1 sm:p-1.5 space-y-1 bg-[#0b131d]/60 ${actor === bottomPlayer ? 'bg-sky-950/20' : ''}`}>
+                        {renderSlot(bottomPlayer, lane, 'front')}
+                        {renderSlot(bottomPlayer, lane, 'back')}
+                      </div>
+                      <div className="px-1.5 py-0.2 sm:py-0.5 bg-sky-950/40 border-t border-sky-900/40 flex items-center justify-between text-[9px] sm:text-[10px] font-mono font-bold text-sky-300">
+                        <span>{isHotseat ? (bottomPlayer === 'player_a' ? '🔵 玩家 A 防线' : '🔵 玩家 B 防线') : '🔵 我方防线'}</span>
+                        <span className="text-[8px] sm:text-[9px] text-sky-400/80">前锋/后卫</span>
+                      </div>
                     </div>
-                    <div className={`p-1 sm:p-1.5 space-y-1 bg-[#180e12]/60 border-b border-rose-900/30 ${actor === topPlayer ? 'bg-rose-950/20' : ''}`}>
-                      {renderSlot(topPlayer, lane, 'back')}
-                      {renderSlot(topPlayer, lane, 'front')}
-                    </div>
+                  );
+                })}
+              </div>
 
-                    {/* 三路阻挡与交锋核心线 */}
-                    <div className="relative py-0.5 sm:py-1 px-2 bg-[#0f131a] border-y border-[#2d3848] flex items-center justify-center gap-1.5 select-none">
-                      <div className="flex-1 h-[1px] sm:h-[1.5px] bg-gradient-to-r from-transparent via-[#45556d] to-transparent" />
-                      <span className="text-[9px] sm:text-[10px] font-mono font-bold text-[#e5a52b] tracking-wider flex items-center gap-1">
-                        <span>⚔</span>
-                        <span>{isDirectBaseLane ? '无阻挡直击' : '交锋阻挡'}</span>
-                      </span>
-                      <div className="flex-1 h-[1px] sm:h-[1.5px] bg-gradient-to-r from-transparent via-[#45556d] to-transparent" />
-                    </div>
-
-                    {/* 己方战区 (下方前排 + 后排) */}
-                    <div className={`p-1 sm:p-1.5 space-y-1 bg-[#0b131d]/60 ${actor === bottomPlayer ? 'bg-sky-950/20' : ''}`}>
-                      {renderSlot(bottomPlayer, lane, 'front')}
-                      {renderSlot(bottomPlayer, lane, 'back')}
-                    </div>
-                    <div className="px-1.5 py-0.2 sm:py-0.5 bg-sky-950/40 border-t border-sky-900/40 flex items-center justify-between text-[9px] sm:text-[10px] font-mono font-bold text-sky-300">
-                      <span>{isHotseat ? (bottomPlayer === 'player_a' ? '🔵 玩家 A 防线' : '🔵 玩家 B 防线') : '🔵 我方防线'}</span>
-                      <span className="text-[8px] sm:text-[9px] text-sky-400/80">前锋/后卫</span>
-                    </div>
-                  </div>
-                );
-              })}
+              {/* 全棋盘矢量攻击轨迹与锁定准星覆盖层 */}
+              <AttackPathOverlay
+                strikes={activeBeat?.laneStrikes ?? []}
+                bottomPlayer={bottomPlayer}
+                topPlayer={topPlayer}
+                slotCenters={boardGeometry.slotCenters}
+                boardSize={boardGeometry.boardSize}
+                cssAnimScale={combatAnim.cssAnimScale}
+                disableMotion={combatAnim.effectiveDisabled}
+              />
             </div>
           </div>
 
-          {/* 操作提示与快捷指令条 (选中干员/手牌或触发索敌预演时显示) */}
-          {(selectedInstance || attackPreview) && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="px-2.5 sm:px-3 py-1.5 bg-[#17202b] border-t border-[#293748] flex items-center justify-between gap-2 text-xs text-amber-300 shrink-0 flex-wrap"
-            >
-              <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <span className="w-1.5 h-3.5 bg-[#e5a52b] shrink-0" />
-                {selectedInstance ? (
-                  <span className="truncate text-[11px] sm:text-xs">
-                    <strong>{selectedDefinition?.card_name_zh}</strong>
-                    {selectedInstance.zone === 'hand' ? (
-                      selectedDeployActions.length > 0 ? (
-                        <span className="text-slate-200">
-                          {' '}· 点击或拖放至高亮黄色格子部署（{selectedDefinition?.cost ?? 0} DP）
-                        </span>
-                      ) : selectedPlayActions.length > 0 ? (
-                        <span className="text-cyan-300"> · 点击青色高亮目标或右侧直接使用</span>
-                      ) : (
-                        <span className="text-rose-300">
-                          {' '}· {getInvalidCardReason(state, actor, selectedInstance.card_instance_id) ?? '当前无法使用'}
-                        </span>
-                      )
-                    ) : attackPreview ? (
-                      <span className="text-slate-200">
-                        {' '}· ⚔ 预计攻击：
-                        {attackPreviewTargetName ? (
-                          <strong className="text-rose-300">
-                            {attackPreview.tauntBlocked ? `【${attackPreviewTargetName}】(嘲讽)` : `【${attackPreviewTargetName}】`}
-                          </strong>
-                        ) : (
-                          <strong className="text-rose-300">对方基地</strong>
-                        )}
-                        {attackPreview.cannotAttackReason && (
-                          <span className="text-slate-400 ml-1.5">({attackPreview.cannotAttackReason})</span>
-                        )}
-                      </span>
-                    ) : (
-                      <span className="text-slate-300"> · 战场编队干员</span>
-                    )}
-                  </span>
-                ) : (
-                  attackPreview && (
-                    <span className="truncate text-[11px] sm:text-xs text-slate-200">
-                      ⚔ 索敌预演：
-                      {attackPreviewTargetName ? (
-                        <strong className="text-rose-300">
-                          {attackPreview.tauntBlocked ? `【${attackPreviewTargetName}】(嘲讽拦截)` : `【${attackPreviewTargetName}】`}
-                        </strong>
-                      ) : (
-                        <strong className="text-rose-300">对方基地</strong>
-                      )}
-                      {attackPreview.cannotAttackReason && (
-                        <span className="text-slate-400 ml-1.5">· {attackPreview.cannotAttackReason}</span>
-                      )}
-                    </span>
-                  )
-                )}
-              </div>
-
-              {selectedInstance && (
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {canQuickActOnSelectedUnit && selectedDefinition?.effect_trigger === 'active' && (
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={handleQuickSkillClick}
-                      className="px-2 py-0.5 text-[10px] min-h-[28px]"
-                    >
-                      ⚡ 技能
-                    </Button>
-                  )}
-                  {canQuickActOnSelectedUnit && (
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={handleQuickWithdrawClick}
-                      className="px-2 py-0.5 text-[10px] min-h-[28px]"
-                    >
-                      ↩ 撤离
-                    </Button>
-                  )}
-                  {isMobile && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setShowDetail(true)}
-                      className="px-2 py-0.5 text-[10px] min-h-[28px]"
-                    >
-                      详情档案
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelection(null)}
-                    className="text-slate-400 hover:text-white px-1.5 py-0.5 text-[10px] min-h-[28px]"
-                  >
-                    ✕ 取消
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* 底部统一己方指挥面板与手牌托盘 */}
           <PlayerHandDock
-            state={state}
+            state={displayState}
             bottomPlayer={bottomPlayer}
             actor={actor}
             canAct={canAct}
@@ -1006,10 +1038,12 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             hasPending={hasPending}
             isHotseat={isHotseat}
             isMobile={isMobile}
+            isLandscape={isLandscape}
             selection={selection}
             draggingCardId={draggingCardId}
             allyBaseDamageDelta={activeBeat?.baseDamage.ally ?? null}
             disableMotion={combatAnim.effectiveDisabled}
+            selectionPrompt={selectionPromptContent}
             onHandCardClick={onHandCardClick}
             onLongPressCard={(id) => {
               setSelection(id);

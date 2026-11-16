@@ -15,6 +15,7 @@ import {
 } from './combatPresentation';
 import { TacticalBattleHud } from './TacticalBattleHud';
 import { PlayerHandDock } from './PlayerHandDock';
+import { AttackPathOverlay } from './AttackPathOverlay';
 import { UnitView } from './UnitView';
 import { HealthBar } from '../ui/HealthBar';
 
@@ -181,26 +182,49 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
       speedMode: 'normal',
     });
 
-    // 第一段：左路远程攻击（护盾吸收 + 伤害跳字 + 原格位阵亡退场残影）
-    const leftBeat = beats.find((b) => b.laneStrikes.some((s) => s.lane === 'left'));
-    expect(leftBeat).toBeDefined();
-    expect(leftBeat!.laneStrikes[0]!.attackType).toBe('ranged');
-    expect(leftBeat!.laneStrikes[0]!.direction).toBe('up');
-    expect(leftBeat!.hitUnits[enemyTarget.card_instance_id]).toBe(true);
-    expect(leftBeat!.floatingPopups.some((p) => p.kind === 'shield' && p.label === '🛡 -1')).toBe(true);
-    expect(leftBeat!.floatingPopups.some((p) => p.kind === 'damage' && p.label.startsWith('-'))).toBe(true);
+    // 第一段：左路远程攻击拆分为 Strike（攻击轨迹先行、目标保持受击前 HP）-> Impact（伤害扣血与原格位阵亡退场）
+    const leftStrikeBeat = beats.find(
+      (b) => b.phase === 'strike' && b.laneStrikes.some((s) => s.lane === 'left'),
+    );
+    expect(leftStrikeBeat).toBeDefined();
+    expect(leftStrikeBeat!.laneStrikes[0]!.attackType).toBe('ranged');
+    expect(leftStrikeBeat!.laneStrikes[0]!.direction).toBe('up');
+    expect(leftStrikeBeat!.laneStrikes[0]!.targetSlotKey).toBe(makeSlotKey(enemy, 'left', 'front'));
+    expect(leftStrikeBeat!.attackingUnits[allyRanged.card_instance_id]).toBe('up');
+    // 关键校验：Strike 阶段绝不提前显示被攻击后的生命值或退场状态
+    expect(leftStrikeBeat!.visualState?.card_instances[enemyTarget.card_instance_id]?.zone).toBe('board');
+    expect(leftStrikeBeat!.visualState?.card_instances[enemyTarget.card_instance_id]?.operator_combat?.current_hp).toBe(2);
+    expect(leftStrikeBeat!.visualState?.card_instances[enemyTarget.card_instance_id]?.operator_combat?.shield).toBe(1);
+
+    const leftImpactBeat = beats.find(
+      (b) => b.phase === 'impact' && b.laneStrikes.some((s) => s.lane === 'left'),
+    );
+    expect(leftImpactBeat).toBeDefined();
+    expect(leftImpactBeat!.hitUnits[enemyTarget.card_instance_id]).toBe(true);
+    expect(leftImpactBeat!.floatingPopups.some((p) => p.kind === 'shield' && p.label === '🛡 -1')).toBe(true);
+    expect(leftImpactBeat!.floatingPopups.some((p) => p.kind === 'damage' && p.label.startsWith('-'))).toBe(true);
     expect(
-      leftBeat!.ghostCues.some(
+      leftImpactBeat!.ghostCues.some(
         (g) => g.kind === 'defeat' && g.slotKey === makeSlotKey(enemy, 'left', 'front'),
       ),
     ).toBe(true);
+    expect(leftImpactBeat!.visualState?.card_instances[enemyTarget.card_instance_id]?.zone).toBe('discard');
 
-    // 第二段：右路近战攻击空路直击基地（HUD 敌方基地掉血 + 近战类型）
-    const rightBeat = beats.find((b) => b.laneStrikes.some((s) => s.lane === 'right'));
-    expect(rightBeat).toBeDefined();
-    expect(rightBeat!.laneStrikes[0]!.attackType).toBe('melee');
-    expect(rightBeat!.laneStrikes[0]!.toBase).toBe(true);
-    expect(rightBeat!.baseDamage.enemy).toBeGreaterThan(0);
+    // 第二段：右路近战攻击空路直击基地（Strike 阶段保持基地受击前血量，Impact 阶段才扣除基地 HP）
+    const rightStrikeBeat = beats.find(
+      (b) => b.phase === 'strike' && b.laneStrikes.some((s) => s.lane === 'right'),
+    );
+    expect(rightStrikeBeat).toBeDefined();
+    expect(rightStrikeBeat!.laneStrikes[0]!.attackType).toBe('melee');
+    expect(rightStrikeBeat!.laneStrikes[0]!.toBase).toBe(true);
+    expect(rightStrikeBeat!.visualState?.players[enemy].base_points).toBe(stagedState.players[enemy].base_points);
+
+    const rightImpactBeat = beats.find(
+      (b) => b.phase === 'impact' && b.laneStrikes.some((s) => s.lane === 'right'),
+    );
+    expect(rightImpactBeat).toBeDefined();
+    expect(rightImpactBeat!.baseDamage.enemy).toBeGreaterThan(0);
+    expect(rightImpactBeat!.visualState!.players[enemy].base_points).toBeLessThan(stagedState.players[enemy].base_points);
 
     // 最后一段：回合切换横幅
     const turnBeat = beats.find((b) => Boolean(b.turnBanner));
@@ -265,9 +289,9 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
       speedMode: 'slow',
     });
     expect(DEFAULT_ANIMATION_SPEED_MODE).toBe('slow');
-    expect(getBeatDurationMs(340, 'slow')).toBe(680);
+    expect(getBeatDurationMs(440, 'slow')).toBe(880);
     expect(getCssAnimationScale('slow')).toBe(2);
-    expect(slowBeats[0]!.durationMs).toBe(680);
+    expect(slowBeats[0]!.durationMs).toBe(880);
 
     const fastBeats = buildPresentationBeats({
       prevState: staged,
@@ -279,7 +303,7 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     });
     expect(fastBeats).toHaveLength(1);
     expect(fastBeats[0]!.ghostCues[0]!.kind).toBe('withdraw');
-    expect(fastBeats[0]!.durationMs).toBe(getBeatDurationMs(340, 'fast'));
+    expect(fastBeats[0]!.durationMs).toBe(getBeatDurationMs(440, 'fast'));
 
     const offBeats = buildPresentationBeats({
       prevState: staged,
@@ -426,5 +450,33 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
       />,
     );
     expect(defaultHudHtml).toContain('0.5x');
+
+    const overlayHtml = renderToString(
+      <AttackPathOverlay
+        strikes={[
+          {
+            id: 's1',
+            lane: 'left',
+            attackType: 'ranged',
+            direction: 'up',
+            attackerSlotKey: makeSlotKey(actor, 'left', 'back'),
+            targetSlotKey: makeSlotKey(enemy, 'left', 'front'),
+            targetHalf: enemy,
+            targetLane: 'left',
+            toBase: false,
+            kind: 'attack',
+            phase: 'strike',
+          },
+        ]}
+        bottomPlayer={actor}
+        topPlayer={enemy}
+        cssAnimScale={2}
+        disableMotion={false}
+      />,
+    );
+    expect(overlayHtml).toContain('data-testid="attack-path-overlay"');
+    expect(overlayHtml).toContain('anim-path-draw');
+    expect(overlayHtml).toContain('anim-reticle-lock');
+    expect(overlayHtml).toContain('animateMotion');
   });
 });

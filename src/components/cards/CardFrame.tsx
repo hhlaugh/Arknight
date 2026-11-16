@@ -222,7 +222,7 @@ export function CardFrame({
 
   const sizeClasses = {
     compact: 'w-28 h-40 p-1.5',
-    hand: 'w-28 h-[148px] sm:w-[116px] sm:h-[156px] p-1.5 shrink-0',
+    hand: 'w-[96px] h-[128px] sm:w-[110px] sm:h-[144px] lg:w-[116px] lg:h-[154px] p-1 sm:p-1.5 shrink-0',
     deck: 'w-full min-h-[178px] p-2.5',
     preview: 'w-full max-w-[248px] min-h-[320px] p-3.5',
   }[variant];
