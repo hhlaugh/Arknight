@@ -28,7 +28,7 @@
 
 ## Phase 1 — Design Tokens 与基础 UI 组件
 
-- [x] **设计令牌集中管理**：整合主题变量到 `:root` (`src/client/ui.css`) 及 TypeScript 常量 (`src/components/ui/tokens.ts`)，包含背景层级、主次文字、战术黄强调色、阵营色、稀有度色值及切角路径
+- [x] **设计令牌集中管理**：整合主题变量到 `:root` (`src/styles/terminal.css`) 及 TypeScript 常量 (`src/components/ui/tokens.ts`)，包含背景层级、主次文字、战术黄强调色、阵营色、稀有度色值及切角路径
 - [x] **统一基础组件库 (`src/components/ui/`)**：
   - `Button`：战术风格按钮，支持 primary / secondary / danger / ghost / outline 变体、三种尺寸、切角与 focus-visible
   - `Panel`：工业终端面板，支持 technical header、scanlines 扫描线、grid 网格与切角
@@ -67,14 +67,14 @@
   - **左栏**：折叠式战术战斗日志（Collapsible Combat Log），支持一键展开/收起（收起至 48px），全彩标注红蓝方阵营、攻击伤害值、击杀连锁、技能触发与撤离事件
   - **中栏**：战术三路推演棋盘（3-Lane Grid），清晰划分左/中/右三路与前锋/后卫阵位，中央交战分割线带动态呼吸发光（Clash line），可部署阵位带高亮脉冲线框；底部停靠手牌托盘（Docked Hand Tray）并实时计算可用费用
   - **右栏**：独立战术单位/卡牌档案与指令面板 (`TacticalDetailPanel.tsx`)，选中棋盘干员或手牌卡牌时展示详细属性、技能说明、主动发动/快捷撤离按钮及实时待处理抉择状态；无选中时展示 PRTS 待机终端心跳监视
-- [x] **棋盘单位棋子 (`src/components/UnitView.tsx`)**：
+- [x] **棋盘单位棋子 (`src/components/battle/UnitView.tsx`)**：
   - 接入 `HealthBar` 进度条、数字 ATK 与当前 SP 槽、状态指示器以及 `OperatorPortrait` 规范头像
 
 ---
 
 ## Phase 3 — 移动端独立布局
 
-- [x] **移动端视口检测与无缝响应式 (`src/hooks/useIsMobile.ts`)**：
+- [x] **移动端视口检测与无缝响应式 (`src/hooks/useViewport.ts`)**：
   - `useViewport` 与 `useIsMobile` 自动感知设备视口与方向旋转（支持窄屏 `<1024px`、手机 `<640px` 与横屏/竖屏检测）
   - 竖屏状态下提供轻量可关闭的横屏建议横幅（“💡 提示：横屏可获得更佳推演视野”）
 - [x] **移动端战场布局独立重构 (`src/views/BattleView.tsx`)**：
@@ -95,11 +95,11 @@
 
 ## Phase 4 — 卡牌视觉系统、只读图鉴与卡组编辑深入优化
 
-- [x] **CSS + SVG Token 化 `CardFrame` (`src/components/cards/CardFrame.tsx` & `src/client/ui.css`)**：
+- [x] **CSS + SVG Token 化 `CardFrame` (`src/components/cards/CardFrame.tsx` & `src/styles/terminal.css`)**：
   - 使用 `[data-rarity="3"|"4"|"5"|"6"]` 与 `[data-state="default"|"selected"|"in-deck"|"unplayable"|"disabled"]` CSS 变量驱动卡框主题、光晕与可访问焦点环，支持 `prefers-reduced-motion`
   - 不同星级不仅通过色值区分，同时通过 SVG 边角导轨、双层内框与三角角标实现非色盲几何差异；零外部 PNG/WebP 卡框图片依赖
   - `CardView` 为手牌注入当前费用不足视觉提示（`unplayable`），不修改任何规则校验
-- [x] **`OperatorPortrait` & `UnitView` 统一表现 (`src/components/cards/OperatorPortrait.tsx` & `src/components/UnitView.tsx`)**：
+- [x] **`OperatorPortrait` & `UnitView` 统一表现 (`src/components/cards/OperatorPortrait.tsx` & `src/components/battle/UnitView.tsx`)**：
   - 切换 `cardId` 时自动重置图片加载失败状态，携带 `referrerPolicy="no-referrer"` 与精准面部 `objectPosition`，缺图自动回退为稀有度微光六边形战术剪影
   - `UnitView` 增加左侧稀有度竖向导轨与键盘聚焦支持，同时维持 82px 紧凑高度保证桌面端三路四行棋盘零滚动
 - [x] **只读干员图鉴优化 (`src/views/CardLibraryView.tsx`)**：
@@ -136,7 +136,7 @@
 - [x] **零规则耦合纯表现适配器 (`src/components/battle/combatPresentation.ts` & `src/hooks/useCombatAnimations.ts`)**：
   - 所有战斗动效仅消费引擎既定 `CombatLogEvent[]` 与 `GameState` 快照差值，绝不修改命中、伤害、阵亡、费用或胜负条件
   - 关闭动效 (`off`) 或触发 `prefers-reduced-motion: reduce` 时立即清空队列，对局结果 100% 等价
-- [x] **基础与战斗交锋反馈 (`UnitView.tsx`, `HealthBar.tsx`, `BattleView.tsx`, `src/client/ui.css`)**：
+- [x] **基础与战斗交锋反馈 (`UnitView.tsx`, `HealthBar.tsx`, `BattleView.tsx`, `src/styles/terminal.css`)**：
   - 部署落位微缩放入场与格位金框闪光 (`anim-deploy-land`, `anim-slot-flash`)
   - 受击闪震 (`anim-hit-shake`, `anim-hit-flash`) 与 `HealthBar` 平滑降血残影条 (`tabular-nums`)
   - 区分近战前冲交锋 (`anim-melee-lunge-up/down`) 与远程 SVG/CSS 弹道光束 (`anim-ranged-bolt-up/down`)
@@ -153,12 +153,12 @@
 - [x] **废弃样式与旧页面清理**：
   - 移除未使用的旧版 `src/components/PlayerBar.tsx` 组件
   - 重构联机大厅 `src/views/RoomLobbyView.tsx` 为统一 PRTS Tactical Terminal 风格（`Panel` / `Button` / `Badge`，无圆角胶囊与 `alert()`/`confirm()`/`open()` 弹窗）
-  - 清理 `src/client/ui.css` 中约 390 行已被替代的旧版 `.player-bar*`、`.room-*`、`.battle-*` 原型样式
+  - 清理 `src/styles/terminal.css` 中约 390 行已被替代的旧版 `.player-bar*`、`.room-*`、`.battle-*` 原型样式
   - 修复 `StartView`、`DeckSelectView`、`MulliganView`、`SettlementView` 窄屏顶栏/底栏 `flex-wrap` 防挤压，并清除 `StartView` 装饰性脉动红绿小点 (`animate-pulse`)
-- [x] **全面回归测试 (`src/views/phase7-regression.test.tsx`)**：
+- [x] **全面回归测试 (`src/views/app-regression.test.tsx`)**：
   - 校验 `verifyDataContractBaseline()` 与 `validateCardPresentationIntegrity()`（72 张正式卡牌、3 套 20 张合法预设卡组、0 遗留 `DEMO-*` 测试卡、0 抽卡/收集锁污染）
   - 验证 `CardFrame` 纯 CSS + SVG 在 3★~6★ 与全状态 (`default` / `selected` / `in-deck` / `unplayable` / `disabled`) 独立渲染，零外部 PNG 卡框依赖
-  - 验证全部 8 个应用视图（`StartView` / `DeckSelectView` / `CardLibraryView` / `DeckEditorView` / `MulliganView` / `BattleView` / `SettlementView` / `RoomLobbyView`）SSR 渲染无异常
+  - 验证全部应用视图（`StartView` / `DeckSelectView` / `CardLibraryView` / `DeckEditorView` / `RecruitmentView` / `MulliganView` / `BattleView` / `SettlementView` / `RoomLobbyView`）SSR 渲染无异常
   - 运行完整对局生命周期冒烟回归（选牌 → 起手换牌 → 多回合行动与 `BotPlayer` 推进 → 日志产出 → 新种子重开复位）
 - [x] **工程质量门槛校验**：
   - `npm run lint` (`tsc --noEmit`) 类型检查通过
@@ -166,5 +166,11 @@
   - Vitest 全量回归测试套件通过
 - [ ] **真机/无头浏览器截图检查（环境受限说明）**：
   - 当前容器环境未安装 Playwright CLI，无法自动化截取 1440×900 / 1280×800 / 390×844 / 360×640 像素截图；各视口响应规则已通过 Tailwind 响应式类（`sm:` / `md:` / `lg:`）与 `useViewport` 断点测试验证，待人工在本地或预览 URL 打开浏览器目视复核。
-- [x] **缺图与后续资产状态明确披露**：
-  - `public/` 下原版干员 `.webp` 立绘/头像素材尚未导入本地；`OperatorPortrait` 已验证在缺图与 404 时平滑回退至带稀有度色标的六边形战术剪影占位符，保证全应用零报错可玩。
+
+---
+
+## Phase 8 — 干员寻访、本地存档、UI 收尾与目录整理
+
+- [x] **144 张干员立绘/头像接入**：`assets/arknights/operators/` 已全量部署 72 位干员立绘与头像 `.webp`（144 个文件），并同步至 `dist/assets/arknights/` 与 GitHub Pages 构建流程。
+- [x] **CardFrame 持有标记与 UI 无遮挡收尾**：将「持有×N / 未收录」内置进 `CardFrame` 左上 DP 徽章下方，移除图鉴、卡组编辑与寻访页外置重叠角标；`RecruitmentView` 支持顶栏返回、1/10 连自适应网格、逐张新收录/重复转化标注与点击档案弹窗；`App.tsx` 联机/人机等待与断线中断弹窗全部接入 `MulliganView` 与 `Modal` 终端组件，清除旧 `.mulligan` / `.modal-backdrop` 样式。
+- [x] **目录与文件命名规范化**：统一整理 `docs/ui/`、`docs/specs/{v0.7,v0.8}`、`src/components/{cards,battle,ui}`、`src/styles/terminal.css`、`src/hooks/useViewport.ts` 与 `src/data/{card-pool.json,preset-decks.csv,load-card-data.ts,player-collection.ts}`。

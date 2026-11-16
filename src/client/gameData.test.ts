@@ -5,8 +5,8 @@ import {
   getAllAvailableDecks,
   getCustomDecks,
   validateDeck,
-} from './demoData';
-import { getActiveCollection } from '../data/playerCollection';
+} from './gameData';
+import { getActiveCollection } from '../data/player-collection';
 import type { CardId, DeckDefinition } from '../game/types';
 
 function mockLocalStorage(initial: Record<string, string> = {}) {

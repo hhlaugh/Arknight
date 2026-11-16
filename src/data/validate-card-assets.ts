@@ -1,6 +1,6 @@
 import { CARD_PRESENTATION_MAP, getCardPresentation } from './card-presentation';
-import cardPoolJson from './demo-card-pool.json';
-import { loadDemoData } from './load-demo-data';
+import cardPoolJson from './card-pool.json';
+import { loadDemoData } from './load-card-data';
 import type { CardId } from '../game/types';
 
 export interface AssetValidationIssue {

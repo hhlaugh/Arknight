@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 import { BotPlayer, botMulliganChoice } from '../ai/botPlayer';
 import type { ActionAck, ActionRequest } from './protocol';
 import { isActionAck, isActionRequest } from './protocol';

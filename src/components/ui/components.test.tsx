@@ -142,7 +142,7 @@ describe('Phase 4: 卡牌视觉系统、只读图鉴与卡组编辑深化', () =
 
   it('DeckEditorView: 正确渲染高级搜索、费用曲线、职业分布与 20 张卡组校验（自由构筑）', async () => {
     const { DeckEditorView } = await import('../../views/DeckEditorView');
-    const { setDeckMode } = await import('../../data/playerCollection');
+    const { setDeckMode } = await import('../../data/player-collection');
     // 默认构筑模式已改为收录模式（GACHA_PLAN_v0.3）；官方预设合法性在自由构筑下验证。
     setDeckMode('free');
     const html = renderToString(<DeckEditorView onBack={() => {}} />).replace(/<!-- -->/g, '');
@@ -155,7 +155,7 @@ describe('Phase 4: 卡牌视觉系统、只读图鉴与卡组编辑深化', () =
 
   it('DeckEditorView: 收录模式下未持有干员拒收并显示持有徽标', async () => {
     const { DeckEditorView } = await import('../../views/DeckEditorView');
-    const { setDeckMode } = await import('../../data/playerCollection');
+    const { setDeckMode } = await import('../../data/player-collection');
     setDeckMode('collection');
     const html = renderToString(<DeckEditorView onBack={() => {}} />).replace(/<!-- -->/g, '');
     expect(html).toContain('收录模式');

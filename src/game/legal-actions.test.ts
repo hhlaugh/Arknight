@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 import { advancePhase, createInitialGameState, mulligan, reduceGameAction } from './engine';
 import { enumerateLegalActions } from './legal-actions';
 import type { CardInstanceId, Cost, GameAction, GameState, PlayerId } from './types';

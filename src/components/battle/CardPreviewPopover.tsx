@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { GameState, CardInstanceId } from '../../game/types';
-import { cardDefinitionOf } from '../CardView';
+import { cardDefinitionOf } from '../cards/CardView';
 import { getCardPresentation } from '../../data/card-presentation';
 import { CardFrame } from '../cards/CardFrame';
 

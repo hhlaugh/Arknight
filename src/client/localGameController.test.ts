@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 import { enumerateLegalActions } from '../game/legal-actions';
 import type { PlayerId } from '../game/types';
 import { LocalGameController } from './localGameController';

@@ -2,7 +2,7 @@ import { Peer, type DataConnection } from 'peerjs';
 import { LocalGameController, type ActionResult, type LocalGameSnapshot } from './localGameController';
 import { clientStateFromPlayerView, type PlayerView } from './playerView';
 import type { ActionAck, ActionRequest, OnlineRole, RoomStatePayload } from './protocol';
-import { DEMO_CARDS, DEMO_DECKS } from './demoData';
+import { DEMO_CARDS, DEMO_DECKS } from './gameData';
 import type { CardInstanceId, DeckDefinition, GameAction, PlayerId } from '../game/types';
 
 export const PROTOCOL_VERSION = 1;

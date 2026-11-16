@@ -6,7 +6,7 @@ import {
   DEMO_CARDS,
   PRESET_DECKS,
   getAllAvailableDecks,
-} from '../client/demoData';
+} from '../client/gameData';
 import { LocalGameController } from '../client/localGameController';
 import type { OnlineMatchController, OnlineMatchSnapshot } from '../client/onlineMatchController';
 import { CardFrame } from '../components/cards/CardFrame';
@@ -21,6 +21,7 @@ import { CardLibraryView } from './CardLibraryView';
 import { DeckEditorView } from './DeckEditorView';
 import { DeckSelectView } from './DeckSelectView';
 import { MulliganView } from './MulliganView';
+import { RecruitmentView } from './RecruitmentView';
 import { RoomLobbyView } from './RoomLobbyView';
 import { SettlementView } from './SettlementView';
 import { StartView } from './StartView';
@@ -114,6 +115,17 @@ describe('Phase 7 全面回归验收测试套件', () => {
         expect(html).not.toContain('border.png');
       }
     }
+
+    const ownedHtml = renderToString(
+      <CardFrame
+        cardId={sampleByRarity[0]!.card_id}
+        definition={sampleByRarity[0]}
+        variant="deck"
+        ownedCount={2}
+        showOwnership
+      />,
+    );
+    expect(ownedHtml).toContain('持有×2');
   });
 
   it('全应用 8 个核心视图在 SSR 下均可正常渲染且无运行时异常与抽卡/遥测污染', () => {
@@ -140,12 +152,15 @@ describe('Phase 7 全面回归验收测试套件', () => {
         onOnline={noop}
         onDeckEditor={noop}
         onLibrary={noop}
+        onRecruitment={noop}
       />,
     );
     expect(startHtml).toContain('舟塔自走牌');
     expect(startHtml).toContain('罗德岛干员图鉴');
+    expect(startHtml).toContain('干员寻访');
     expect(startHtml).not.toContain('animate-pulse');
     expect(startHtml).not.toContain('招募');
+    expect(startHtml).not.toContain('PROTOCOL');
 
     const deckSelectHtml = renderToString(
       <DeckSelectView mode="hotseat" onStart={noop} onCancel={noop} onOpenDeckEditor={noop} />,
@@ -172,6 +187,26 @@ describe('Phase 7 全面回归验收测试套件', () => {
       />,
     );
     expect(mulliganHtml).toContain('战术调度阶段');
+
+    const mulliganWaitingHtml = renderToString(
+      <MulliganView
+        state={mulliganSnap.state}
+        playerId="player_a"
+        deckName={deckA.deck_name_zh}
+        waitingForOpponent
+        onConfirm={noopActionResult}
+        onLeave={noop}
+      />,
+    );
+    expect(mulliganWaitingHtml).toContain('起手调度已锁定');
+    expect(mulliganWaitingHtml).toContain('离开对局');
+
+    const recruitmentHtml = renderToString(
+      <RecruitmentView onBack={noop} onOpenDeckEditor={noop} />,
+    );
+    expect(recruitmentHtml).toContain('干员寻访');
+    expect(recruitmentHtml).toContain('返回');
+    expect(recruitmentHtml).toContain('编制卡组');
 
     const battleHotseatHtml = renderToString(
       <BattleView snapshot={battleSnap} controller={controller} humanPlayer={null} />,
@@ -213,7 +248,9 @@ describe('Phase 7 全面回归验收测试套件', () => {
           roomCode: 'ABCD2345',
           seat: 'host',
           roomState: {
-            roomCode: 'ABCD2345',
+            code: 'ABCD2345',
+            started: false,
+            pausedForGuest: false,
             host: { connected: true, ready: false, deckId: deckA.deck_id },
             guest: { connected: true, ready: true, deckId: deckB.deck_id },
           },

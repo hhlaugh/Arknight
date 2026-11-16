@@ -1,8 +1,8 @@
 import type React from 'react';
-import type { CardInstanceId, GameState } from '../game/types';
-import type { UiCardDefinition } from '../client/demoData';
-import { useLongPress } from '../hooks/useLongPress';
-import { CardFrame } from './cards/CardFrame';
+import type { CardInstanceId, GameState } from '../../game/types';
+import type { UiCardDefinition } from '../../client/gameData';
+import { useLongPress } from '../../hooks/useLongPress';
+import { CardFrame } from './CardFrame';
 
 export function cardDefinitionOf(state: GameState, instanceId: CardInstanceId): UiCardDefinition | undefined {
   const instance = state.card_instances[instanceId];

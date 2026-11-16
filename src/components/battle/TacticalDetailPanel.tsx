@@ -5,7 +5,7 @@ import type {
   GameAction,
   GameState,
 } from '../../game/types';
-import { cardDefinitionOf } from '../CardView';
+import { cardDefinitionOf } from '../cards/CardView';
 import { getCardPresentation } from '../../data/card-presentation';
 import { Panel } from '../ui/Panel';
 import { Button } from '../ui/Button';
@@ -13,7 +13,7 @@ import { Badge } from '../ui/Badge';
 import { CardFrame } from '../cards/CardFrame';
 import { HealthBar } from '../ui/HealthBar';
 import { ResourceIndicator } from '../ui/ResourceIndicator';
-import { STATUS_LABEL, PLAYER_LABEL } from '../../client/demoData';
+import { STATUS_LABEL, PLAYER_LABEL } from '../../client/gameData';
 import { getInvalidCardReason, getInvalidUnitActionReason } from './tacticalSelectors';
 
 interface TacticalDetailPanelProps {

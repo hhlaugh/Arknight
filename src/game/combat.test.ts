@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 import { createInitialGameState, mulligan, reduceGameAction } from './engine';
 import { applyEffectDamage, expireOwnerTurnStatuses, grantSp, naturalSpAtTurnStart, resolveCombat } from './combat';
 import type { CardId, CardInstance, CardInstanceId, GameState, HpValue, PlayerId } from './types';

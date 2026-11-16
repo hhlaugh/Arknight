@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { CombatLogEvent, GameState, PlayerId } from '../game/types';
-import { CARD_BY_ID } from '../client/demoData';
+import type { CombatLogEvent, GameState, PlayerId } from '../../game/types';
+import { CARD_BY_ID } from '../../client/gameData';
 
 interface LogViewProps {
   readonly history: readonly CombatLogEvent[];

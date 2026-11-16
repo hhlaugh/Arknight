@@ -1,6 +1,6 @@
 # UI 改造前项目审计报告 (docs/ui-audit.md)
 
-> **审计执行时间：** 2026-11-10  
+> **审计执行时间：** 2026-11-10（注：本文档保留 Phase 0 原始快照记录；后续版本已完成本地 144 张 `.webp` 立绘接入，样式与组件已迁移至 `src/styles/terminal.css`、`src/components/{cards,battle,ui}/` 与 `src/data/{card-pool.json,preset-decks.csv,load-card-data.ts}`。）  
 > **审计执行阶段：** Phase 0 — 项目审计与基准建立  
 > **目标：** 明确当前分支真实能力、代码结构、现有功能与技术栈，保护核心玩法与规则逻辑，避免为 UI 改造破坏已有功能。
 
@@ -11,10 +11,10 @@
 - **框架与运行时：** React 19 (`react@^19.0.1`, `react-dom@^19.0.1`)
 - **语言与配置：** TypeScript 7.0 (`tsconfig.json` 配置 `target: ES2022`, `moduleResolution: bundler`, `noEmit: true`)
 - **构建工具：** Vite 8.3 (`@vitejs/plugin-react@^6.1.1`)
-- **样式方案：** Tailwind CSS v4 (`@tailwindcss/vite@^4.3.3`, `@import "tailwindcss";` 在 `src/index.css`) + `src/client/ui.css` (包含棋盘与战斗样式)
+- **样式方案：** Tailwind CSS v4 (`@tailwindcss/vite@^4.3.3`, `@import "tailwindcss";` 在 `src/index.css`) + `src/styles/terminal.css`
 - **图标与动效：** `lucide-react@^0.546.0`，`motion@^12.23.24` (已安装但核心交互由轻量 CSS 控制)
 - **服务端/全栈能力：** `express@^4.21.2` (预置，目前前端采用单页 SPA 与本地控制器)
-- **测试环境：** `load-demo-data.test.ts`、`combat.test.ts`、`engine.test.ts` 等基于 Vitest 的测试用例。
+- **测试环境：** `load-card-data.test.ts`、`combat.test.ts`、`app-regression.test.tsx` 等基于 Vitest 的测试用例。
 
 ---
 

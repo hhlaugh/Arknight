@@ -11,9 +11,9 @@ import {
   validateDeck,
   validateDeckWithOwnership,
   type UiCardDefinition,
-} from '../client/demoData';
-import { getActiveCollection, getDeckMode, setDeckMode } from '../data/playerCollection';
-import type { DeckMode } from '../data/playerCollection';
+} from '../client/gameData';
+import { getActiveAccountName, getActiveCollection, getDeckMode, setDeckMode } from '../data/player-collection';
+import type { DeckMode } from '../data/player-collection';
 import type { CardId, DeckDefinition } from '../game/types';
 import { getCardPresentation } from '../data/card-presentation';
 import { OperatorPortrait } from '../components/cards/OperatorPortrait';
@@ -113,8 +113,13 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const [deckMode, setDeckModeState] = useState<DeckMode>(() => getDeckMode());
+  const [accountName] = useState(() => getActiveAccountName());
   // 持有量快照：进入构筑器/切换模式时刷新（寻访收录发生在其他视图）。
   const [owned, setOwned] = useState<Readonly<Record<string, number>>>(() => getActiveCollection().owned);
+  const ownedSpeciesCount = useMemo(
+    () => DEMO_CARDS.filter((c) => (owned[c.card_id] ?? 0) > 0).length,
+    [owned],
+  );
 
   const showNotice = (msg: string) => {
     setStatusNotice(msg);
@@ -560,6 +565,9 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
               未保存修改
             </span>
           )}
+          <span className="text-[11px] font-mono text-slate-400 hidden xl:inline tabular-nums">
+            · 账户 {accountName} · 收录 {ownedSpeciesCount}/{DEMO_CARDS.length}
+          </span>
         </div>
 
         {/* Global Deck Actions */}
@@ -816,12 +824,23 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
           <div className="flex-1 overflow-y-auto p-2.5 sm:p-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3 content-start">
             {filteredCards.length === 0 ? (
               <div className="col-span-full py-16 text-center space-y-3">
-                <div className="text-xs font-mono text-slate-400">没有符合当前条件的干员</div>
-                {hasActiveFilters && (
-                  <Button variant="outline" size="sm" onClick={resetFilters}>
-                    清除筛选条件
-                  </Button>
-                )}
+                <div className="text-xs font-mono text-slate-400">
+                  {deckMode === 'collection' && !hasActiveFilters
+                    ? '当前账号已收录干员暂为空或未匹配条件，可切换到自由构筑查看全量卡池'
+                    : '没有符合当前条件的干员'}
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {hasActiveFilters && (
+                    <Button variant="outline" size="sm" onClick={resetFilters}>
+                      清除筛选条件
+                    </Button>
+                  )}
+                  {deckMode === 'collection' && (
+                    <Button variant="secondary" size="sm" onClick={() => toggleDeckMode('free')}>
+                      切换到自由构筑
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : (
               filteredCards.map((card) => {
@@ -836,19 +855,16 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
                   <div
                     key={card.card_id}
                     onMouseEnter={() => setInspectCard(uiCard)}
-                    className="h-full flex flex-col relative"
+                    className="h-full flex flex-col"
                   >
-                    {deckMode === 'collection' && (
-                      <div className="absolute top-1 right-1 z-10 px-1.5 py-0.5 bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 text-[9px] font-mono font-bold pointer-events-none">
-                        持有×{ownedCount}{ownedCount >= 2 ? ' ·满仓' : ''}
-                      </div>
-                    )}
                     <CardFrame
                       cardId={card.card_id}
                       definition={uiCard}
                       variant="deck"
                       inDeckCount={inDeckCount}
                       maxInDeckCount={copyCap}
+                      ownedCount={ownedCount}
+                      showOwnership={deckMode === 'collection'}
                       selected={inDeckCount > 0}
                       disabled={isMaxed && inDeckCount === 0}
                       onClick={() => addCard(card.card_id)}
@@ -1121,7 +1137,10 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
               ) : (
                 customDecks.map((deck) => {
                   const deckTotal = deck.cards.reduce((s, c) => s + c.quantity, 0);
-                  const isDeckValid = validateDeck(deck, DEMO_CARDS).valid;
+                  const isDeckValid =
+                    deckMode === 'collection'
+                      ? validateDeckWithOwnership(deck, DEMO_CARDS, owned).valid
+                      : validateDeck(deck, DEMO_CARDS).valid;
                   const isActive = currentDeck.deck_id === deck.deck_id;
                   return (
                     <button
@@ -1155,58 +1174,65 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
         codeName={mobileInspectCard?.card_id}
         maxHeight="max-h-[88vh]"
       >
-        {mobileInspectCard && (
-          <div className="p-4 space-y-3 text-xs">
-            <div className="flex justify-center">
-              <CardFrame
-                cardId={mobileInspectCard.card_id}
-                definition={mobileInspectCard}
-                variant="preview"
-                interactive={false}
-                className="max-w-[220px] min-h-[260px]"
-              />
-            </div>
-
-            <div className="bg-[#11151c] p-2.5 border border-[#273240] space-y-1.5">
-              <div className="text-slate-200">
-                <strong className="text-amber-300 block mb-0.5">被动特性 / 效果</strong>
-                {mobileInspectCard.rules_text_zh || '无特殊常驻被动效果'}
+        {mobileInspectCard && (() => {
+          const mobileCount = inDeckCardCounts.get(mobileInspectCard.card_id) ?? 0;
+          const mobileOwned = owned[mobileInspectCard.card_id] ?? 0;
+          const mobileCap = deckMode === 'collection' ? Math.min(2, mobileOwned) : 2;
+          return (
+            <div className="p-4 space-y-3 text-xs">
+              <div className="flex justify-center">
+                <CardFrame
+                  cardId={mobileInspectCard.card_id}
+                  definition={mobileInspectCard}
+                  variant="preview"
+                  interactive={false}
+                  ownedCount={mobileOwned}
+                  showOwnership={deckMode === 'collection'}
+                  className="max-w-[220px] min-h-[260px]"
+                />
               </div>
-              {mobileInspectCard.active_skill_text_zh && (
-                <div className="text-sky-300 pt-1 border-t border-[#232c38]">
-                  <strong className="block mb-0.5">主动技能 ({mobileInspectCard.active_skill_sp_cost ?? 0} SP)</strong>
-                  {mobileInspectCard.active_skill_text_zh}
-                </div>
-              )}
-            </div>
 
-            <div className="flex items-center gap-2 pt-1">
-              <Button
-                variant="secondary"
-                size="md"
-                onClick={() => removeCard(mobileInspectCard.card_id)}
-                disabled={(inDeckCardCounts.get(mobileInspectCard.card_id) ?? 0) === 0}
-                className="flex-1"
-              >
-                - 移出一张 ({inDeckCardCounts.get(mobileInspectCard.card_id) ?? 0}/2)
-              </Button>
-              <Button
-                variant="primary"
-                size="md"
-                cornerCut
-                onClick={() => addCard(mobileInspectCard.card_id)}
-                disabled={
-                  (inDeckCardCounts.get(mobileInspectCard.card_id) ?? 0) >= 2 ||
-                  (inDeckNameCounts.get(mobileInspectCard.card_name_zh) ?? 0) >= 2 ||
-                  validation.totalCards >= 20
-                }
-                className="flex-1"
-              >
-                + 加入卡组
-              </Button>
+              <div className="bg-[#11151c] p-2.5 border border-[#273240] space-y-1.5">
+                <div className="text-slate-200">
+                  <strong className="text-amber-300 block mb-0.5">被动特性 / 效果</strong>
+                  {mobileInspectCard.rules_text_zh || '无特殊常驻被动效果'}
+                </div>
+                {mobileInspectCard.active_skill_text_zh && (
+                  <div className="text-sky-300 pt-1 border-t border-[#232c38]">
+                    <strong className="block mb-0.5">主动技能 ({mobileInspectCard.active_skill_sp_cost ?? 0} SP)</strong>
+                    {mobileInspectCard.active_skill_text_zh}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => removeCard(mobileInspectCard.card_id)}
+                  disabled={mobileCount === 0}
+                  className="flex-1"
+                >
+                  - 移出一张 ({mobileCount}/{mobileCap})
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
+                  cornerCut
+                  onClick={() => addCard(mobileInspectCard.card_id)}
+                  disabled={
+                    mobileCount >= mobileCap ||
+                    (inDeckNameCounts.get(mobileInspectCard.card_name_zh) ?? 0) >= 2 ||
+                    validation.totalCards >= 20
+                  }
+                  className="flex-1"
+                >
+                  + 加入卡组
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </BottomSheet>
 
       {/* JSON Import/Export Modal */}

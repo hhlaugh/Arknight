@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GACHA_CONFIG, DEFAULT_POOL, derivePoolMembers, loadGachaConfig } from './load-gacha-data';
-import { VALID_CARDS } from './playerCollection';
+import { VALID_CARDS } from './player-collection';
 import gachaPoolJson from './gacha-pool.json';
 
 describe('gacha 配置契约（GACHA_PLAN_v0.3）', () => {

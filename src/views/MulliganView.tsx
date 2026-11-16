@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { ActionResult } from '../client/localGameController';
-import { PLAYER_LABEL } from '../client/demoData';
-import { CardView } from '../components/CardView';
+import { PLAYER_LABEL } from '../client/gameData';
+import { CardView } from '../components/cards/CardView';
 import type { CardInstanceId, GameState, PlayerId } from '../game/types';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
@@ -12,6 +12,8 @@ interface MulliganViewProps {
   readonly deckName: string;
   readonly waitingForOpponent?: boolean;
   readonly onConfirm: (selected: readonly CardInstanceId[]) => ActionResult | Promise<ActionResult>;
+  readonly onLeave?: () => void;
+  readonly leaveLabel?: string;
 }
 
 export function MulliganView({
@@ -20,6 +22,8 @@ export function MulliganView({
   deckName,
   waitingForOpponent = false,
   onConfirm,
+  onLeave,
+  leaveLabel = '离开对局',
 }: MulliganViewProps) {
   const [selected, setSelected] = useState<ReadonlySet<CardInstanceId>>(new Set());
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +65,13 @@ export function MulliganView({
           <p className="text-xs text-slate-400 font-mono">
             编制：{deckName} · 正在等待对手完成调度同步…
           </p>
+          {onLeave && (
+            <div className="pt-2">
+              <Button variant="ghost" size="sm" onClick={onLeave}>
+                {leaveLabel}
+              </Button>
+            </div>
+          )}
         </Panel>
       </div>
     );

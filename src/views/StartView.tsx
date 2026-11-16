@@ -6,11 +6,13 @@ import {
   createAccount,
   exportAccountsJson,
   getActiveAccountName,
+  getActiveCollection,
   importAccountsJson,
   listAccounts,
   setActiveAccount,
-} from '../data/playerCollection';
-import type { AccountSummary } from '../data/playerCollection';
+} from '../data/player-collection';
+import type { AccountSummary } from '../data/player-collection';
+import { DEMO_CARDS } from '../client/gameData';
 
 interface StartViewProps {
   readonly onHotseat: () => void;
@@ -24,13 +26,17 @@ interface StartViewProps {
 export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrary, onRecruitment }: StartViewProps) {
   const [accounts, setAccounts] = useState<AccountSummary[]>(() => listAccounts());
   const [activeName, setActiveNameState] = useState(() => getActiveAccountName());
+  const [collection, setCollection] = useState(() => getActiveCollection());
   const [newName, setNewName] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const ownedSpeciesCount = DEMO_CARDS.filter((c) => (collection.owned[c.card_id] ?? 0) > 0).length;
+
   const refreshAccounts = () => {
     setAccounts(listAccounts());
     setActiveNameState(getActiveAccountName());
+    setCollection(getActiveCollection());
   };
 
   const handleSwitch = (name: string) => {
@@ -100,12 +106,15 @@ export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrar
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="rarity" value={6}>v0.8 竞技规则</Badge>
-            <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 border border-emerald-500/40">
-              <span className="w-1.5 h-1.5 bg-emerald-400" />
-              ONLINE
+          <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono tabular-nums">
+            <span className="text-slate-300">
+              账户 <strong className="text-white">{activeName}</strong>
             </span>
+            <span className="text-amber-300 font-bold">◆ {collection.currency.originite}</span>
+            <span className="text-slate-400">
+              收录 {ownedSpeciesCount}/{DEMO_CARDS.length}
+            </span>
+            <Badge variant="rarity" value={6}>v0.8 规则</Badge>
           </div>
         </div>
 
@@ -283,8 +292,11 @@ export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrar
               value={newName}
               maxLength={24}
               onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleCreate();
+              }}
               placeholder="新账户名（初始：3★×2 + 6000 合成玉）"
-              className="bg-[#1b2127] border border-[#3c4750] px-2.5 py-1 text-xs text-slate-200 font-mono focus:border-amber-400 focus:outline-none w-64"
+              className="flex-1 min-w-[180px] sm:max-w-xs bg-[#1b2127] border border-[#3c4750] px-2.5 py-1 text-xs text-slate-200 font-mono focus:border-amber-400 focus:outline-none"
             />
             <Button variant="secondary" size="sm" onClick={handleCreate}>
               新建账户
@@ -293,14 +305,10 @@ export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrar
           </div>
         </div>
 
-        {/* Terminal Footer System Status Info */}
+        {/* Footer */}
         <div className="px-6 py-3 bg-[#121518] border-t border-[#2d353b] flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-slate-400">
-          <div className="flex items-center gap-3">
-            <span>PRTS TERMINAL PROTOCOL: TACTICAL-v0.8</span>
-            <span>·</span>
-            <span>ASSET ENGINE: PRESENTATION-v1.1</span>
-          </div>
-          <div>RHODES ISLAND PHARMACEUTICAL TACTICS</div>
+          <span>本地浏览器存档 · 支持多账户切换与 JSON 导出备份</span>
+          <span>RHODES ISLAND TACTICAL CARD GAME</span>
         </div>
       </Panel>
     </div>

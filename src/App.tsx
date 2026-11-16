@@ -4,7 +4,7 @@ import type { LocalGameSetup } from './client/localGameController';
 import { OnlineMatchController, type OnlineMatchSnapshot } from './client/onlineMatchController';
 import { BotPlayer, botMulliganChoice } from './ai/botPlayer';
 import { enumerateLegalActions } from './game/legal-actions';
-import { DEMO_CARDS, getAllAvailableDecks } from './client/demoData';
+import { DEMO_CARDS, getAllAvailableDecks } from './client/gameData';
 import { StartView } from './views/StartView';
 import { DeckSelectView } from './views/DeckSelectView';
 import { DeckEditorView } from './views/DeckEditorView';
@@ -14,7 +14,9 @@ import { BattleView } from './views/BattleView';
 import { SettlementView } from './views/SettlementView';
 import { RecruitmentView } from './views/RecruitmentView';
 import { RoomLobbyView } from './views/RoomLobbyView';
-import { awardBattleReward, getActiveAccountName, getDeckMode } from './data/playerCollection';
+import { Modal } from './components/ui/Modal';
+import { Button } from './components/ui/Button';
+import { awardBattleReward, getActiveAccountName, getDeckMode } from './data/player-collection';
 import type { CardInstanceId, DeckDefinition, PlayerId } from './game/types';
 
 type Screen = 'title' | 'deckSelect' | 'game' | 'online' | 'deckEditor' | 'library' | 'recruitment';
@@ -48,7 +50,12 @@ export function App() {
   }
 
   if (screen === 'recruitment') {
-    return <RecruitmentView onBack={() => setScreen('title')} />;
+    return (
+      <RecruitmentView
+        onBack={() => setScreen('title')}
+        onOpenDeckEditor={() => setScreen('deckEditor')}
+      />
+    );
   }
 
   if (screen === 'deckEditor') {
@@ -212,10 +219,14 @@ function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreen
     const nextPlayer: PlayerId = state.mulligan_completed.player_a ? 'player_b' : 'player_a';
     if (bot && nextPlayer === botSeat) {
       return (
-        <div className="mulligan">
-          <h1>机器人正在选择起手牌…</h1>
-          <p className="note">牌组：{controller.getSetup().decks[botSeat].deck_name_zh}</p>
-        </div>
+        <MulliganView
+          key={`waiting-${botSeat}`}
+          state={state}
+          playerId={botSeat}
+          deckName={controller.getSetup().decks[botSeat].deck_name_zh}
+          waitingForOpponent
+          onConfirm={() => ({ ok: true })}
+        />
       );
     }
     return (
@@ -297,14 +308,18 @@ function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
     const myDone = state.mulligan_completed[mySeat];
     if (myDone) {
       return (
-        <div className="mulligan">
-          <h1>起手换牌完成</h1>
-          <p className="note">你已提交换牌选择</p>
-          <div className="status-box">⏳ 等待对手完成起手换牌并同步…</div>
-          <button className="btn small" onClick={() => controller.leaveRoom()}>
-            离开对局
-          </button>
-        </div>
+        <MulliganView
+          key={`waiting-${mySeat}`}
+          state={state}
+          playerId={mySeat}
+          deckName={mySeat === 'player_a' ? deckA.deck_name_zh : deckB.deck_name_zh}
+          waitingForOpponent
+          onConfirm={() => ({ ok: true })}
+          onLeave={() => {
+            controller.leaveRoom();
+            onExit();
+          }}
+        />
       );
     }
     return (
@@ -353,28 +368,44 @@ function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
         }}
       />
 
-      {snapshot.closedReason && (
-        <div className="modal-backdrop">
-          <div className="modal-card">
-            <h2>对局已中断</h2>
-            <p>
-              {snapshot.closedReason === 'HOST_LEFT'
-                ? '房主已主动退出房间。'
-                : snapshot.closedReason === 'HOST_TIMEOUT'
-                  ? '房主断线超时，对局已释放。'
-                  : snapshot.closedReason === 'GUEST_LEFT'
-                    ? '访客已主动放弃对局。'
-                    : snapshot.closedReason === 'GUEST_TIMEOUT'
-                      ? '访客断线超时未恢复。'
-                      : `房间已关闭：${snapshot.closedReason}`}
-            </p>
-            <p className="hint">对局已结束，请返回标题页。</p>
-            <button className="btn primary big" onClick={() => { controller.leaveRoom(); onExit(); }}>
-              返回标题页
-            </button>
-          </div>
+      <Modal
+        isOpen={Boolean(snapshot.closedReason)}
+        onClose={() => {
+          controller.leaveRoom();
+          onExit();
+        }}
+        title="对局已中断"
+        codeName="NET.CLOSE"
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="md"
+            cornerCut
+            onClick={() => {
+              controller.leaveRoom();
+              onExit();
+            }}
+          >
+            返回标题页
+          </Button>
+        }
+      >
+        <div className="space-y-2 text-xs text-slate-200 leading-relaxed">
+          <p className="m-0">
+            {snapshot.closedReason === 'HOST_LEFT'
+              ? '房主已主动退出房间。'
+              : snapshot.closedReason === 'HOST_TIMEOUT'
+                ? '房主断线超时，对局已释放。'
+                : snapshot.closedReason === 'GUEST_LEFT'
+                  ? '访客已主动放弃对局。'
+                  : snapshot.closedReason === 'GUEST_TIMEOUT'
+                    ? '访客断线超时未恢复。'
+                    : `房间已关闭：${snapshot.closedReason}`}
+          </p>
+          <p className="m-0 text-slate-400">对局已结束，请返回标题页。</p>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

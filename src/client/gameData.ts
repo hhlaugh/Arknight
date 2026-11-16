@@ -1,10 +1,10 @@
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 import {
   getAccountCustomDecks,
   getActiveCollection,
   saveAccountCustomDecks,
-} from '../data/playerCollection';
-import type { DeckMode } from '../data/playerCollection';
+} from '../data/player-collection';
+import type { DeckMode } from '../data/player-collection';
 import type { CardDefinition, CardId, DeckDefinition, LaneId, PlayerId } from '../game/types';
 
 /** UI 侧使用的卡牌定义视图：在引擎类型上补充数据里实际存在、但引擎类型未声明的展示字段。 */

@@ -18,10 +18,10 @@ import {
   listAccounts,
   setActiveAccount,
   setDeckMode,
-} from './playerCollection';
+} from './player-collection';
 import { performPull } from './recruitment';
 import { DEFAULT_POOL, GACHA_CONFIG, derivePoolMembers } from './load-gacha-data';
-import { VALID_CARDS } from './playerCollection';
+import { VALID_CARDS } from './player-collection';
 import type { DeckDefinition } from '../game/types';
 
 function mockLocalStorage(initial: Record<string, string> = {}) {

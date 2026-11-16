@@ -1,5 +1,5 @@
-import cardPoolJson from './demo-card-pool.json';
-import { loadDemoData } from './load-demo-data';
+import cardPoolJson from './card-pool.json';
+import { loadDemoData } from './load-card-data';
 import { GACHA_CONFIG, DEFAULT_POOL } from './load-gacha-data';
 import type { PullOutcome } from './recruitment';
 import { DECK_MODES } from './gacha-schema';

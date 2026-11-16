@@ -3,7 +3,7 @@ import type { CardDefinition, CardId } from '../../game/types';
 import { getCardPresentation, type CardPresentation } from '../../data/card-presentation';
 import { OperatorPortrait } from './OperatorPortrait';
 import { RARITY_THEMES, CORNER_CUTS } from '../ui/tokens';
-import { CLASS_COLOR, CLASS_LABEL, type UiCardDefinition } from '../../client/demoData';
+import { CLASS_COLOR, CLASS_LABEL, type UiCardDefinition } from '../../client/gameData';
 
 export type CardFrameVariant = 'hand' | 'deck' | 'preview' | 'compact';
 
@@ -21,6 +21,8 @@ export interface CardFrameProps {
   readonly interactive?: boolean;
   readonly inDeckCount?: number;
   readonly maxInDeckCount?: number;
+  readonly ownedCount?: number;
+  readonly showOwnership?: boolean;
   readonly onClick?: (e?: React.MouseEvent<HTMLDivElement>) => void;
   readonly onActionClick?: () => void;
   readonly onInspectClick?: () => void;
@@ -173,6 +175,8 @@ export function CardFrame({
   interactive = true,
   inDeckCount,
   maxInDeckCount = 2,
+  ownedCount,
+  showOwnership = false,
   onClick,
   onActionClick,
   onInspectClick,
@@ -297,17 +301,32 @@ export function CardFrame({
       {/* 3. FrameShapeLayer：CSS + SVG 几何框体 */}
       <FrameSvgBorder rarity={rarity} rarityColor={rarityTheme.color} variant={variant} />
 
-      {/* 4 & 5 Top: NameAndCostLayer + RarityAccentLayer (费用 + 职业 + 星级) */}
+      {/* 4 & 5 Top: NameAndCostLayer + RarityAccentLayer (费用+持有量 + 职业+星级) */}
       <div className="relative z-10 flex items-start justify-between gap-1 w-full">
-        {/* DP 费用切角标记 */}
-        <div
-          className={`flex items-baseline gap-0.5 px-1.5 py-0.5 font-mono font-black shadow-md ${
-            unplayable ? 'bg-slate-800 text-rose-300 border border-rose-500/60' : 'bg-[#e5a52b] text-slate-950'
-          }`}
-          style={{ clipPath: 'polygon(0 0, 100% 0, 86% 100%, 0 100%)' }}
-        >
-          <span className="text-[8px] font-sans tracking-tight">DP</span>
-          <span className="text-xs sm:text-sm leading-none">{cost}</span>
+        {/* DP 费用切角标记与可选持有量标签 */}
+        <div className="flex flex-col items-start gap-1">
+          <div
+            className={`flex items-baseline gap-0.5 px-1.5 py-0.5 font-mono font-black shadow-md ${
+              unplayable ? 'bg-slate-800 text-rose-300 border border-rose-500/60' : 'bg-[#e5a52b] text-slate-950'
+            }`}
+            style={{ clipPath: 'polygon(0 0, 100% 0, 86% 100%, 0 100%)' }}
+          >
+            <span className="text-[8px] font-sans tracking-tight">DP</span>
+            <span className="text-xs sm:text-sm leading-none">{cost}</span>
+          </div>
+          {showOwnership && ownedCount !== undefined && (
+            <span
+              className={`px-1 py-0.2 text-[9px] font-mono font-bold leading-tight border ${
+                ownedCount >= 2
+                  ? 'bg-emerald-950/90 border-emerald-500/60 text-emerald-300'
+                  : ownedCount > 0
+                    ? 'bg-sky-950/90 border-sky-500/60 text-sky-300'
+                    : 'bg-[#0b0f14]/85 border-slate-700/80 text-slate-400'
+              }`}
+            >
+              {ownedCount >= 2 ? `持有×${ownedCount} 满` : ownedCount > 0 ? `持有×${ownedCount}` : '未收录'}
+            </span>
+          )}
         </div>
 
         {/* 职业标志与星级 */}

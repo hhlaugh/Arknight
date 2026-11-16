@@ -1,13 +1,13 @@
 import React from 'react';
-import type { CardInstance, GameState } from '../game/types';
-import { STATUS_LABEL } from '../client/demoData';
-import { getCardPresentation } from '../data/card-presentation';
-import { useLongPress } from '../hooks/useLongPress';
-import type { FloatingPopupKind, UnitAnimationState } from './battle/combatPresentation';
-import { cardDefinitionOf } from './CardView';
-import { OperatorPortrait } from './cards/OperatorPortrait';
-import { HealthBar } from './ui/HealthBar';
-import { RARITY_THEMES } from './ui/tokens';
+import type { CardInstance, GameState } from '../../game/types';
+import { STATUS_LABEL } from '../../client/gameData';
+import { getCardPresentation } from '../../data/card-presentation';
+import { useLongPress } from '../../hooks/useLongPress';
+import type { FloatingPopupKind, UnitAnimationState } from './combatPresentation';
+import { cardDefinitionOf } from '../cards/CardView';
+import { OperatorPortrait } from '../cards/OperatorPortrait';
+import { HealthBar } from '../ui/HealthBar';
+import { RARITY_THEMES } from '../ui/tokens';
 
 export type UnitHighlight = 'none' | 'target' | 'selected' | 'attack_target';
 

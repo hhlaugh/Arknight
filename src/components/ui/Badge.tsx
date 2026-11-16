@@ -1,6 +1,6 @@
 import React from 'react';
 import { RARITY_THEMES } from './tokens';
-import { CLASS_COLOR, CLASS_LABEL } from '../../client/demoData';
+import { CLASS_COLOR, CLASS_LABEL } from '../../client/gameData';
 
 export type BadgeVariant = 'class' | 'rarity' | 'status' | 'cost' | 'ally' | 'enemy' | 'neutral';
 

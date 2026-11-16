@@ -3,9 +3,9 @@ import {
   DEMO_CARDS,
   CLASS_LABEL,
   type UiCardDefinition,
-} from '../client/demoData';
+} from '../client/gameData';
 import { getCardPresentation, type CardPresentation } from '../data/card-presentation';
-import { getActiveCollection } from '../data/playerCollection';
+import { getActiveAccountName, getActiveCollection } from '../data/player-collection';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -23,13 +23,19 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [selectedRarity, setSelectedRarity] = useState<string>('all');
   const [selectedCost, setSelectedCost] = useState<string>('all');
+  const [selectedOwned, setSelectedOwned] = useState<'all' | 'owned' | 'unowned'>('all');
   const [sortBy, setSortBy] = useState<'rarity-desc' | 'cost-asc' | 'cost-desc' | 'atk-desc' | 'hp-desc' | 'name'>('rarity-desc');
 
   // Currently inspected card for detailed dossier
   const [inspectCard, setInspectCard] = useState<UiCardDefinition>(() => DEMO_CARDS[0] as UiCardDefinition);
   const [mobileDossierOpen, setMobileDossierOpen] = useState(false);
   // 持有数据在进入图鉴时读取一次（账户切换会重新挂载本视图）。
+  const [accountName] = useState(() => getActiveAccountName());
   const [owned] = useState<Readonly<Record<string, number>>>(() => getActiveCollection().owned);
+  const ownedSpeciesCount = useMemo(
+    () => DEMO_CARDS.filter((c) => (owned[c.card_id] ?? 0) > 0).length,
+    [owned],
+  );
 
   const inspectPresentation = useMemo<CardPresentation>(() => {
     return getCardPresentation(inspectCard.card_id);
@@ -38,13 +44,18 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
   const classLabelZh = CLASS_LABEL[inspectPresentation.profession] ?? inspectPresentation.profession;
 
   const hasActiveFilters =
-    searchQuery.trim() !== '' || selectedClass !== 'all' || selectedRarity !== 'all' || selectedCost !== 'all';
+    searchQuery.trim() !== '' ||
+    selectedClass !== 'all' ||
+    selectedRarity !== 'all' ||
+    selectedCost !== 'all' ||
+    selectedOwned !== 'all';
 
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedClass('all');
     setSelectedRarity('all');
     setSelectedCost('all');
+    setSelectedOwned('all');
   };
 
   // Filter and sort catalog cards
@@ -52,6 +63,10 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
     const result = DEMO_CARDS.filter((card) => {
       const p = getCardPresentation(card.card_id);
       const uiDef = card as UiCardDefinition;
+      const cardOwned = owned[card.card_id] ?? 0;
+
+      if (selectedOwned === 'owned' && cardOwned === 0) return false;
+      if (selectedOwned === 'unowned' && cardOwned > 0) return false;
 
       // 1. Search Query
       if (searchQuery.trim()) {
@@ -103,7 +118,7 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
     });
 
     return result;
-  }, [searchQuery, selectedClass, selectedRarity, selectedCost, sortBy]);
+  }, [owned, searchQuery, selectedClass, selectedOwned, selectedRarity, selectedCost, sortBy]);
 
   const onCardSelect = (uiCard: UiCardDefinition) => {
     setInspectCard(uiCard);
@@ -149,8 +164,15 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
               {inspectCard.card_id}
             </span>
           </div>
-          <div className="text-xs font-mono text-[#e5a52b] tracking-widest uppercase">
-            {inspectPresentation.codeNameEn}
+          <div className="flex items-center justify-between text-xs font-mono pt-0.5">
+            <span className="text-[#e5a52b] tracking-widest uppercase">
+              {inspectPresentation.codeNameEn}
+            </span>
+            <span className={(owned[inspectCard.card_id] ?? 0) > 0 ? 'text-emerald-300 font-bold' : 'text-slate-400'}>
+              {(owned[inspectCard.card_id] ?? 0) > 0
+                ? `当前持有 ${owned[inspectCard.card_id]} / 2 张`
+                : '未收录 · 可通过干员寻访收录'}
+            </span>
           </div>
         </div>
 
@@ -253,8 +275,8 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
             <h1 className="text-sm sm:text-base font-black tracking-wider uppercase m-0 text-white">
               罗德岛干员档案图鉴
             </h1>
-            <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
-              · 只读全量目录 ({DEMO_CARDS.length} 位)
+            <span className="text-[11px] font-mono text-slate-400 hidden sm:inline tabular-nums">
+              · {DEMO_CARDS.length} 位干员 · 账户 {accountName} 已收录 {ownedSpeciesCount}/{DEMO_CARDS.length}
             </span>
           </div>
         </div>
@@ -388,6 +410,27 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
                     </button>
                   ))}
                 </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-slate-400 text-[11px] mr-1">收录:</span>
+                  {[
+                    { id: 'all', label: '全部' },
+                    { id: 'owned', label: '已收录' },
+                    { id: 'unowned', label: '未收录' },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSelectedOwned(item.id as 'all' | 'owned' | 'unowned')}
+                      className={`px-1.5 sm:px-2 py-0.5 text-[11px] font-mono transition cursor-pointer border ${
+                        selectedOwned === item.id
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/60 font-bold'
+                          : 'bg-[#12161d] text-slate-400 border-[#263140] hover:text-white hover:border-slate-600'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {hasActiveFilters && (
@@ -421,24 +464,18 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
                 const isSelected = inspectCard.card_id === card.card_id;
                 const ownedCount = owned[card.card_id] ?? 0;
                 return (
-                  <div
-                    key={card.card_id}
-                    className="h-full flex flex-col relative"
-                  >
+                  <div key={card.card_id} className="h-full flex flex-col">
                     <CardFrame
                       cardId={card.card_id}
                       definition={uiCard}
                       variant="deck"
                       selected={isSelected}
+                      ownedCount={ownedCount}
+                      showOwnership
                       onClick={() => onCardSelect(uiCard)}
                       onInspectClick={() => onCardSelect(uiCard)}
                       className="flex-1"
                     />
-                    {ownedCount > 0 && (
-                      <div className="absolute top-1 right-1 z-10 px-1.5 py-0.5 bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 text-[9px] font-mono font-bold pointer-events-none">
-                        持有×{ownedCount}{ownedCount >= 2 ? ' ·满仓' : ''}
-                      </div>
-                    )}
                   </div>
                 );
               })

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { LocalGameController } from '../../client/localGameController';
-import { DEMO_CARDS, PRESET_DECKS } from '../../client/demoData';
+import { DEMO_CARDS, PRESET_DECKS } from '../../client/gameData';
 import { advancePhase, reduceGameAction } from '../../game/engine';
 import type { CardInstanceId, CombatLogEvent, GameState, PlayerId } from '../../game/types';
 import {
@@ -12,7 +12,7 @@ import {
   makeSlotKey,
 } from './combatPresentation';
 import { TacticalBattleHud } from './TacticalBattleHud';
-import { UnitView } from '../UnitView';
+import { UnitView } from './UnitView';
 import { HealthBar } from '../ui/HealthBar';
 
 function createStartedController(seed = 777): LocalGameController {

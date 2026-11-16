@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { ActionResult, LocalGameController, LocalGameSnapshot } from '../client/localGameController';
-import { LANE_LABEL } from '../client/demoData';
-import { CardView, cardDefinitionOf } from '../components/CardView';
-import { UnitView } from '../components/UnitView';
-import type { UnitHighlight } from '../components/UnitView';
-import { LogView } from '../components/LogView';
+import { LANE_LABEL } from '../client/gameData';
+import { CardView, cardDefinitionOf } from '../components/cards/CardView';
+import { UnitView } from '../components/battle/UnitView';
+import type { UnitHighlight } from '../components/battle/UnitView';
+import { LogView } from '../components/battle/LogView';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
@@ -24,7 +24,7 @@ import {
 } from '../components/battle/combatPresentation';
 import { enumerateLegalActions } from '../game/legal-actions';
 import { useCombatAnimations } from '../hooks/useCombatAnimations';
-import { useViewport } from '../hooks/useIsMobile';
+import { useViewport } from '../hooks/useViewport';
 import type { CardInstance, CardInstanceId, GameAction, LaneId, PlayerId, Position } from '../game/types';
 
 const SLOT_POPUP_STYLE: Record<FloatingPopupKind, string> = {

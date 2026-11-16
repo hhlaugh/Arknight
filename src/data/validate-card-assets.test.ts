@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateCardPresentationIntegrity, verifyDataContractBaseline } from './validate-card-assets';
 import { CARD_PRESENTATION_MAP, getCardPresentation } from './card-presentation';
-import cardPoolJson from './demo-card-pool.json';
+import cardPoolJson from './card-pool.json';
 import type { CardId } from '../game/types';
 
 describe('Phase 0.5: 最低限度数据层与表现层契约校验', () => {

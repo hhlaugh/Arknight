@@ -9,8 +9,8 @@ import {
   getInvalidUnitActionReason,
   previewAttackTargets,
 } from './tacticalSelectors';
-import { UnitView } from '../UnitView';
-import { DEMO_CARDS, PRESET_DECKS } from '../../client/demoData';
+import { UnitView } from './UnitView';
+import { DEMO_CARDS, PRESET_DECKS } from '../../client/gameData';
 import { advancePhase, createInitialGameState, mulligan, reduceGameAction } from '../../game/engine';
 import type { CardId, CardInstanceId, Cost, GameState } from '../../game/types';
 

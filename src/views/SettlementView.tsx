@@ -1,6 +1,6 @@
 import React from 'react';
 import type { LocalGameSetup, LocalGameSnapshot } from '../client/localGameController';
-import { PLAYER_LABEL } from '../client/demoData';
+import { PLAYER_LABEL } from '../client/gameData';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 import { LocalGameController } from '../client/localGameController';
 import { BotPlayer, botMulliganChoice } from './botPlayer';
 import type { GameAction, GameState, PlayerId } from '../game/types';

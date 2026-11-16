@@ -1,5 +1,5 @@
-import cardPoolJson from './demo-card-pool.json';
-import deckCsv from './demo-decks.csv?raw';
+import cardPoolJson from './card-pool.json';
+import deckCsv from './preset-decks.csv?raw';
 import { CARD_TYPES, EFFECT_ACTION_TYPES, EFFECT_TRIGGERS, STATUS_KINDS } from './card-schema';
 import type { CardDefinition, CardId, DeckDefinition } from '../game/types';
 
@@ -229,3 +229,6 @@ export function summarizeValidation(issues: readonly ValidationIssue[]): { error
     return summary;
   }, { errors: 0, warnings: 0 });
 }
+
+export type CardDataLoadResult = DemoDataLoadResult;
+export const loadCardData = loadDemoData;

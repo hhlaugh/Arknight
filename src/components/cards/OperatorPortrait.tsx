@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { CardId } from '../../game/types';
 import { getCardPresentation, resolveAssetUrl, type CardPresentation } from '../../data/card-presentation';
-import { CLASS_COLOR, CLASS_LABEL } from '../../client/demoData';
+import { CLASS_COLOR, CLASS_LABEL } from '../../client/gameData';
 import { RARITY_THEMES } from '../ui/tokens';
 
 export type PortraitVariant = 'portrait' | 'avatar' | 'mini';

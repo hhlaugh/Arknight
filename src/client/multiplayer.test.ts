@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { clientStateFromPlayerView } from './playerView';
 import { LocalGameController } from './localGameController';
 import { enumerateLegalActions } from '../game/legal-actions';
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 
 const loaded = loadDemoData();
 const [deckA, deckB] = loaded.decks;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadDemoData, summarizeValidation } from './load-demo-data';
+import { loadDemoData, summarizeValidation } from './load-card-data';
 
 describe('loadDemoData', () => {
   it('loads all source cards and two complete preset decks without changing source records', () => {

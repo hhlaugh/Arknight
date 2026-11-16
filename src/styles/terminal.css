@@ -68,35 +68,6 @@ h1 { font-size: 22px; margin: 0 0 8px; }
 h2 { font-size: 16px; margin: 0 0 8px; }
 b { color: #fff; }
 
-.btn {
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  color: var(--text);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 14px;
-  cursor: pointer;
-}
-.btn:hover:not(:disabled) { border-color: var(--accent); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn.big { padding: 12px 28px; font-size: 16px; }
-
-.note, .hint { color: var(--muted); font-size: 12px; }
-.empty-hint { color: var(--muted); font-size: 12px; }
-
-/* ---------- Online/Bot 过渡状态页 ---------- */
-.mulligan {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 48px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-  text-align: center;
-}
-
 
 /* ---------- Phase 4: CardFrame CSS 变量系统 (Rarity & State Tokens) ---------- */
 .card-frame {
@@ -386,23 +357,6 @@ b { color: #fff; }
 .log-view { max-height: 70vh; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
 .log-omitted { color: var(--muted); font-size: 11px; margin-bottom: 4px; }
 .log-empty { color: var(--muted); }
-
-/* ---------- 联机等待与中断弹窗 ---------- */
-.status-box {
-  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-  padding: 16px 24px; color: #ffe08a; font-size: 15px; margin: 12px 0;
-}
-
-.modal-backdrop {
-  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
-  display: flex; align-items: center; justify-content: center; z-index: 100;
-}
-.modal-card {
-  background: var(--panel); border: 1px solid var(--bad); border-radius: 14px;
-  padding: 28px 36px; max-width: 480px; width: 90%; text-align: center;
-  display: flex; flex-direction: column; gap: 12px;
-}
-.modal-card h2 { color: #ffadad; margin: 0; font-size: 20px; }
 
 @media (max-width: 900px) {
   .log-view { max-height: 40vh; }

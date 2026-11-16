@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadDemoData } from '../data/load-demo-data';
+import { loadDemoData } from '../data/load-card-data';
 import { advancePhase, createInitialGameState, mulligan, reduceGameAction } from '../game/engine';
 import { BotPlayer, botMulliganChoice, stateHashForRepetition } from './botPlayer';
 import type { CardId, CardInstanceId, Cost, GameState, HpValue, LaneId, PaidDeployCost, PlayerId, Position, SpValue } from '../game/types';

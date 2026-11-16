@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CARD_BY_ID, DEMO_CARDS, getAllAvailableDecks, getCustomDecks, PLAYER_LABEL, validateDeck } from '../client/demoData';
-import { getDeckMode, setDeckMode } from '../data/playerCollection';
-import type { DeckMode } from '../data/playerCollection';
+import { CARD_BY_ID, DEMO_CARDS, getAllAvailableDecks, getCustomDecks, PLAYER_LABEL, validateDeck } from '../client/gameData';
+import { getActiveAccountName, getDeckMode, setDeckMode } from '../data/player-collection';
+import type { DeckMode } from '../data/player-collection';
 import type { LocalGameSetup } from '../client/localGameController';
 import type { DeckDefinition, PlayerId } from '../game/types';
 import { Panel } from '../components/ui/Panel';
@@ -22,6 +22,7 @@ function deckComposition(deck: DeckDefinition): string {
 }
 
 export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: DeckSelectViewProps) {
+  const [accountName] = useState(() => getActiveAccountName());
   const [deckMode, setDeckModeState] = useState<DeckMode>(() => getDeckMode());
   const availableDecks = useMemo(() => getAllAvailableDecks(deckMode), [deckMode]);
   const incompleteCustomDecks = useMemo(
@@ -135,7 +136,7 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
                 作战出击配置 · 编制选择
               </h2>
               <span className="text-[10px] font-mono text-slate-400 tracking-wider">
-                {mode === 'vs-bot' ? '单人人机推演模式' : '本地热座双人推演模式'} · {deckMode === 'collection' ? '收录模式（仅已持有干员）' : '自由构筑（全量干员）'}
+                账户 {accountName} · {mode === 'vs-bot' ? '单人人机推演模式' : '本地热座双人推演模式'} · {deckMode === 'collection' ? '收录模式（仅已持有干员）' : '自由构筑（全量干员）'}
               </span>
             </div>
           </div>

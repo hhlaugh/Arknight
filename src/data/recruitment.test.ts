@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mulberry32, performPull, sixStarRate } from './recruitment';
 import { DEFAULT_POOL, GACHA_CONFIG, derivePoolMembers } from './load-gacha-data';
 import type { GachaPoolMember } from './load-gacha-data';
-import { VALID_CARDS } from './playerCollection';
+import { VALID_CARDS } from './player-collection';
 
 const { byRarity } = derivePoolMembers(VALID_CARDS, DEFAULT_POOL);
 const economy = GACHA_CONFIG.economy;

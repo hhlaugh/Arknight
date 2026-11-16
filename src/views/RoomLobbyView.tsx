@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { OnlineMatchController, OnlineMatchSnapshot } from '../client/onlineMatchController';
-import { getAllAvailableDecks } from '../client/demoData';
-import { getActiveAccountName, getDeckMode } from '../data/playerCollection';
+import { getAllAvailableDecks } from '../client/gameData';
+import { getActiveAccountName, getDeckMode } from '../data/player-collection';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
