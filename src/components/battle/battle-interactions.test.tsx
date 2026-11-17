@@ -1,8 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { createLongPressController, exceedsMoveThreshold, LONG_PRESS_DELAY_MS } from '../../hooks/useLongPress';
+import {
+  createLongPressController,
+  DOUBLE_TAP_WINDOW_MS,
+  exceedsMoveThreshold,
+  LONG_PRESS_DELAY_MS,
+} from '../../hooks/useLongPress';
 import { clampPopoverPosition } from './CardPreviewPopover';
+import {
+  computeTouchAimPoint,
+  detectTouchDragIntent,
+  resolveTouchDropTarget,
+  type TouchDragSlotCandidate,
+} from './touchDrag';
 import {
   getInvalidCardReason,
   getInvalidDeployReason,
@@ -341,5 +352,184 @@ describe('Phase 5: 桌面与移动端交互体验测试', () => {
     );
     expect(htmlSkillTarget).toContain('data-highlight="target"');
     expect(htmlSkillTarget).toContain('◎ 目标');
+
+    const htmlSkillReady = renderToString(
+      <UnitView
+        state={unitState}
+        instance={unitState.card_instances[unitId]}
+        highlight="none"
+        canActivateSkill
+      />,
+    );
+    expect(htmlSkillReady).toContain('data-skill-ready="true"');
+    expect(htmlSkillReady).toContain('⚡ 就绪');
+
+    const htmlDragLocked = renderToString(
+      <UnitView
+        state={unitState}
+        instance={unitState.card_instances[unitId]}
+        highlight="target"
+        isDragLocked
+      />,
+    );
+    expect(htmlDragLocked).toContain('✓ 释放锁定');
+  });
+
+  it('双击手势识别: 300ms 内连续轻点触发双击快速技能，超过阈值则按普通单击处理', () => {
+    let clock = 1000;
+    const onLongPress = vi.fn();
+    const onTap = vi.fn();
+    const onDoubleTap = vi.fn();
+    const ctrl = createLongPressController({
+      onLongPress,
+      onTap,
+      onDoubleTap,
+      now: () => clock,
+    });
+
+    // 第一次点击
+    ctrl.start({ x: 180, y: 320 });
+    ctrl.end();
+    expect(ctrl.consumeClick()).toBe(true);
+    expect(onTap).toHaveBeenCalledTimes(1);
+    expect(onDoubleTap).not.toHaveBeenCalled();
+
+    // 220ms 后第二次点击 -> 识别为双击
+    clock += 220;
+    ctrl.start({ x: 182, y: 321 });
+    ctrl.end();
+    expect(ctrl.consumeClick()).toBe(true);
+    expect(onDoubleTap).toHaveBeenCalledTimes(1);
+    expect(onTap).toHaveBeenCalledTimes(1);
+
+    // 超过 DOUBLE_TAP_WINDOW_MS 再次点击 -> 重新作为普通单击
+    clock += DOUBLE_TAP_WINDOW_MS + 60;
+    ctrl.start({ x: 180, y: 320 });
+    ctrl.end();
+    expect(ctrl.consumeClick()).toBe(true);
+    expect(onTap).toHaveBeenCalledTimes(2);
+    expect(onDoubleTap).toHaveBeenCalledTimes(1);
+  });
+
+  it('移动端拖牌意图识别: 竖屏上拉拖牌 vs 横向滑手牌，横屏侧栏左拉拖牌 vs 纵向滚动', () => {
+    // 竖屏 bottom 模式
+    expect(
+      detectTouchDragIntent({
+        start: { x: 200, y: 700 },
+        current: { x: 204, y: 694 },
+        layoutMode: 'bottom',
+      }),
+    ).toBe('pending');
+    expect(
+      detectTouchDragIntent({
+        start: { x: 200, y: 700 },
+        current: { x: 202, y: 675 },
+        layoutMode: 'bottom',
+      }),
+    ).toBe('drag');
+    expect(
+      detectTouchDragIntent({
+        start: { x: 200, y: 700 },
+        current: { x: 240, y: 696 },
+        layoutMode: 'bottom',
+      }),
+    ).toBe('scroll');
+
+    // 横屏 side-rail 模式
+    expect(
+      detectTouchDragIntent({
+        start: { x: 740, y: 260 },
+        current: { x: 710, y: 256 },
+        layoutMode: 'side-rail',
+      }),
+    ).toBe('drag');
+    expect(
+      detectTouchDragIntent({
+        start: { x: 740, y: 260 },
+        current: { x: 742, y: 295 },
+        layoutMode: 'side-rail',
+      }),
+    ).toBe('scroll');
+  });
+
+  it('触控准星偏移与格位磁吸解析: 精准命中、24px 边缘磁吸、非法格位提示与棋盘直接释放', () => {
+    const aim = computeTouchAimPoint({ x: 160, y: 400 }, 390, 844);
+    expect(aim.x).toBe(160);
+    expect(aim.y).toBe(372); // 默认上移 28px 防止手指遮挡
+
+    const slots: TouchDragSlotCandidate[] = [
+      {
+        key: 'player_a:left:front',
+        half: 'player_a',
+        lane: 'left',
+        position: 'front',
+        rect: { left: 20, top: 300, right: 120, bottom: 360 },
+        isValidDeploy: true,
+        isValidUnitTarget: false,
+      },
+      {
+        key: 'player_a:center:front',
+        half: 'player_a',
+        lane: 'center',
+        position: 'front',
+        rect: { left: 140, top: 300, right: 240, bottom: 360 },
+        isValidDeploy: false,
+        isValidUnitTarget: false,
+      },
+    ];
+    const boardRect = { left: 10, top: 140, right: 380, bottom: 480 };
+
+    // 1. 直接命中有效格
+    const directRes = resolveTouchDropTarget({
+      aimPoint: { x: 70, y: 330 },
+      slots,
+      boardRect,
+      canDirectPlay: false,
+    });
+    expect(directRes.kind).toBe('slot');
+    if (directRes.kind === 'slot') {
+      expect(directRes.snapped).toBe(false);
+      expect(directRes.slot.key).toBe('player_a:left:front');
+    }
+
+    // 2. 位于有效格边缘外 16px（<= 24px）自动磁吸至格中心
+    const snappedRes = resolveTouchDropTarget({
+      aimPoint: { x: 70, y: 376 },
+      slots,
+      boardRect,
+      canDirectPlay: false,
+    });
+    expect(snappedRes.kind).toBe('slot');
+    if (snappedRes.kind === 'slot') {
+      expect(snappedRes.snapped).toBe(true);
+      expect(snappedRes.aimCenter).toEqual({ x: 70, y: 330 });
+    }
+
+    // 3. 落在不可部署格位内
+    const invalidRes = resolveTouchDropTarget({
+      aimPoint: { x: 190, y: 330 },
+      slots,
+      boardRect,
+      canDirectPlay: false,
+    });
+    expect(invalidRes.kind).toBe('invalid_slot');
+
+    // 4. 非指向型战术卡拖入棋盘空白区 -> direct_play
+    const directPlayRes = resolveTouchDropTarget({
+      aimPoint: { x: 300, y: 200 },
+      slots,
+      boardRect,
+      canDirectPlay: true,
+    });
+    expect(directPlayRes.kind).toBe('direct_play');
+
+    // 5. 拖回手牌托盘区 -> 安全取消
+    const cancelRes = resolveTouchDropTarget({
+      aimPoint: { x: 190, y: 720 },
+      slots,
+      boardRect,
+      canDirectPlay: true,
+    });
+    expect(cancelRes.kind).toBe('cancel');
   });
 });

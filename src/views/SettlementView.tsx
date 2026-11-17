@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { LocalGameSetup, LocalGameSnapshot } from '../client/localGameController';
 import { PLAYER_LABEL } from '../client/gameData';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { playTacticalSfx } from '../audio/bgmPlayer';
+import { playCombatSfx } from '../audio/combatSfx';
 
 interface SettlementViewProps {
   readonly snapshot: LocalGameSnapshot;
   readonly setup: LocalGameSetup;
   readonly modeLabel?: string;
+  readonly outcome?: 'victory' | 'defeat' | 'draw';
   readonly reward?: { readonly originite: number; readonly accountName: string } | null;
   readonly onRestart: () => void;
   readonly onExit: () => void;
 }
 
-export function SettlementView({ snapshot, setup, modeLabel, reward, onRestart, onExit }: SettlementViewProps) {
+export function SettlementView({ snapshot, setup, modeLabel, outcome, reward, onRestart, onExit }: SettlementViewProps) {
   const state = snapshot.state;
   const isWinnerA = state.winner === 'player_a';
   const isWinnerB = state.winner === 'player_b';
@@ -24,6 +27,13 @@ export function SettlementView({ snapshot, setup, modeLabel, reward, onRestart, 
     : state.winner && state.winner !== 'draw'
     ? `${PLAYER_LABEL[state.winner]} 作战胜利`
     : '未分胜负';
+
+  useEffect(() => {
+    const isVictory =
+      outcome === 'victory' ||
+      (outcome === undefined && (state.winner === 'player_a' || state.winner === 'player_b'));
+    playCombatSfx(isVictory ? 'victory' : 'defeat_match', 90);
+  }, []);
 
   return (
     <div className="min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-4 select-none">
@@ -104,10 +114,26 @@ export function SettlementView({ snapshot, setup, modeLabel, reward, onRestart, 
 
         {/* Actions */}
         <div className="px-4 sm:px-5 py-3.5 bg-[#14171a] border-t border-[#313b43] flex flex-wrap items-center justify-end gap-3">
-          <Button variant="ghost" size="md" onClick={onExit}>
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={() => {
+              playTacticalSfx('click');
+              onExit();
+            }}
+          >
             ◀ 返回主菜单
           </Button>
-          <Button variant="primary" size="md" cornerCut onClick={onRestart} className="font-bold px-6">
+          <Button
+            variant="primary"
+            size="md"
+            cornerCut
+            onClick={() => {
+              playTacticalSfx('confirm');
+              onRestart();
+            }}
+            className="font-bold px-6"
+          >
             再来一局（新种子） ▶
           </Button>
         </div>

@@ -10,6 +10,7 @@ import type {
   Position,
   SpValue,
 } from '../../game/types';
+import type { CombatAudioCue, CombatSfxKind } from '../../audio/combatSfx';
 
 export type AnimationSpeedMode = 'slow' | 'normal' | 'fast' | 'off';
 
@@ -80,6 +81,7 @@ export interface PresentationBeat {
     readonly enemy?: number;
   };
   readonly turnBanner?: TurnBannerCue;
+  readonly audioCues?: readonly CombatAudioCue[];
 }
 
 export interface UnitAnimationState {
@@ -338,12 +340,39 @@ interface MutableBeatBuilder {
   ghostCues: SlotGhostCue[];
   baseDamage: { ally?: number; enemy?: number };
   turnBanner?: TurnBannerCue;
+  audioCues: CombatAudioCue[];
   hasContent: boolean;
+}
+
+function pushBeatAudioCue(builder: MutableBeatBuilder, kind: CombatSfxKind, delayMs = 0): void {
+  if (builder.audioCues.some((cue) => cue.kind === kind)) {
+    return;
+  }
+  builder.audioCues.push(delayMs > 0 ? { kind, delayMs } : { kind });
+}
+
+function detectCardDrawn(prevState: GameState | null, nextState: GameState): {
+  readonly anyDrawn: boolean;
+  readonly byPlayer: Readonly<Record<PlayerId, boolean>>;
+} {
+  if (!prevState) {
+    return { anyDrawn: false, byPlayer: { player_a: false, player_b: false } };
+  }
+  const check = (p: PlayerId): boolean => {
+    const prevDeck = new Set(prevState.players[p].deck);
+    return nextState.players[p].hand.some((id) => prevDeck.has(id));
+  };
+  const a = check('player_a');
+  const b = check('player_b');
+  return {
+    anyDrawn: a || b,
+    byPlayer: { player_a: a, player_b: b },
+  };
 }
 
 function createMutableBeat(
   id: string,
-  durationMs = 460,
+  durationMs = 440,
   phase: PresentationBeat['phase'] = 'impact',
 ): MutableBeatBuilder {
   return {
@@ -359,6 +388,7 @@ function createMutableBeat(
     floatingPopups: [],
     ghostCues: [],
     baseDamage: {},
+    audioCues: [],
     hasContent: false,
   };
 }
@@ -379,6 +409,7 @@ function freezeBeat(builder: MutableBeatBuilder): PresentationBeat {
     ghostCues: builder.ghostCues,
     baseDamage: builder.baseDamage,
     turnBanner: builder.turnBanner,
+    ...(builder.audioCues.length > 0 ? { audioCues: builder.audioCues } : {}),
   };
 }
 
@@ -409,7 +440,7 @@ export function buildPresentationBeats(params: {
 
   const cursor = prevState ? createVisualCursor(prevState, nextState) : null;
   const beats: MutableBeatBuilder[] = [];
-  let current = createMutableBeat(`beat-init-${nextState.state_version}`, 440, 'impact');
+  let current = createMutableBeat(`beat-init-${nextState.state_version}`, 420, 'impact');
   let activeStrikeCue: LaneStrikeCue | null = null;
 
   const flushCurrent = () => {
@@ -418,7 +449,7 @@ export function buildPresentationBeats(params: {
         current.visualState = snapshotVisualCursor(cursor);
       }
       beats.push(current);
-      current = createMutableBeat(`beat-${nextState.state_version}-${beats.length}`, 460, 'impact');
+      current = createMutableBeat(`beat-${nextState.state_version}-${beats.length}`, 430, 'impact');
     }
   };
 
@@ -450,19 +481,23 @@ export function buildPresentationBeats(params: {
           phase: 'strike',
         };
 
-        // 第 1 拍：攻击路径发射/突进阶段（此时 visualState 保持受击前 HP，不剧透扣血）
-        const strikeBeat = createMutableBeat(`beat-strike-${seqId}`, 520, 'strike');
+        // 第 1 拍：攻击路径发射/突进阶段（此时 visualState 保持受击前 HP，节拍与 CSS 突进/射线时长紧密同步）
+        const strikeBeat = createMutableBeat(`beat-strike-${seqId}`, 430, 'strike');
         if (cursor) {
           strikeBeat.visualState = snapshotVisualCursor(cursor);
         }
         strikeBeat.attackingUnits[event.source_instance_id] = direction;
         strikeBeat.laneStrikes.push(baseCue);
+        pushBeatAudioCue(
+          strikeBeat,
+          attackerLoc.attackType === 'ranged' ? 'strike_ranged' : 'strike_melee',
+        );
         strikeBeat.hasContent = true;
         beats.push(strikeBeat);
 
         // 第 2 拍：准备命中阶段（后续伤害、护盾、退场事件将应用到 cursor 并附带在 impactBeat 上）
         activeStrikeCue = { ...baseCue, phase: 'impact' };
-        current = createMutableBeat(`beat-impact-${seqId}`, 480, 'impact');
+        current = createMutableBeat(`beat-impact-${seqId}`, 430, 'impact');
         current.laneStrikes.push(activeStrikeCue);
       }
       continue;
@@ -479,6 +514,8 @@ export function buildPresentationBeats(params: {
             ? makeSlotKey(event.source_player_id, event.lane, event.position)
             : undefined;
       if (slotKey) {
+        const deployedInst = targetId ? nextState.card_instances[targetId] : undefined;
+        const deployedRarity = deployedInst ? (nextState.card_definitions[deployedInst.card_id]?.rarity ?? 3) : 3;
         current.phase = 'deploy';
         current.deployedSlots.add(slotKey);
         if (targetId) current.deployedUnits[targetId] = true;
@@ -489,7 +526,8 @@ export function buildPresentationBeats(params: {
           slotKey,
           unitId: targetId,
         });
-        current.durationMs = Math.max(current.durationMs, 380);
+        pushBeatAudioCue(current, deployedRarity >= 5 ? 'deploy_elite' : 'deploy');
+        current.durationMs = 360;
         current.hasContent = true;
       }
       continue;
@@ -520,7 +558,8 @@ export function buildPresentationBeats(params: {
           slotKey,
           unitId: targetId,
         });
-        current.durationMs = Math.max(current.durationMs, 400);
+        pushBeatAudioCue(current, 'withdraw');
+        current.durationMs = Math.max(current.durationMs, 440);
         current.hasContent = true;
       }
       continue;
@@ -534,7 +573,7 @@ export function buildPresentationBeats(params: {
         if (current.hasContent) {
           flushCurrent();
         }
-        const castBeat = createMutableBeat(`beat-skill-cast-${seqId}`, 440, 'strike');
+        const castBeat = createMutableBeat(`beat-skill-cast-${seqId}`, 400, 'strike');
         if (cursor) {
           castBeat.visualState = snapshotVisualCursor(cursor);
         }
@@ -559,6 +598,7 @@ export function buildPresentationBeats(params: {
           slotKey: makeSlotKey(srcLoc.half, srcLoc.lane, srcLoc.position),
           unitId: event.source_instance_id,
         });
+        pushBeatAudioCue(castBeat, 'skill');
         castBeat.hasContent = true;
         beats.push(castBeat);
         continue;
@@ -573,13 +613,18 @@ export function buildPresentationBeats(params: {
           slotKey: makeSlotKey(srcLoc.half, srcLoc.lane, srcLoc.position),
           unitId: event.source_instance_id,
         });
+        pushBeatAudioCue(current, 'skill');
+        current.hasContent = true;
+      } else if (event.type === 'skill_activated' || event.type === 'reaction_triggered') {
+        // 战术卡/无棋盘来源格的技能也应有明确技能反馈音效
+        pushBeatAudioCue(current, 'skill');
         current.hasContent = true;
       }
       if (event.target_instance_id && event.target_instance_id !== event.source_instance_id && tgtLoc) {
         current.skillUnits[event.target_instance_id] = true;
         current.hasContent = true;
       }
-      current.durationMs = Math.max(current.durationMs, 420);
+      current.durationMs = Math.max(current.durationMs, 400);
       continue;
     }
 
@@ -594,6 +639,7 @@ export function buildPresentationBeats(params: {
           slotKey: makeSlotKey(loc.half, loc.lane, loc.position),
           unitId: event.target_instance_id,
         });
+        pushBeatAudioCue(current, 'shield');
         current.hasContent = true;
       }
       continue;
@@ -614,7 +660,11 @@ export function buildPresentationBeats(params: {
             unitId: event.target_instance_id,
           });
         }
-        current.durationMs = Math.max(current.durationMs, 480);
+        if (dmg > 0) {
+          const hasShieldOnBeat = current.audioCues.some((c) => c.kind === 'shield');
+          pushBeatAudioCue(current, 'hit', hasShieldOnBeat ? 35 : 0);
+        }
+        current.durationMs = Math.max(current.durationMs, 440);
         current.hasContent = true;
       }
       continue;
@@ -631,7 +681,8 @@ export function buildPresentationBeats(params: {
           slotKey: makeSlotKey(loc.half, loc.lane, loc.position),
           unitId: event.target_instance_id,
         });
-        current.durationMs = Math.max(current.durationMs, 440);
+        pushBeatAudioCue(current, 'heal');
+        current.durationMs = Math.max(current.durationMs, 400);
         current.hasContent = true;
       }
       continue;
@@ -648,6 +699,7 @@ export function buildPresentationBeats(params: {
           slotKey: makeSlotKey(loc.half, loc.lane, loc.position),
           unitId: event.target_instance_id,
         });
+        pushBeatAudioCue(current, 'sp');
         current.hasContent = true;
       }
       continue;
@@ -685,7 +737,8 @@ export function buildPresentationBeats(params: {
           kind: 'defeat',
           name: event.target_name ?? loc.name,
         });
-        current.durationMs = Math.max(current.durationMs, 500);
+        pushBeatAudioCue(current, 'defeat', 75);
+        current.durationMs = Math.max(current.durationMs, 470);
         current.hasContent = true;
       }
       continue;
@@ -701,7 +754,8 @@ export function buildPresentationBeats(params: {
         } else {
           current.baseDamage.enemy = (current.baseDamage.enemy ?? 0) + dmg;
         }
-        current.durationMs = Math.max(current.durationMs, 500);
+        pushBeatAudioCue(current, 'base_hit');
+        current.durationMs = Math.max(current.durationMs, 480);
         current.hasContent = true;
       }
     }
@@ -715,16 +769,19 @@ export function buildPresentationBeats(params: {
     const topPlayer: PlayerId = bottomPlayer === 'player_a' ? 'player_b' : 'player_a';
     const enemyDiff = prevState.players[topPlayer].base_points - nextState.players[topPlayer].base_points;
     if (allyDiff > 0 || enemyDiff > 0) {
-      const fallback = createMutableBeat(`beat-base-${nextState.state_version}`, 480, 'impact');
+      const fallback = createMutableBeat(`beat-base-${nextState.state_version}`, 460, 'impact');
       fallback.visualState = nextState;
       if (allyDiff > 0) fallback.baseDamage.ally = allyDiff;
       if (enemyDiff > 0) fallback.baseDamage.enemy = enemyDiff;
+      pushBeatAudioCue(fallback, 'base_hit');
       fallback.hasContent = true;
       beats.push(fallback);
     }
   }
 
-  // 若回合归属或回合数切换且对局尚未结束，追加非阻塞回合切换横幅提示
+  const drawInfo = detectCardDrawn(prevState, nextState);
+
+  // 若回合归属或回合数切换且对局尚未结束，追加非阻塞回合切换横幅提示与抽卡音效
   const turnSwitched =
     prevState !== null &&
     nextState.phase !== 'finished' &&
@@ -732,15 +789,33 @@ export function buildPresentationBeats(params: {
     (prevState.active_player_id !== nextState.active_player_id || prevState.turn_number !== nextState.turn_number);
 
   if (turnSwitched) {
-    const bannerBeat = createMutableBeat(`beat-turn-${nextState.state_version}`, 520, 'turn');
+    const bannerBeat = createMutableBeat(`beat-turn-${nextState.state_version}`, 450, 'turn');
     bannerBeat.visualState = nextState;
     bannerBeat.turnBanner = {
       id: `turn-${nextState.turn_number}-${nextState.active_player_id}-${nextState.state_version}`,
       actor: nextState.active_player_id,
       turnNumber: nextState.turn_number,
     };
+    pushBeatAudioCue(
+      bannerBeat,
+      nextState.active_player_id === bottomPlayer ? 'turn_ally' : 'turn_enemy',
+    );
+    if (drawInfo.anyDrawn) {
+      pushBeatAudioCue(bannerBeat, 'draw', 110);
+    }
     bannerBeat.hasContent = true;
     beats.push(bannerBeat);
+  } else if (drawInfo.anyDrawn) {
+    // 回合内抽卡（例如先锋回费抽牌或支援战术抽卡）
+    if (beats.length > 0) {
+      pushBeatAudioCue(beats[beats.length - 1]!, 'draw', 90);
+    } else {
+      const drawBeat = createMutableBeat(`beat-draw-${nextState.state_version}`, 340, 'deploy');
+      drawBeat.visualState = nextState;
+      pushBeatAudioCue(drawBeat, 'draw');
+      drawBeat.hasContent = true;
+      beats.push(drawBeat);
+    }
   }
 
   // 若队列过长（极端场面），合并超出部分到最后一帧避免拖慢交互
@@ -753,9 +828,19 @@ export function buildPresentationBeats(params: {
     const mergedGhosts = tail.flatMap((b) => b.ghostCues);
     const mergedAllyBase = tail.reduce((s, b) => s + (b.baseDamage.ally ?? 0), 0);
     const mergedEnemyBase = tail.reduce((s, b) => s + (b.baseDamage.enemy ?? 0), 0);
+    const seenCues = new Set<CombatSfxKind>();
+    const mergedCues: CombatAudioCue[] = [];
+    for (const beat of tail) {
+      for (const cue of beat.audioCues ?? []) {
+        if (!seenCues.has(cue.kind) && mergedCues.length < 4) {
+          seenCues.add(cue.kind);
+          mergedCues.push(cue);
+        }
+      }
+    }
     head.push({
       id: `beat-coalesced-${nextState.state_version}`,
-      durationMs: 480,
+      durationMs: 440,
       phase: 'impact',
       visualState: nextState,
       deployedSlots: tail.flatMap((b) => b.deployedSlots),
@@ -771,6 +856,7 @@ export function buildPresentationBeats(params: {
         ...(mergedEnemyBase > 0 ? { enemy: mergedEnemyBase } : {}),
       },
       turnBanner: lastTurnBanner,
+      ...(mergedCues.length > 0 ? { audioCues: mergedCues } : {}),
     });
     normalized = head;
   }
@@ -779,4 +865,58 @@ export function buildPresentationBeats(params: {
     ...beat,
     durationMs: getBeatDurationMs(beat.durationMs, speedMode),
   }));
+}
+
+/**
+ * 在动画模式关闭（animSpeedMode === 'off'）时直接汇总本步应触发的即时音效队列。
+ */
+export function collectImmediateCombatAudioCues(params: {
+  readonly prevState: GameState | null;
+  readonly nextState: GameState;
+  readonly newEvents: readonly CombatLogEvent[];
+  readonly bottomPlayer: PlayerId;
+}): readonly CombatAudioCue[] {
+  const { prevState, nextState, newEvents, bottomPlayer } = params;
+  const seen = new Set<CombatSfxKind>();
+  const cues: CombatAudioCue[] = [];
+  const push = (kind: CombatSfxKind, delayMs = 0) => {
+    if (seen.has(kind) || cues.length >= 6) return;
+    seen.add(kind);
+    cues.push(delayMs > 0 ? { kind, delayMs } : { kind });
+  };
+
+  for (const event of newEvents) {
+    if (event.type === 'unit_deployed' && event.source_instance_id) {
+      const inst = nextState.card_instances[event.source_instance_id];
+      const rarity = inst ? (nextState.card_definitions[inst.card_id]?.rarity ?? 3) : 3;
+      push(rarity >= 5 ? 'deploy_elite' : 'deploy');
+    } else if (event.type === 'unit_withdrawn') {
+      push('withdraw');
+    } else if (event.type === 'skill_activated' || event.type === 'reaction_triggered') {
+      push('skill');
+    } else if (event.type === 'shield_absorbed' && (event.amount ?? 0) > 0) {
+      push('shield');
+    } else if (event.type === 'damage_resolved' && (event.amount ?? 0) > 0) {
+      push('hit', seen.has('shield') ? 35 : 0);
+    } else if (event.type === 'base_damaged' && (event.amount ?? 0) > 0) {
+      push('base_hit');
+    } else if (event.type === 'healed' && (event.amount ?? 0) > 0) {
+      push('heal');
+    } else if (event.type === 'sp_gained' && (event.amount ?? 0) > 0) {
+      push('sp');
+    }
+  }
+
+  if (detectCardDrawn(prevState, nextState).anyDrawn) {
+    push('draw', cues.length > 0 ? 75 : 0);
+  } else if (
+    prevState &&
+    nextState.phase !== 'finished' &&
+    nextState.phase !== 'mulligan' &&
+    (prevState.active_player_id !== nextState.active_player_id || prevState.turn_number !== nextState.turn_number)
+  ) {
+    push(nextState.active_player_id === bottomPlayer ? 'turn_ally' : 'turn_enemy');
+  }
+
+  return cues;
 }

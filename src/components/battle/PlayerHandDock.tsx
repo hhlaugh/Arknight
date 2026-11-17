@@ -25,6 +25,11 @@ interface PlayerHandDockProps {
   readonly onHoverCard: (preview: HoveredCardPreview | null) => void;
   readonly onDragStartCard: (id: CardInstanceId, e: React.DragEvent) => void;
   readonly onDragEndCard: () => void;
+  readonly onTouchStartCardCandidate?: (
+    id: CardInstanceId,
+    e: React.PointerEvent<HTMLDivElement>,
+    layoutMode: 'bottom' | 'side-rail',
+  ) => void;
   readonly onEndActionPhase: () => void;
 }
 
@@ -56,6 +61,7 @@ export function PlayerHandDock({
   onHoverCard,
   onDragStartCard,
   onDragEndCard,
+  onTouchStartCardCandidate,
   onEndActionPhase,
 }: PlayerHandDockProps) {
   const playerAlly = state.players[bottomPlayer];
@@ -166,7 +172,11 @@ export function PlayerHandDock({
         )}
 
         {/* 手牌双列纵向滚动网格 */}
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-1.5">
+        <div
+          className={`flex-1 min-h-0 p-1.5 ${
+            draggingCardId ? 'overflow-hidden touch-none' : 'overflow-y-auto overscroll-contain'
+          }`}
+        >
           {playerAlly.hand.length === 0 ? (
             <div className="w-full text-center py-6 text-xs text-slate-500 font-mono">
               （暂无手牌）
@@ -185,6 +195,8 @@ export function PlayerHandDock({
                     selected={selection === id}
                     interactive={canInteractHand}
                     draggable={canDragCard}
+                    touchActionMode="pan-y"
+                    isTouchDragging={draggingCardId === id}
                     onClick={() => onHandCardClick(id)}
                     onLongPress={() => {
                       onHoverCard(null);
@@ -198,6 +210,11 @@ export function PlayerHandDock({
                     onHoverEnd={() => onHoverCard(null)}
                     onDragStart={(e) => onDragStartCard(id, e)}
                     onDragEnd={onDragEndCard}
+                    onTouchPointerDown={(e) => {
+                      if (canInteractHand) {
+                        onTouchStartCardCandidate?.(id, e, 'side-rail');
+                      }
+                    }}
                   />
                 );
               })}
@@ -351,7 +368,9 @@ export function PlayerHandDock({
       {/* 2. 手牌横向滚动托盘 */}
       <div
         onScroll={() => onHoverCard(null)}
-        className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto overscroll-x-contain pt-1 sm:pt-2 pb-1 sm:pb-1.5 px-2 sm:px-3 content-start snap-x min-h-[116px] sm:min-h-[148px] lg:min-h-[164px]"
+        className={`flex items-center gap-1.5 sm:gap-2 pt-1 sm:pt-2 pb-1 sm:pb-1.5 px-2 sm:px-3 content-start snap-x min-h-[116px] sm:min-h-[148px] lg:min-h-[164px] ${
+          draggingCardId ? 'overflow-hidden touch-none' : 'overflow-x-auto overscroll-x-contain'
+        }`}
       >
         {playerAlly.hand.length === 0 ? (
           <div className="w-full text-center py-6 text-xs text-slate-500 font-mono">
@@ -369,6 +388,8 @@ export function PlayerHandDock({
                   selected={selection === id}
                   interactive={canInteractHand}
                   draggable={canDragCard}
+                  touchActionMode="pan-x"
+                  isTouchDragging={draggingCardId === id}
                   onClick={() => onHandCardClick(id)}
                   onLongPress={() => {
                     onHoverCard(null);
@@ -384,6 +405,11 @@ export function PlayerHandDock({
                   }}
                   onDragStart={(e) => onDragStartCard(id, e)}
                   onDragEnd={onDragEndCard}
+                  onTouchPointerDown={(e) => {
+                    if (canInteractHand) {
+                      onTouchStartCardCandidate?.(id, e, 'bottom');
+                    }
+                  }}
                 />
               </div>
             );

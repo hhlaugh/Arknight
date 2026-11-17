@@ -8,11 +8,13 @@ import type { CardInstanceId, CombatLogEvent, GameState, PlayerId } from '../../
 import {
   buildPresentationBeats,
   captureBoardPositions,
+  collectImmediateCombatAudioCues,
   DEFAULT_ANIMATION_SPEED_MODE,
   getBeatDurationMs,
   getCssAnimationScale,
   makeSlotKey,
 } from './combatPresentation';
+import { playCombatAudioCues, playCombatSfx } from '../../audio/combatSfx';
 import { TacticalBattleHud } from './TacticalBattleHud';
 import { PlayerHandDock } from './PlayerHandDock';
 import { AttackPathOverlay } from './AttackPathOverlay';
@@ -74,6 +76,8 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     expect(deployBeat.deployedSlots).toContain(expectedSlot);
     expect(deployBeat.deployedUnits[opId!]).toBe(true);
     expect(deployBeat.floatingPopups.some((p) => p.slotKey === expectedSlot && p.kind === 'deploy')).toBe(true);
+    const expectedDeployCue = (opDef.rarity ?? 3) >= 5 ? 'deploy_elite' : 'deploy';
+    expect(deployBeat.audioCues?.some((c) => c.kind === expectedDeployCue)).toBe(true);
     // 零规则耦合校验：适配器未改动 state 一分一毫
     expect(nextSnapshot.state).toEqual(frozenNextCopy);
   });
@@ -191,6 +195,7 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     expect(leftStrikeBeat!.laneStrikes[0]!.direction).toBe('up');
     expect(leftStrikeBeat!.laneStrikes[0]!.targetSlotKey).toBe(makeSlotKey(enemy, 'left', 'front'));
     expect(leftStrikeBeat!.attackingUnits[allyRanged.card_instance_id]).toBe('up');
+    expect(leftStrikeBeat!.audioCues?.some((c) => c.kind === 'strike_ranged')).toBe(true);
     // 关键校验：Strike 阶段绝不提前显示被攻击后的生命值或退场状态
     expect(leftStrikeBeat!.visualState?.card_instances[enemyTarget.card_instance_id]?.zone).toBe('board');
     expect(leftStrikeBeat!.visualState?.card_instances[enemyTarget.card_instance_id]?.operator_combat?.current_hp).toBe(2);
@@ -203,6 +208,9 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     expect(leftImpactBeat!.hitUnits[enemyTarget.card_instance_id]).toBe(true);
     expect(leftImpactBeat!.floatingPopups.some((p) => p.kind === 'shield' && p.label === '🛡 -1')).toBe(true);
     expect(leftImpactBeat!.floatingPopups.some((p) => p.kind === 'damage' && p.label.startsWith('-'))).toBe(true);
+    expect(leftImpactBeat!.audioCues?.some((c) => c.kind === 'shield')).toBe(true);
+    expect(leftImpactBeat!.audioCues?.some((c) => c.kind === 'hit' && (c.delayMs ?? 0) > 0)).toBe(true);
+    expect(leftImpactBeat!.audioCues?.some((c) => c.kind === 'defeat' && (c.delayMs ?? 0) >= 75)).toBe(true);
     expect(
       leftImpactBeat!.ghostCues.some(
         (g) => g.kind === 'defeat' && g.slotKey === makeSlotKey(enemy, 'left', 'front'),
@@ -217,6 +225,7 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     expect(rightStrikeBeat).toBeDefined();
     expect(rightStrikeBeat!.laneStrikes[0]!.attackType).toBe('melee');
     expect(rightStrikeBeat!.laneStrikes[0]!.toBase).toBe(true);
+    expect(rightStrikeBeat!.audioCues?.some((c) => c.kind === 'strike_melee')).toBe(true);
     expect(rightStrikeBeat!.visualState?.players[enemy].base_points).toBe(stagedState.players[enemy].base_points);
 
     const rightImpactBeat = beats.find(
@@ -224,12 +233,28 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     );
     expect(rightImpactBeat).toBeDefined();
     expect(rightImpactBeat!.baseDamage.enemy).toBeGreaterThan(0);
+    expect(rightImpactBeat!.audioCues?.some((c) => c.kind === 'base_hit')).toBe(true);
     expect(rightImpactBeat!.visualState!.players[enemy].base_points).toBeLessThan(stagedState.players[enemy].base_points);
 
-    // 最后一段：回合切换横幅
+    // 最后一段：回合切换横幅 + 抽卡音效
     const turnBeat = beats.find((b) => Boolean(b.turnBanner));
     expect(turnBeat).toBeDefined();
     expect(turnBeat!.turnBanner!.actor).toBe(enemy);
+    expect(turnBeat!.audioCues?.some((c) => c.kind === 'turn_enemy')).toBe(true);
+    expect(turnBeat!.audioCues?.some((c) => c.kind === 'draw')).toBe(true);
+
+    // 动画关闭时即时音频队列与 SSR 安全调用验证
+    const immediateCues = collectImmediateCombatAudioCues({
+      prevState: stagedState,
+      nextState,
+      newEvents: combatEvents,
+      bottomPlayer: actor,
+    });
+    expect(immediateCues.some((c) => c.kind === 'shield')).toBe(true);
+    expect(immediateCues.some((c) => c.kind === 'hit')).toBe(true);
+    expect(immediateCues.some((c) => c.kind === 'draw')).toBe(true);
+    expect(() => playCombatSfx('skill')).not.toThrow();
+    expect(() => playCombatAudioCues(immediateCues)).not.toThrow();
   });
 
   it('撤离与倍速/关闭控制: withdraw 生成撤离残影；fast 时长减半；off 返回空队列', () => {
@@ -303,6 +328,7 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     });
     expect(fastBeats).toHaveLength(1);
     expect(fastBeats[0]!.ghostCues[0]!.kind).toBe('withdraw');
+    expect(fastBeats[0]!.audioCues?.some((c) => c.kind === 'withdraw')).toBe(true);
     expect(fastBeats[0]!.durationMs).toBe(getBeatDurationMs(440, 'fast'));
 
     const offBeats = buildPresentationBeats({
@@ -314,6 +340,26 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
       speedMode: 'off',
     });
     expect(offBeats).toHaveLength(0);
+
+    // 主动技能事件应附加 skill 音效节拍
+    const skillBeats = buildPresentationBeats({
+      prevState: staged,
+      nextState: staged,
+      newEvents: [
+        {
+          sequence: 2,
+          type: 'skill_activated',
+          source_instance_id: unitId,
+          source_player_id: actor,
+          skill_name: '战术指令',
+          detail: '发动技能',
+        },
+      ],
+      prevPositions,
+      bottomPlayer: actor,
+      speedMode: 'normal',
+    });
+    expect(skillBeats.some((b) => b.audioCues?.some((c) => c.kind === 'skill'))).toBe(true);
   });
 
   it('组件视觉渲染: UnitView/HealthBar/TacticalBattleHud 正确渲染浮动伤害、基地受击标徽、倍速按钮及禁用动效', () => {

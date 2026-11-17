@@ -290,6 +290,34 @@ b { color: #fff; }
 }
 .anim-attack-glow { animation: attackGlow calc(0.42s * var(--combat-anim-scale, 2)) ease-out both; }
 
+/* ---------- 移动端手势与触控精准反馈 ---------- */
+.touch-gesture-surface {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes holdCharge {
+  from { transform: scaleX(0); opacity: 0.7; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes reticleSnap {
+  0% { transform: scale(1.28); opacity: 0.5; }
+  65% { transform: scale(0.94); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.anim-hold-charge {
+  transform-origin: left center;
+  animation: holdCharge 0.34s linear both;
+}
+
+.anim-reticle-snap {
+  animation: reticleSnap 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* ---------- 5★/6★ 部署入场光柱 ---------- */
 @keyframes deployRarityBeam {
   0% { opacity: 0; transform: translateY(-60%) scaleY(0.6); }
@@ -391,7 +419,9 @@ b { color: #fff; }
   .gacha-beam-6,
   .gacha-shake,
   .gacha-sweep,
-  .gacha-progress-shine {
+  .gacha-progress-shine,
+  .anim-hold-charge,
+  .anim-reticle-snap {
     transition: none !important;
     animation: none !important;
     transform: none !important;

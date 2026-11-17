@@ -13,6 +13,7 @@ export interface CardFrameProps {
   readonly presentation?: CardPresentation;
   readonly variant?: CardFrameVariant;
   readonly selected?: boolean;
+  readonly holding?: boolean;
   readonly disabled?: boolean;
   readonly dimmed?: boolean;
   readonly unplayable?: boolean;
@@ -167,6 +168,7 @@ export function CardFrame({
   presentation,
   variant = 'deck',
   selected = false,
+  holding = false,
   disabled = false,
   dimmed = false,
   unplayable = false,
@@ -258,13 +260,20 @@ export function CardFrame({
       onContextMenu={onContextMenu}
       onClick={disabled ? undefined : (e) => onClick?.(e)}
       onKeyDown={handleKeyDown}
-      className={`card-frame group relative flex flex-col justify-between text-slate-100 select-none overflow-hidden transition-all duration-150 border ${
+      className={`card-frame touch-gesture-surface group relative flex flex-col justify-between text-slate-100 select-none overflow-hidden transition-all duration-150 border ${
         isClickable ? 'cursor-pointer hover:-translate-y-1' : ''
-      } ${sizeClasses} ${className}`}
+      } ${holding ? 'ring-2 ring-amber-400/80 border-amber-400' : ''} ${sizeClasses} ${className}`}
       style={{
         clipPath: CORNER_CUTS.md,
       }}
     >
+      {/* 长按查看详情蓄力进度条 */}
+      {holding && (
+        <div
+          aria-hidden="true"
+          className="absolute top-0 left-0 right-0 h-[3px] bg-amber-400 z-30 pointer-events-none anim-hold-charge"
+        />
+      )}
       {/* 1. CardBackgroundLayer：碳纤维斜纹与稀有度顶光 */}
       <div
         className="absolute inset-0 pointer-events-none z-0"

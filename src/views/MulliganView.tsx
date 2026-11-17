@@ -5,6 +5,8 @@ import { CardView } from '../components/cards/CardView';
 import type { CardInstanceId, GameState, PlayerId } from '../game/types';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
+import { playTacticalSfx } from '../audio/bgmPlayer';
+import { playCombatSfx } from '../audio/combatSfx';
 
 interface MulliganViewProps {
   readonly state: GameState;
@@ -32,6 +34,7 @@ export function MulliganView({
 
   const toggle = (id: CardInstanceId) => {
     if (submitting) return;
+    playCombatSfx('select');
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -43,12 +46,20 @@ export function MulliganView({
   const confirm = async () => {
     setSubmitting(true);
     try {
+      const swapCount = selected.size;
       const result = await onConfirm([...selected]);
       if (!result.ok) {
+        playTacticalSfx('alert');
         setSubmitting(false);
         setError(result.reason ?? '换牌失败');
+      } else {
+        playCombatSfx(swapCount > 0 ? 'draw' : 'select');
+        if (swapCount === 0) {
+          playTacticalSfx('confirm');
+        }
       }
     } catch (err) {
+      playTacticalSfx('alert');
       setSubmitting(false);
       setError(err instanceof Error ? err.message : '换牌异常');
     }

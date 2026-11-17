@@ -14,6 +14,15 @@ import { PlayerHandDock } from '../components/battle/PlayerHandDock';
 import { TacticalDetailPanel } from '../components/battle/TacticalDetailPanel';
 import { AttackPathOverlay, type Point2D } from '../components/battle/AttackPathOverlay';
 import { CardPreviewPopover, type HoveredCardPreview } from '../components/battle/CardPreviewPopover';
+import { CardTouchDragOverlay } from '../components/battle/CardTouchDragOverlay';
+import {
+  computeTouchAimPoint,
+  detectTouchDragIntent,
+  resolveTouchDropTarget,
+  type TouchDragLayoutMode,
+  type TouchDragSlotCandidate,
+  type TouchDropResolution,
+} from '../components/battle/touchDrag';
 import {
   getInvalidCardReason,
   getInvalidDeployReason,
@@ -23,12 +32,16 @@ import {
 import {
   makeSlotKey,
   type FloatingPopupKind,
+  type SlotKey,
   type UnitAnimationState,
 } from '../components/battle/combatPresentation';
 import { enumerateLegalActions } from '../game/legal-actions';
 import { useCombatAnimations } from '../hooks/useCombatAnimations';
+import { triggerHaptic, type PointerPosition } from '../hooks/useLongPress';
 import { useViewport } from '../hooks/useViewport';
 import { useAppSettings } from '../data/app-settings';
+import { playTacticalSfx } from '../audio/bgmPlayer';
+import { playCombatSfx } from '../audio/combatSfx';
 import type { CardInstance, CardInstanceId, GameAction, LaneId, PlayerId, Position } from '../game/types';
 
 const SLOT_POPUP_STYLE: Record<FloatingPopupKind, string> = {
@@ -53,6 +66,16 @@ interface SlotCoords {
   readonly half: PlayerId;
   readonly lane: LaneId;
   readonly position: Position;
+}
+
+interface TouchDragState {
+  readonly cardId: CardInstanceId;
+  readonly pointerId: number;
+  readonly pointer: PointerPosition;
+  readonly aimPoint: PointerPosition;
+  readonly resolution: TouchDropResolution;
+  readonly statusText: string;
+  readonly layoutMode: TouchDragLayoutMode;
 }
 
 export interface NetworkStatus {
@@ -97,10 +120,22 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   const [hoveredSlot, setHoveredSlot] = useState<SlotCoords | null>(null);
   const [draggingCardId, setDraggingCardId] = useState<CardInstanceId | null>(null);
   const [dragOverSlot, setDragOverSlot] = useState<SlotCoords | null>(null);
+  const [touchDragState, setTouchDragState] = useState<TouchDragState | null>(null);
   const [showLog, setShowLog] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<'surrender' | 'exit' | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const touchCandidateRef = useRef<{
+    cardId: CardInstanceId;
+    pointerId: number;
+    start: PointerPosition;
+    layoutMode: TouchDragLayoutMode;
+    active: boolean;
+  } | null>(null);
+  const touchCleanupRef = useRef<(() => void) | null>(null);
+  const justFinishedTouchDragAtRef = useRef(0);
+  const lastSnappedSlotKeyRef = useRef<SlotKey | null>(null);
 
   const effectiveOnExit = onExit ?? networkStatus?.onLeaveRoom ?? null;
   const surrenderActor: PlayerId = humanPlayer ?? actor;
@@ -162,7 +197,16 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     };
   }, [activeBeat?.id, showLog, showDetail, isMobile, isLandscape, isCompactLandscape, width, height]);
 
+  const cancelPendingTouchCandidate = () => {
+    touchCleanupRef.current?.();
+    touchCleanupRef.current = null;
+    touchCandidateRef.current = null;
+    lastSnappedSlotKeyRef.current = null;
+    setTouchDragState(null);
+  };
+
   useEffect(() => {
+    cancelPendingTouchCandidate();
     setSelection(null);
     setHoveredCard(null);
     setHoveredUnitId(null);
@@ -183,8 +227,16 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       setHoveredUnitId(null);
       setHoveredSlot(null);
       setDraggingCardId(null);
+      cancelPendingTouchCandidate();
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    return () => {
+      touchCleanupRef.current?.();
+      touchCleanupRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (!error) return;
@@ -313,8 +365,12 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     try {
       const result = onDispatch ? await onDispatch(action) : controller?.dispatch(actorOverride, action);
       if (result && !result.ok) {
+        playTacticalSfx('alert');
         setError(result.reason ?? '操作不合法');
       } else {
+        if (action.type === 'end_action_phase') {
+          playTacticalSfx('confirm');
+        }
         setSelection(null);
         setHoveredCard(null);
         setHoveredSlot(null);
@@ -323,11 +379,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         if (isMobile) setShowDetail(false);
       }
     } catch (err) {
+      playTacticalSfx('alert');
       setError(err instanceof Error ? err.message : '执行操作异常');
     }
   };
 
   const clearNonModalSelection = () => {
+    if (Date.now() - justFinishedTouchDragAtRef.current < 160) return;
     setSelection(null);
     setHoveredCard(null);
     setHoveredSlot(null);
@@ -335,16 +393,24 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   };
 
   const onSlotClick = (half: PlayerId, lane: LaneId, position: Position) => {
+    if (Date.now() - justFinishedTouchDragAtRef.current < 160) return;
     if (!canAct) {
-      if (selection) setError('当前不是你的行动回合。');
+      if (selection) {
+        playTacticalSfx('alert');
+        setError('当前不是你的行动回合。');
+      }
       return;
     }
     if (hasPending) {
+      playTacticalSfx('alert');
       setError('请先完成回合开始的 SP 支援选择。');
       return;
     }
     if (!isActionPhase) {
-      if (selection) setError('只有行动阶段可以执行部署操作。');
+      if (selection) {
+        playTacticalSfx('alert');
+        setError('只有行动阶段可以执行部署操作。');
+      }
       return;
     }
 
@@ -360,8 +426,12 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       if (selectedInst?.zone === 'hand' && selectedDef) {
         if (selectedDef.card_type === 'operator') {
           const reason = getInvalidDeployReason(state, actor, selection, half, lane, position);
-          if (reason) setError(reason);
+          if (reason) {
+            playTacticalSfx('alert');
+            setError(reason);
+          }
         } else {
+          playTacticalSfx('alert');
           setError('战术或支援卡请点击高亮作用单位，或使用「直接使用」按钮。');
         }
       }
@@ -370,6 +440,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
 
   const onUnitClick = (instance: CardInstance) => {
     if (!canAct) {
+      playCombatSfx('select');
       setSelection(instance.card_instance_id);
       return;
     }
@@ -380,6 +451,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       if (pendingAction) {
         dispatch(pendingAction);
       } else {
+        playTacticalSfx('alert');
         setError('SP 支援必须选择尚未满 SP 且未冻结的友方干员。');
       }
       return;
@@ -405,9 +477,11 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     }
 
     if (selection === targetId) {
+      playTacticalSfx('click');
       setSelection(null);
       if (isMobile) setShowDetail(false);
     } else {
+      playCombatSfx('select');
       setSelection(targetId);
     }
   };
@@ -415,19 +489,23 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   const onHandCardClick = (id: CardInstanceId) => {
     setHoveredCard(null);
     if (!canAct) {
+      playTacticalSfx('alert');
       setError('当前不是你的行动回合。');
       return;
     }
     if (hasPending) {
+      playTacticalSfx('alert');
       setError('请先完成回合开始的支援选择。');
       return;
     }
     if (!isActionPhase) {
+      playTacticalSfx('alert');
       setError('当前不在行动阶段，无法使用手牌。');
       return;
     }
 
     if (selection === id) {
+      playTacticalSfx('click');
       setSelection(null);
       if (isMobile) setShowDetail(false);
       return;
@@ -436,7 +514,10 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     setSelection(id);
     const reason = getInvalidCardReason(state, actor, id);
     if (reason) {
+      playTacticalSfx('alert');
       setError(reason);
+    } else {
+      playCombatSfx('select');
     }
   };
 
@@ -452,10 +533,12 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       }
     }
     if (selectedUnitActions.skillTargets.size > 0) {
+      playTacticalSfx('alert');
       setError('请直接点击棋盘上青色脉冲高亮的目标单位发动技能。');
       return;
     }
     const reason = getInvalidUnitActionReason(state, actor, selection, 'activate_skill');
+    playTacticalSfx('alert');
     setError(reason ?? '当前无法发动主动技能。');
   };
 
@@ -469,7 +552,329 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       return;
     }
     const reason = getInvalidUnitActionReason(state, actor, selection, 'withdraw_operator');
+    playTacticalSfx('alert');
     setError(reason ?? '当前无法撤离该干员。');
+  };
+
+  const handleUnitDoubleTap = (instance: CardInstance) => {
+    const unitId = instance.card_instance_id;
+    // 若刚才已有其它选中项且该单位属于可选目标，单击已触发目标作用，不重复触发技能
+    if (
+      selection &&
+      selection !== unitId &&
+      (pendingTargets.has(unitId) || playTargets.has(unitId) || selectedUnitActions.skillTargets.has(unitId))
+    ) {
+      return;
+    }
+
+    if (!canAct || hasPending || !isActionPhase || instance.controller_id !== actor) {
+      setSelection(unitId);
+      setShowDetail(true);
+      playCombatSfx('select');
+      triggerHaptic(10);
+      return;
+    }
+
+    const directSkill = legal.find(
+      (a): a is SkillAction =>
+        a.type === 'activate_skill' && a.card_instance_id === unitId && a.target_instance_id === undefined,
+    );
+    if (directSkill) {
+      triggerHaptic(14);
+      void dispatch(directSkill);
+      return;
+    }
+
+    const targetedSkills = legal.filter(
+      (a): a is SkillAction =>
+        a.type === 'activate_skill' && a.card_instance_id === unitId && a.target_instance_id !== undefined,
+    );
+    if (targetedSkills.length > 0) {
+      setSelection(unitId);
+      playCombatSfx('select');
+      triggerHaptic(10);
+      return;
+    }
+
+    setSelection(unitId);
+    const reason = getInvalidUnitActionReason(state, actor, unitId, 'activate_skill');
+    playTacticalSfx('alert');
+    triggerHaptic(8);
+    setError(reason ?? '当前无法发动主动技能。');
+  };
+
+  const evaluateTouchDragRef = useRef<
+    (cardId: CardInstanceId, pointer: PointerPosition) => {
+      aimPoint: PointerPosition;
+      resolution: TouchDropResolution;
+      statusText: string;
+    }
+  >(() => ({
+    aimPoint: { x: 0, y: 0 },
+    resolution: { kind: 'cancel', aimCenter: { x: 0, y: 0 } },
+    statusText: '',
+  }));
+
+  evaluateTouchDragRef.current = (cardId, pointer) => {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : width;
+    const vh = typeof window !== 'undefined' ? window.innerHeight : height;
+    const aimPoint = computeTouchAimPoint(pointer, vw, vh);
+    const cardDef = cardDefinitionOf(state, cardId);
+
+    const deployActionsForCard =
+      canAct && isActionPhase && !hasPending
+        ? legal.filter((a): a is DeployAction => a.type === 'deploy_operator' && a.card_instance_id === cardId)
+        : [];
+    const playActionsForCard =
+      canAct && isActionPhase && !hasPending
+        ? legal.filter((a): a is PlayCardAction => a.type === 'play_card' && a.card_instance_id === cardId)
+        : [];
+    const playTargetIds = new Set(
+      playActionsForCard.map((a) => a.target_instance_id).filter((id): id is CardInstanceId => id !== undefined),
+    );
+    const canDirectPlay = playActionsForCard.some((a) => a.target_instance_id === undefined);
+
+    const slots: TouchDragSlotCandidate[] = [];
+    for (const half of [topPlayer, bottomPlayer] as const) {
+      for (const lane of LANES) {
+        for (const position of ['front', 'back'] as const) {
+          const slotKey = makeSlotKey(half, lane, position);
+          const el = slotElRefs.current[slotKey];
+          if (!el) continue;
+          const rect = el.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0) continue;
+          const unit = boardMap.get(slotKey);
+          const isValidDeploy =
+            half === actor &&
+            !unit &&
+            deployActionsForCard.some((a) => a.lane === lane && a.position === position);
+          const isValidUnitTarget = Boolean(unit && playTargetIds.has(unit.card_instance_id));
+          slots.push({
+            key: slotKey,
+            half,
+            lane,
+            position,
+            rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom },
+            isValidDeploy,
+            unitId: unit?.card_instance_id,
+            isValidUnitTarget,
+          });
+        }
+      }
+    }
+
+    const boardElRect = boardGridRef.current?.getBoundingClientRect();
+    const boardRect = boardElRect
+      ? {
+          left: boardElRect.left,
+          top: boardElRect.top,
+          right: boardElRect.right,
+          bottom: boardElRect.bottom,
+        }
+      : null;
+
+    const resolution = resolveTouchDropTarget({
+      aimPoint,
+      slots,
+      boardRect,
+      canDirectPlay,
+    });
+
+    let statusText = '松手返回手牌区（取消操作）';
+    if (resolution.kind === 'slot') {
+      if (resolution.slot.isValidDeploy) {
+        const posLabel = resolution.slot.position === 'front' ? '前锋' : '后卫';
+        statusText = `松手部署 · ${LANE_LABEL[resolution.slot.lane]}${posLabel} (-${cardDef?.cost ?? 0} DP)`;
+      } else {
+        const targetDef = resolution.slot.unitId ? cardDefinitionOf(state, resolution.slot.unitId) : undefined;
+        statusText = `松手施放 · 目标【${targetDef?.card_name_zh ?? '干员'}】`;
+      }
+    } else if (resolution.kind === 'direct_play') {
+      statusText = `松手直接施放 · ${cardDef?.card_name_zh ?? '战术指令'} (-${cardDef?.cost ?? 0} DP)`;
+    } else if (resolution.kind === 'invalid_slot') {
+      if (cardDef?.card_type === 'operator') {
+        statusText =
+          getInvalidDeployReason(
+            state,
+            actor,
+            cardId,
+            resolution.slot.half,
+            resolution.slot.lane,
+            resolution.slot.position,
+          ) ?? '所选格位不可部署';
+      } else {
+        statusText = getInvalidCardReason(state, actor, cardId) ?? '该目标无法使用此卡牌';
+      }
+    }
+
+    return { aimPoint, resolution, statusText };
+  };
+
+  const dispatchRef = useRef(dispatch);
+  dispatchRef.current = dispatch;
+  const legalRef = useRef(legal);
+  legalRef.current = legal;
+
+  const handleTouchStartCardCandidate = (
+    cardId: CardInstanceId,
+    e: React.PointerEvent<HTMLDivElement>,
+    layoutMode: TouchDragLayoutMode,
+  ) => {
+    if (e.pointerType === 'mouse' || !e.isPrimary) return;
+    if (!canAct || !isActionPhase || hasPending) return;
+
+    cancelPendingTouchCandidate();
+    const pointerId = e.pointerId;
+    const start: PointerPosition = { x: e.clientX, y: e.clientY };
+    touchCandidateRef.current = { cardId, pointerId, start, layoutMode, active: false };
+
+    const cleanup = () => {
+      window.removeEventListener('pointermove', onWindowPointerMove);
+      window.removeEventListener('pointerup', onWindowPointerUp);
+      window.removeEventListener('pointercancel', onWindowPointerCancel);
+      touchCleanupRef.current = null;
+      touchCandidateRef.current = null;
+      lastSnappedSlotKeyRef.current = null;
+    };
+
+    const syncDragFrame = (pointer: PointerPosition) => {
+      const candidate = touchCandidateRef.current;
+      if (!candidate) return;
+      const evaluated = evaluateTouchDragRef.current(candidate.cardId, pointer);
+      setTouchDragState({
+        cardId: candidate.cardId,
+        pointerId: candidate.pointerId,
+        pointer,
+        aimPoint: evaluated.aimPoint,
+        resolution: evaluated.resolution,
+        statusText: evaluated.statusText,
+        layoutMode: candidate.layoutMode,
+      });
+
+      if (evaluated.resolution.kind === 'slot' || evaluated.resolution.kind === 'invalid_slot') {
+        const s = evaluated.resolution.slot;
+        setDragOverSlot({ half: s.half, lane: s.lane, position: s.position });
+        const nextSnapKey = evaluated.resolution.kind === 'slot' ? s.key : null;
+        if (nextSnapKey && nextSnapKey !== lastSnappedSlotKeyRef.current) {
+          triggerHaptic(6);
+        }
+        lastSnappedSlotKeyRef.current = nextSnapKey;
+      } else {
+        setDragOverSlot(null);
+        lastSnappedSlotKeyRef.current = null;
+      }
+    };
+
+    const onWindowPointerMove = (moveEv: PointerEvent) => {
+      const candidate = touchCandidateRef.current;
+      if (!candidate || moveEv.pointerId !== candidate.pointerId) return;
+      const current: PointerPosition = { x: moveEv.clientX, y: moveEv.clientY };
+
+      if (!candidate.active) {
+        const intent = detectTouchDragIntent({
+          start: candidate.start,
+          current,
+          layoutMode: candidate.layoutMode,
+        });
+        if (intent === 'pending') return;
+        if (intent === 'scroll') {
+          cleanup();
+          return;
+        }
+        candidate.active = true;
+        setHoveredCard(null);
+        setDraggingCardId(candidate.cardId);
+        setSelection(candidate.cardId);
+        playCombatSfx('select');
+        triggerHaptic(8);
+      }
+
+      if (moveEv.cancelable) {
+        moveEv.preventDefault();
+      }
+      syncDragFrame(current);
+    };
+
+    const finishDrag = (endEv: PointerEvent, cancelled: boolean) => {
+      const candidate = touchCandidateRef.current;
+      if (!candidate || endEv.pointerId !== candidate.pointerId) return;
+      const wasActive = candidate.active;
+      const draggedCardId = candidate.cardId;
+      cleanup();
+
+      if (!wasActive) return;
+
+      justFinishedTouchDragAtRef.current = Date.now();
+      setDraggingCardId(null);
+      setDragOverSlot(null);
+      setTouchDragState(null);
+
+      if (cancelled) {
+        playTacticalSfx('click');
+        return;
+      }
+
+      const dropPointer: PointerPosition = { x: endEv.clientX, y: endEv.clientY };
+      const evaluated = evaluateTouchDragRef.current(draggedCardId, dropPointer);
+      const currentLegal = legalRef.current;
+
+      if (evaluated.resolution.kind === 'slot') {
+        const slot = evaluated.resolution.slot;
+        if (slot.isValidDeploy) {
+          const action = currentLegal.find(
+            (a): a is DeployAction =>
+              a.type === 'deploy_operator' &&
+              a.card_instance_id === draggedCardId &&
+              a.lane === slot.lane &&
+              a.position === slot.position,
+          );
+          if (action) {
+            triggerHaptic(14);
+            void dispatchRef.current(action);
+            return;
+          }
+        } else if (slot.isValidUnitTarget && slot.unitId) {
+          const action = currentLegal.find(
+            (a): a is PlayCardAction =>
+              a.type === 'play_card' &&
+              a.card_instance_id === draggedCardId &&
+              a.target_instance_id === slot.unitId,
+          );
+          if (action) {
+            triggerHaptic(14);
+            void dispatchRef.current(action);
+            return;
+          }
+        }
+      } else if (evaluated.resolution.kind === 'direct_play') {
+        const action = currentLegal.find(
+          (a): a is PlayCardAction =>
+            a.type === 'play_card' &&
+            a.card_instance_id === draggedCardId &&
+            a.target_instance_id === undefined,
+        );
+        if (action) {
+          triggerHaptic(14);
+          void dispatchRef.current(action);
+          return;
+        }
+      } else if (evaluated.resolution.kind === 'invalid_slot') {
+        playTacticalSfx('alert');
+        triggerHaptic(10);
+        setError(evaluated.statusText);
+        return;
+      }
+
+      playTacticalSfx('click');
+    };
+
+    const onWindowPointerUp = (upEv: PointerEvent) => finishDrag(upEv, false);
+    const onWindowPointerCancel = (cancelEv: PointerEvent) => finishDrag(cancelEv, true);
+
+    touchCleanupRef.current = cleanup;
+    window.addEventListener('pointermove', onWindowPointerMove, { passive: false });
+    window.addEventListener('pointerup', onWindowPointerUp);
+    window.addEventListener('pointercancel', onWindowPointerCancel);
   };
 
   const selectedInstance = selection ? state.card_instances[selection] : undefined;
@@ -515,6 +920,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         isSlotHovered && !isDeployTarget && activeHandCardId && activeHandIsOperator && isActionPhase && canAct && !hasPending
           ? getInvalidDeployReason(state, actor, activeHandCardId, half, lane, position)
           : null;
+
+      const isTouchLockedSlot = Boolean(
+        touchDragState &&
+          touchDragState.resolution.kind === 'slot' &&
+          touchDragState.resolution.slot.key === slotKey &&
+          touchDragState.resolution.slot.isValidDeploy,
+      );
 
       return (
         <div
@@ -575,16 +987,21 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               dispatch(action);
             } else {
               const reason = getInvalidDeployReason(state, actor, cardId, half, lane, position);
-              if (reason) setError(reason);
+              if (reason) {
+                playTacticalSfx('alert');
+                setError(reason);
+              }
             }
           }}
           className={`relative flex items-center justify-center ${
             useCompactBoard ? 'h-[54px]' : 'h-[58px] sm:h-[70px] lg:h-[82px]'
           } border transition-all duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
             isDeployTarget
-              ? isSlotHovered
-                ? 'border-[#f59e0b] bg-amber-500/35 ring-2 ring-[#f59e0b] shadow-[0_0_16px_rgba(245,158,11,0.55)] cursor-pointer'
-                : 'border-[#e5a52b] bg-amber-500/20 ring-2 ring-[#e5a52b]/60 shadow-[0_0_12px_rgba(229,165,43,0.4)] cursor-pointer animate-pulse'
+              ? isTouchLockedSlot
+                ? 'border-[#f59e0b] bg-amber-500/40 ring-2 ring-[#f59e0b] scale-[1.03] shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer z-20'
+                : isSlotHovered
+                  ? 'border-[#f59e0b] bg-amber-500/35 ring-2 ring-[#f59e0b] shadow-[0_0_16px_rgba(245,158,11,0.55)] cursor-pointer'
+                  : 'border-[#e5a52b] bg-amber-500/20 ring-2 ring-[#e5a52b]/60 shadow-[0_0_12px_rgba(229,165,43,0.4)] cursor-pointer animate-pulse'
               : slotInvalidReason
                 ? 'border-rose-500/70 bg-rose-950/35 cursor-not-allowed'
                 : isAttackLaneCell
@@ -598,12 +1015,16 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           {isDeployTarget ? (
             <div className="flex flex-col items-center gap-0.5 text-[#e5a52b] font-bold text-[10px] sm:text-xs tracking-wider text-center px-1">
               <span className="truncate max-w-full">
-                {isSlotHovered && activeHandDef
-                  ? `✓ 部署 ${activeHandDef.card_name_zh}`
-                  : '+ 部署'}
+                {isTouchLockedSlot
+                  ? '✓ 释放部署'
+                  : isSlotHovered && activeHandDef
+                    ? `✓ 部署 ${activeHandDef.card_name_zh}`
+                    : '+ 部署'}
               </span>
               <span className="text-[8px] sm:text-[10px] font-mono">
-                {isSlotHovered && activeHandDef ? `-${activeHandDef.cost} DP · ${posName}` : `(${posName})`}
+                {(isTouchLockedSlot || isSlotHovered) && activeHandDef
+                  ? `-${activeHandDef.cost} DP · ${posName}`
+                  : `(${posName})`}
               </span>
             </div>
           ) : slotInvalidReason ? (
@@ -679,6 +1100,21 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       disableMotion: combatAnim.effectiveDisabled,
     };
 
+    const canActivateUnitSkill =
+      instance.controller_id === actor &&
+      isActionPhase &&
+      canAct &&
+      !hasPending &&
+      legal.some(
+        (a) => a.type === 'activate_skill' && a.card_instance_id === instance.card_instance_id,
+      );
+    const isUnitDragLocked = Boolean(
+      touchDragState &&
+        touchDragState.resolution.kind === 'slot' &&
+        touchDragState.resolution.slot.key === slotKey &&
+        touchDragState.resolution.slot.isValidUnitTarget,
+    );
+
     return (
       <div
         key={instance.card_instance_id}
@@ -692,9 +1128,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           instance={instance}
           highlight={highlight}
           compact={useCompactBoard}
+          canActivateSkill={canActivateUnitSkill}
+          isDragLocked={isUnitDragLocked}
           animState={unitAnimState}
           onClick={() => onUnitClick(instance)}
+          onDoubleTap={() => handleUnitDoubleTap(instance)}
           onLongPress={() => {
+            cancelPendingTouchCandidate();
             setSelection(instance.card_instance_id);
             setShowDetail(true);
           }}
@@ -738,11 +1178,17 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               {selectedInstance.zone === 'hand' ? (
                 selectedDeployActions.length > 0 ? (
                   <span className="text-slate-200">
-                    {' '}· 点黄格部署（{selectedDefinition?.cost ?? 0} DP）
+                    {' '}· {isMobile ? (useSideRail ? '左拖或点黄格部署' : '上拖或点黄格部署') : '点黄格部署'}（{selectedDefinition?.cost ?? 0} DP）
                   </span>
                 ) : selectedPlayActions.length > 0 ? (
                   <span className="text-cyan-300">
-                    {directPlayAction ? ' · 可直接使用此战术卡' : ' · 点击青色高亮目标发动'}
+                    {directPlayAction
+                      ? isMobile
+                        ? ' · 拖入棋盘或点下方直接使用'
+                        : ' · 可直接使用此战术卡'
+                      : isMobile
+                        ? ' · 拖向目标或点击青色高亮单位发动'
+                        : ' · 点击青色高亮目标发动'}
                   </span>
                 ) : (
                   <span className="text-rose-300">
@@ -762,9 +1208,15 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
                   {attackPreview.cannotAttackReason && (
                     <span className="text-slate-400 ml-1.5">({attackPreview.cannotAttackReason})</span>
                   )}
+                  {canQuickActOnSelectedUnit && selectedUnitActions.canSkillDirect && (
+                    <span className="text-amber-300 ml-1.5">· ⚡双击可发动技能</span>
+                  )}
+                  {canQuickActOnSelectedUnit && selectedUnitActions.skillTargets.size > 0 && (
+                    <span className="text-cyan-300 ml-1.5">· ⚡点青格目标发动技能</span>
+                  )}
                 </span>
               ) : (
-                <span className="text-slate-300"> · 战场编队干员</span>
+                <span className="text-slate-300"> · 战场编队干员（长按看详情）</span>
               )}
             </span>
           ) : (
@@ -831,7 +1283,10 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSelection(null)}
+              onClick={() => {
+                playTacticalSfx('click');
+                setSelection(null);
+              }}
               className="text-slate-400 hover:text-white px-2 py-0.5 text-[10px] min-h-[28px] sm:min-h-[26px]"
             >
               ✕ 取消
@@ -970,7 +1425,22 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             )}
 
             <div className="relative flex-1 min-h-0 overflow-y-auto overscroll-contain flex flex-col items-center px-1 sm:px-3 lg:px-4 py-1 sm:py-1.5">
-              <div ref={boardGridRef} className="relative my-auto w-full max-w-4xl">
+              <div
+                ref={boardGridRef}
+                className={`relative my-auto w-full max-w-4xl transition-all duration-150 ${
+                  touchDragState?.resolution.kind === 'direct_play'
+                    ? 'ring-2 ring-cyan-400/85 bg-cyan-950/15 shadow-[0_0_24px_rgba(34,211,238,0.25)]'
+                    : ''
+                }`}
+              >
+                {touchDragState?.resolution.kind === 'direct_play' && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-40 px-3 py-1 bg-cyan-950/95 border border-cyan-400 text-cyan-200 font-mono font-bold text-[11px] shadow-lg whitespace-nowrap"
+                  >
+                    ⚡ 松手直接释放战术指令
+                  </div>
+                )}
                 <div className="grid grid-cols-3 gap-1 sm:gap-2 lg:gap-2.5 w-full">
                   {LANES.map((lane) => {
                     const isDirectBaseLane = Boolean(attackPreview?.attacksBase && attackPreview.lane === lane);
@@ -1070,6 +1540,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             selectionPrompt={selectionPromptContent}
             onHandCardClick={onHandCardClick}
             onLongPressCard={(id) => {
+              cancelPendingTouchCandidate();
               setSelection(id);
               setShowDetail(true);
             }}
@@ -1081,6 +1552,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               }
             }}
             onDragStartCard={(id, e) => {
+              playCombatSfx('select');
               setHoveredCard(null);
               setDraggingCardId(id);
               setSelection(id);
@@ -1091,6 +1563,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               setDraggingCardId(null);
               setDragOverSlot(null);
             }}
+            onTouchStartCardCandidate={handleTouchStartCardCandidate}
             onEndActionPhase={() => dispatch({ type: 'end_action_phase' })}
           />
         </main>
@@ -1242,6 +1715,18 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             ✕
           </button>
         </div>
+      )}
+      {/* 11. 移动端触控拖拽悬浮预览、瞄准虚线与磁吸准星 */}
+      {touchDragState && cardDefinitionOf(state, touchDragState.cardId) && (
+        <CardTouchDragOverlay
+          definition={cardDefinitionOf(state, touchDragState.cardId)!}
+          pointer={touchDragState.pointer}
+          aimPoint={touchDragState.aimPoint}
+          resolution={touchDragState.resolution}
+          statusText={touchDragState.statusText}
+          viewportWidth={typeof window !== 'undefined' ? window.innerWidth : width}
+          viewportHeight={typeof window !== 'undefined' ? window.innerHeight : height}
+        />
       )}
     </div>
   );

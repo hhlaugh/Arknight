@@ -16,8 +16,11 @@ interface UnitViewProps {
   readonly instance: CardInstance;
   readonly highlight: UnitHighlight;
   readonly compact?: boolean;
+  readonly canActivateSkill?: boolean;
+  readonly isDragLocked?: boolean;
   readonly animState?: UnitAnimationState;
   readonly onClick?: () => void;
+  readonly onDoubleTap?: () => void;
   readonly onLongPress?: () => void;
   readonly onHoverStart?: () => void;
   readonly onHoverEnd?: () => void;
@@ -45,8 +48,11 @@ export function UnitView({
   instance,
   highlight,
   compact = false,
+  canActivateSkill = false,
+  isDragLocked = false,
   animState,
   onClick,
+  onDoubleTap,
   onLongPress,
   onHoverStart,
   onHoverEnd,
@@ -56,7 +62,8 @@ export function UnitView({
   const longPressHandlers = useLongPress({
     onLongPress,
     onClick,
-    disabled: !onClick && !onLongPress,
+    onDoubleTap,
+    disabled: !onClick && !onLongPress && !onDoubleTap,
   });
 
   if (!definition || !combat) return null;
@@ -119,22 +126,33 @@ export function UnitView({
           onClick();
         }
       }}
-      className={`group relative rounded-sm bg-[#181d24] select-none transition-all duration-150 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-        isSelected
-          ? 'border-[#e5a52b] ring-2 ring-[#e5a52b]/50 shadow-[0_0_14px_rgba(229,165,43,0.4)] z-20 scale-[1.01]'
-          : isTarget
-            ? 'border-cyan-400 ring-2 ring-cyan-400/60 shadow-[0_0_12px_rgba(56,189,248,0.45)] animate-pulse z-20'
-            : isAttackTarget
-              ? 'border-rose-500 ring-2 ring-rose-500/55 shadow-[0_0_12px_rgba(244,63,94,0.45)] z-20'
-              : animState?.hit
-                ? 'border-rose-400 ring-1 ring-rose-400/70 z-20'
-                : animState?.skillFlash
-                  ? 'border-cyan-400 ring-1 ring-cyan-400/70 z-20'
-                  : 'border-[#36424e] hover:border-[#526475] hover:bg-[#1e252e]'
+      className={`touch-gesture-surface group relative rounded-sm bg-[#181d24] select-none transition-all duration-150 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+        isDragLocked
+          ? 'border-cyan-300 ring-2 ring-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.65)] scale-[1.03] z-30'
+          : longPressHandlers.isHolding
+            ? 'border-amber-400 ring-2 ring-amber-400/80 z-25'
+            : isSelected
+              ? 'border-[#e5a52b] ring-2 ring-[#e5a52b]/50 shadow-[0_0_14px_rgba(229,165,43,0.4)] z-20 scale-[1.01]'
+              : isTarget
+                ? 'border-cyan-400 ring-2 ring-cyan-400/60 shadow-[0_0_12px_rgba(56,189,248,0.45)] animate-pulse z-20'
+                : isAttackTarget
+                  ? 'border-rose-500 ring-2 ring-rose-500/55 shadow-[0_0_12px_rgba(244,63,94,0.45)] z-20'
+                  : animState?.hit
+                    ? 'border-rose-400 ring-1 ring-rose-400/70 z-20'
+                    : animState?.skillFlash
+                      ? 'border-cyan-400 ring-1 ring-cyan-400/70 z-20'
+                      : 'border-[#36424e] hover:border-[#526475] hover:bg-[#1e252e]'
       } ${motionClass} w-full ${compact ? 'h-[54px]' : 'h-[58px] sm:h-[70px] lg:h-[82px]'}`}
     >
       {/* 内部裁切内容容器（保证立绘/血条不溢出，同时允许上方浮动跳字完整浮现） */}
       <div className={`relative flex flex-col justify-between w-full h-full ${compact ? 'p-0.5 pl-1.5' : 'p-1 sm:p-1.5 pl-1.5 sm:pl-2'} overflow-hidden`}>
+        {/* 长按查看详情蓄力进度条 */}
+        {longPressHandlers.isHolding && (
+          <div
+            aria-hidden="true"
+            className="absolute top-0 left-0 right-0 h-[3px] bg-amber-400 z-30 pointer-events-none anim-hold-charge"
+          />
+        )}
         {/* 左侧稀有度竖向导轨 */}
         <div
           className="absolute left-0 top-0 bottom-0 w-[3px] pointer-events-none"
@@ -229,17 +247,34 @@ export function UnitView({
           </span>
         </div>
 
+        {/* 拖拽释放锁定指示 */}
+        {isDragLocked && (
+          <div className="absolute top-0 right-0 px-1 py-0.2 bg-cyan-400 text-slate-950 font-mono font-black text-[8px] pointer-events-none z-25">
+            ✓ 释放锁定
+          </div>
+        )}
+
         {/* 可用技能/战术指定目标指示 */}
-        {isTarget && (
+        {!isDragLocked && isTarget && (
           <div className="absolute top-0 right-0 px-1 py-0.2 bg-cyan-500 text-slate-950 font-mono font-black text-[8px] pointer-events-none">
             ◎ 目标
           </div>
         )}
 
         {/* 攻击索敌锁定角标 */}
-        {isAttackTarget && !isTarget && (
+        {!isDragLocked && isAttackTarget && !isTarget && (
           <div className="absolute top-0 right-0 px-1 py-0.2 bg-rose-600 text-white font-mono font-black text-[8px] pointer-events-none">
             ⚔ 锁定
+          </div>
+        )}
+
+        {/* 主动技能就绪指示（双击可快速发动） */}
+        {!isDragLocked && !isTarget && !isAttackTarget && canActivateSkill && (
+          <div
+            data-skill-ready="true"
+            className="absolute top-0 right-0 px-1 py-0.2 bg-amber-400/95 text-slate-950 font-mono font-black text-[8px] pointer-events-none shadow-xs"
+          >
+            ⚡ 就绪
           </div>
         )}
       </div>

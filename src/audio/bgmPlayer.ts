@@ -214,17 +214,14 @@ export function useBgmStatus(): BgmSnapshot {
 }
 
 /**
- * 轻量 PRTS 战术终端合成音效（Web Audio API）：无需额外音效资源即可响应音量/静音调节。
+ * 获取并按需唤醒全局共享的 SFX AudioContext（避免创建过多硬件音频节点）。
  */
-export function playTacticalSfx(kind: 'click' | 'confirm' | 'alert' = 'click'): void {
-  if (typeof window === 'undefined') return;
-  const vol = computeEffectiveSfxVolume();
-  if (vol <= 0) return;
-
+export function getSfxAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null;
   const AudioCtx =
     window.AudioContext ||
     (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!AudioCtx) return;
+  if (!AudioCtx) return null;
 
   try {
     if (!sfxAudioContext) {
@@ -233,12 +230,28 @@ export function playTacticalSfx(kind: 'click' | 'confirm' | 'alert' = 'click'): 
     if (sfxAudioContext.state === 'suspended') {
       void sfxAudioContext.resume();
     }
+    return sfxAudioContext;
+  } catch {
+    return null;
+  }
+}
 
-    const now = sfxAudioContext.currentTime;
-    const osc = sfxAudioContext.createOscillator();
-    const gain = sfxAudioContext.createGain();
+/**
+ * 轻量 PRTS 战术终端合成音效（Web Audio API）：无需额外音效资源即可响应音量/静音调节。
+ */
+export function playTacticalSfx(kind: 'click' | 'confirm' | 'alert' = 'click'): void {
+  const vol = computeEffectiveSfxVolume();
+  if (vol <= 0) return;
+
+  const ctx = getSfxAudioContext();
+  if (!ctx) return;
+
+  try {
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(sfxAudioContext.destination);
+    gain.connect(ctx.destination);
 
     if (kind === 'confirm') {
       osc.type = 'triangle';

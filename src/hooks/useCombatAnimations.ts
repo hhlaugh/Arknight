@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { updateAppSettings, useAppSettings } from '../data/app-settings';
+import { playCombatAudioCues } from '../audio/combatSfx';
 import type { CardInstanceId, CombatLogEvent, GameState, PlayerId } from '../game/types';
 import {
   buildPresentationBeats,
   captureBoardPositions,
+  collectImmediateCombatAudioCues,
   getCssAnimationScale,
   type AnimationSpeedMode,
   type PresentationBeat,
@@ -62,6 +64,7 @@ export function useCombatAnimations({
   const prevLogLenRef = useRef<number>(logHistory.length);
   const prevPositionsRef = useRef<Map<CardInstanceId, UnitSlotLocation>>(captureBoardPositions(state));
   const timerRef = useRef<number | null>(null);
+  const lastPlayedBeatIdRef = useRef<string | null>(null);
 
   const effectiveDisabled = speedMode === 'off' || prefersReducedMotion;
 
@@ -105,16 +108,28 @@ export function useCombatAnimations({
     prevPositionsRef.current = currentPositions;
 
     if (isReset) {
-      setQueue([]);
-      return;
-    }
-
-    if (effectiveDisabled) {
+      lastPlayedBeatIdRef.current = null;
       setQueue([]);
       return;
     }
 
     const newEvents = logHistory.slice(prevLogLen);
+
+    if (effectiveDisabled) {
+      setQueue([]);
+      if (newEvents.length > 0 || prevState.active_player_id !== state.active_player_id || prevState.turn_number !== state.turn_number) {
+        playCombatAudioCues(
+          collectImmediateCombatAudioCues({
+            prevState,
+            nextState: state,
+            newEvents,
+            bottomPlayer,
+          }),
+        );
+      }
+      return;
+    }
+
     if (
       newEvents.length === 0 &&
       prevState.active_player_id === state.active_player_id &&
@@ -143,7 +158,7 @@ export function useCombatAnimations({
     }
   }, [state, logHistory, bottomPlayer, speedMode, effectiveDisabled]);
 
-  // 定时推进队列中的当前节拍，并在卸载或清空时清理定时器
+  // 定时推进队列中的当前节拍，并同步播放本节拍的明日方舟战术音效
   const activeBeat = !effectiveDisabled && queue.length > 0 ? queue[0] : null;
 
   useEffect(() => {
@@ -153,6 +168,11 @@ export function useCombatAnimations({
     }
 
     if (!activeBeat) return;
+
+    if (lastPlayedBeatIdRef.current !== activeBeat.id) {
+      lastPlayedBeatIdRef.current = activeBeat.id;
+      playCombatAudioCues(activeBeat.audioCues);
+    }
 
     const duration = Math.max(80, activeBeat.durationMs);
     timerRef.current = window.setTimeout(() => {

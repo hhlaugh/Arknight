@@ -51,12 +51,16 @@ interface CardViewProps {
   readonly selectable?: boolean;
   readonly checked?: boolean;
   readonly draggable?: boolean;
+  readonly touchActionMode?: 'pan-x' | 'pan-y';
+  readonly isTouchDragging?: boolean;
   readonly onClick?: () => void;
+  readonly onDoubleTap?: () => void;
   readonly onLongPress?: () => void;
   readonly onHoverStart?: (rect: DOMRect) => void;
   readonly onHoverEnd?: () => void;
   readonly onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
   readonly onDragEnd?: (e: React.DragEvent<HTMLDivElement>) => void;
+  readonly onTouchPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
 }
 
 export function CardView({
@@ -68,19 +72,24 @@ export function CardView({
   selectable = false,
   checked = false,
   draggable = false,
+  touchActionMode = 'pan-x',
+  isTouchDragging = false,
   onClick,
+  onDoubleTap,
   onLongPress,
   onHoverStart,
   onHoverEnd,
   onDragStart,
   onDragEnd,
+  onTouchPointerDown,
 }: CardViewProps) {
   const instance = state.card_instances[instanceId];
   const definition = cardDefinitionOf(state, instanceId);
   const longPressHandlers = useLongPress({
     onLongPress,
     onClick,
-    disabled: !onClick && !onLongPress,
+    onDoubleTap,
+    disabled: !onClick && !onLongPress && !onDoubleTap,
   });
 
   if (!instance || !definition) return null;
@@ -88,6 +97,7 @@ export function CardView({
   const ownerCost = state.players[instance.owner_id]?.cost ?? 0;
   const affordable = ownerCost >= definition.cost;
   const isUnplayable = instance.zone === 'hand' && !selectable && interactive && !affordable && cd === 0;
+  const touchPanClass = isTouchDragging ? 'touch-none' : touchActionMode === 'pan-y' ? 'touch-pan-y' : 'touch-pan-x';
 
   return (
     <CardFrame
@@ -95,6 +105,7 @@ export function CardView({
       definition={definition}
       variant={variant}
       selected={selected}
+      holding={longPressHandlers.isHolding}
       interactive={interactive}
       unplayable={isUnplayable}
       checked={checked}
@@ -107,7 +118,12 @@ export function CardView({
       onDragEnd={onDragEnd}
       onMouseEnter={(e) => onHoverStart?.(e.currentTarget.getBoundingClientRect())}
       onMouseLeave={() => onHoverEnd?.()}
-      onPointerDown={longPressHandlers.onPointerDown}
+      onPointerDown={(e) => {
+        longPressHandlers.onPointerDown(e);
+        if (e.pointerType !== 'mouse') {
+          onTouchPointerDown?.(e);
+        }
+      }}
       onPointerMove={longPressHandlers.onPointerMove}
       onPointerUp={longPressHandlers.onPointerUp}
       onPointerCancel={longPressHandlers.onPointerCancel}
@@ -116,7 +132,7 @@ export function CardView({
         e?.stopPropagation();
         longPressHandlers.onClick(e as React.MouseEvent);
       }}
-      className={`touch-pan-x card card-${definition.card_type}${selected ? ' selected' : ''}${interactive ? ' interactive' : ''}${checked ? ' checked' : ''}${cd > 0 ? ' card-dimmed' : ''}`}
+      className={`${touchPanClass} card card-${definition.card_type}${selected ? ' selected' : ''}${interactive ? ' interactive' : ''}${checked ? ' checked' : ''}${cd > 0 ? ' card-dimmed' : ''}${isTouchDragging ? ' opacity-35 scale-95 border-dashed ring-1 ring-amber-400/60' : ''}`}
     />
   );
 }

@@ -297,11 +297,23 @@ function GameScreen({ controller, mode, botSeat, onOpenSettings, onExit, onResta
   }
 
   if (state.phase === 'finished') {
+    const humanSeat = botSeat === 'player_b' ? 'player_a' : 'player_b';
+    const outcome =
+      state.winner === 'draw'
+        ? 'draw'
+        : mode === 'vs-bot'
+          ? state.winner === humanSeat
+            ? 'victory'
+            : 'defeat'
+          : state.winner
+            ? 'victory'
+            : 'draw';
     return (
       <SettlementView
         snapshot={snapshot}
         setup={controller.getSetup()}
         modeLabel={mode === 'vs-bot' ? '模式：单人对战（机器人 · 普通难度）' : '模式：本地热座（双人）'}
+        outcome={outcome}
         reward={reward}
         onRestart={onRestart}
         onExit={onExit}
@@ -397,11 +409,14 @@ function OnlineScreen({ controller, snapshot, onOpenSettings, onExit }: OnlineSc
   }
 
   if (state.phase === 'finished') {
+    const outcome =
+      state.winner === 'draw' ? 'draw' : state.winner === mySeat ? 'victory' : 'defeat';
     return (
       <SettlementView
         snapshot={gameSnapshot}
         setup={setup}
         modeLabel={`模式：好友联机对战（房间码：${snapshot.roomCode} · 你执${mySeat === 'player_a' ? '玩家 A' : '玩家 B'}）`}
+        outcome={outcome}
         reward={reward}
         onRestart={() => controller.leaveRoom()}
         onExit={() => {
