@@ -16,6 +16,7 @@ import {
 } from '../data/validate-card-assets';
 import { enumerateLegalActions } from '../game/legal-actions';
 import type { CardId } from '../game/types';
+import { AuthView } from './AuthView';
 import { BattleView } from './BattleView';
 import { CardLibraryView } from './CardLibraryView';
 import { DeckEditorView } from './DeckEditorView';
@@ -25,6 +26,7 @@ import { RecruitmentView } from './RecruitmentView';
 import { RoomLobbyView } from './RoomLobbyView';
 import { SettlementView } from './SettlementView';
 import { StartView } from './StartView';
+import { SettingsModal } from '../components/ui/SettingsModal';
 
 const noop = () => {};
 const noopActionResult = () => ({ ok: true as const });
@@ -145,6 +147,25 @@ describe('Phase 7 全面回归验收测试套件', () => {
     controller.submitMulligan('player_b', []);
     const battleSnap = controller.getSnapshot();
 
+    const authHtml = renderToString(
+      <AuthView onAuthenticated={noop} onOpenSettings={noop} />,
+    );
+    expect(authHtml).toContain('data-testid="auth-rhodes-tower-backdrop"');
+    expect(authHtml).toContain('rhodes_island_dark.png');
+    expect(authHtml).toContain('登录账户');
+    expect(authHtml).toContain('注册新档案');
+    expect(authHtml).toContain('aria-label="打开系统设置"');
+    expect(authHtml).not.toContain('animate-pulse');
+
+    const settingsModalHtml = renderToString(
+      <SettingsModal isOpen onClose={noop} activeUsername="指挥官" onLogout={noop} />,
+    );
+    expect(settingsModalHtml).toContain('系统设置');
+    expect(settingsModalHtml).toContain('主音量');
+    expect(settingsModalHtml).toContain('背景音乐');
+    expect(settingsModalHtml).toContain('战斗动画与轨迹演出速度');
+    expect(settingsModalHtml).toContain('战斗攻击路径与冲击特效');
+
     const startHtml = renderToString(
       <StartView
         onHotseat={noop}
@@ -153,6 +174,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
         onDeckEditor={noop}
         onLibrary={noop}
         onRecruitment={noop}
+        onOpenSettings={noop}
+        onLogout={noop}
       />,
     );
     expect(startHtml).toContain('舟塔自走牌');
@@ -162,6 +185,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(startHtml).toContain('rhodes_island_light.png');
     expect(startHtml).toContain('rhodes_island_dark.png');
     expect(startHtml).toContain('prts_badge.svg');
+    expect(startHtml).toContain('aria-label="打开系统设置"');
+    expect(startHtml).toContain('aria-label="退出登录"');
     expect(startHtml).not.toContain('animate-pulse');
     expect(startHtml).not.toContain('招募');
     expect(startHtml).not.toContain('PROTOCOL');
@@ -215,7 +240,13 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(recruitmentHtml).toContain('编制卡组');
 
     const battleHotseatHtml = renderToString(
-      <BattleView snapshot={battleSnap} controller={controller} humanPlayer={null} onExit={noop} />,
+      <BattleView
+        snapshot={battleSnap}
+        controller={controller}
+        humanPlayer={null}
+        onExit={noop}
+        onOpenSettings={noop}
+      />,
     );
     expect(battleHotseatHtml).toContain('玩家 A');
     expect(battleHotseatHtml).toContain('结束行动');
@@ -224,6 +255,7 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(battleHotseatHtml).toContain('prts_diamond.png');
     expect(battleHotseatHtml).toContain('aria-label="投降"');
     expect(battleHotseatHtml).toContain('aria-label="退出对局"');
+    expect(battleHotseatHtml).toContain('aria-label="系统设置"');
     expect(battleHotseatHtml).not.toContain('aria-label="战局菜单"');
     expect(battleHotseatHtml).toContain('--combat-anim-scale:2');
     expect(battleHotseatHtml).toContain('0.5x');

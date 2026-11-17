@@ -63,7 +63,7 @@ export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
         {/* Subtle Scanlines Texture */}
         {scanlines && (
           <div
-            className="absolute inset-0 opacity-5 pointer-events-none z-0"
+            className="prts-scanlines absolute inset-0 opacity-5 pointer-events-none z-0"
             style={{
               backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)',
             }}
@@ -73,7 +73,7 @@ export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
         {/* Subtle Grid Pattern */}
         {grid && (
           <div
-            className="absolute inset-0 opacity-5 pointer-events-none z-0"
+            className="prts-grid absolute inset-0 opacity-5 pointer-events-none z-0"
             style={{
               backgroundImage: `
                 linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),

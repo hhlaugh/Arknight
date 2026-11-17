@@ -398,6 +398,26 @@ b { color: #fff; }
   }
 }
 
+/* ---------- 全局设置：扫描线与战斗冲击特效开关 ---------- */
+[data-scanline-fx="off"] .prts-scanlines,
+[data-scanline-fx="off"] .prts-grid {
+  display: none !important;
+}
+
+[data-combat-vfx="off"] .anim-hit-flash,
+[data-combat-vfx="off"] .anim-slot-flash,
+[data-combat-vfx="off"] .anim-attack-glow,
+[data-combat-vfx="off"] .anim-skill-burst,
+[data-combat-vfx="off"] .anim-deploy-rarity-5,
+[data-combat-vfx="off"] .anim-deploy-rarity-6,
+[data-combat-vfx="off"] .gacha-burst-5,
+[data-combat-vfx="off"] .gacha-burst-6,
+[data-combat-vfx="off"] .gacha-beam-6,
+[data-combat-vfx="off"] .gacha-sweep {
+  display: none !important;
+  animation: none !important;
+}
+
 /* ---------- 日志滚动区 ---------- */
 .log-view { max-height: 70vh; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
 .log-omitted { color: var(--muted); font-size: 11px; margin-bottom: 4px; }

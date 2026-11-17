@@ -22,9 +22,20 @@ interface StartViewProps {
   readonly onDeckEditor: () => void;
   readonly onLibrary?: () => void;
   readonly onRecruitment: () => void;
+  readonly onOpenSettings?: () => void;
+  readonly onLogout?: () => void;
 }
 
-export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrary, onRecruitment }: StartViewProps) {
+export function StartView({
+  onHotseat,
+  onVsBot,
+  onOnline,
+  onDeckEditor,
+  onLibrary,
+  onRecruitment,
+  onOpenSettings,
+  onLogout,
+}: StartViewProps) {
   const [accounts, setAccounts] = useState<AccountSummary[]>(() => listAccounts());
   const [activeName, setActiveNameState] = useState(() => getActiveAccountName());
   const [collection, setCollection] = useState(() => getActiveCollection());
@@ -113,7 +124,7 @@ export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrar
               </span>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono tabular-nums">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] font-mono tabular-nums">
             <span className="text-slate-300">
               账户 <strong className="text-white">{activeName}</strong>
             </span>
@@ -122,6 +133,28 @@ export function StartView({ onHotseat, onVsBot, onOnline, onDeckEditor, onLibrar
               收录 {ownedSpeciesCount}/{DEMO_CARDS.length}
             </span>
             <Badge variant="rarity" value={6}>v0.8 规则</Badge>
+            {onOpenSettings && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onOpenSettings}
+                aria-label="打开系统设置"
+                className="text-[11px] font-mono px-2.5 py-1"
+              >
+                ⚙ 设置
+              </Button>
+            )}
+            {onLogout && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onLogout}
+                aria-label="退出登录"
+                className="text-[11px] font-mono px-2 py-1 text-slate-300 border border-[#3a4552] hover:border-rose-400 hover:text-rose-200"
+              >
+                退出登录
+              </Button>
+            )}
           </div>
         </div>
 

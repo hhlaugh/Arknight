@@ -23,6 +23,7 @@ interface TacticalBattleHudProps {
   readonly onCycleAnimSpeed?: () => void;
   readonly enemyBaseDamageDelta?: number | null;
   readonly disableMotion?: boolean;
+  readonly onOpenSettings?: () => void;
 }
 
 const SPEED_LABEL: Record<AnimationSpeedMode, { short: string; title: string }> = {
@@ -57,6 +58,7 @@ export function TacticalBattleHud({
   onCycleAnimSpeed,
   enemyBaseDamageDelta = null,
   disableMotion = false,
+  onOpenSettings,
 }: TacticalBattleHudProps) {
   const playerEnemy = state.players[topPlayer];
   const isAllyTurn = actor === bottomPlayer;
@@ -242,6 +244,19 @@ export function TacticalBattleHud({
         >
           🔍<span className="hidden lg:inline ml-1">档案</span>
         </Button>
+
+        {onOpenSettings && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onOpenSettings}
+            title="打开系统设置（音量、特效、动效倍速）"
+            aria-label="系统设置"
+            className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 whitespace-nowrap text-slate-200 hover:text-amber-300"
+          >
+            ⚙<span className="hidden xl:inline ml-1">设置</span>
+          </Button>
+        )}
 
         {(onSurrender || onExit) && (
           <>

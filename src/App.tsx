@@ -5,6 +5,7 @@ import { OnlineMatchController, type OnlineMatchSnapshot } from './client/online
 import { BotPlayer, botMulliganChoice } from './ai/botPlayer';
 import { enumerateLegalActions } from './game/legal-actions';
 import { DEMO_CARDS, getAllAvailableDecks } from './client/gameData';
+import { AuthView } from './views/AuthView';
 import { StartView } from './views/StartView';
 import { DeckSelectView } from './views/DeckSelectView';
 import { DeckEditorView } from './views/DeckEditorView';
@@ -16,10 +17,14 @@ import { RecruitmentView } from './views/RecruitmentView';
 import { RoomLobbyView } from './views/RoomLobbyView';
 import { Modal } from './components/ui/Modal';
 import { Button } from './components/ui/Button';
+import { SettingsModal } from './components/ui/SettingsModal';
 import { awardBattleReward, getActiveAccountName, getDeckMode } from './data/player-collection';
+import { getAuthSession, isAuthenticated, logoutAccount } from './data/auth-store';
+import { useAppSettings } from './data/app-settings';
+import { playTacticalSfx, setBgmScene, type BgmScene } from './audio/bgmPlayer';
 import type { CardInstanceId, DeckDefinition, PlayerId } from './game/types';
 
-type Screen = 'title' | 'deckSelect' | 'game' | 'online' | 'deckEditor' | 'library' | 'recruitment';
+type Screen = 'auth' | 'title' | 'deckSelect' | 'game' | 'online' | 'deckEditor' | 'library' | 'recruitment';
 type Mode = 'hotseat' | 'vs-bot' | 'online';
 
 interface BattleReward {
@@ -33,37 +38,73 @@ function randomSeed(): number {
 }
 
 export function App() {
-  const [screen, setScreen] = useState<Screen>('title');
+  const [screen, setScreen] = useState<Screen>(() => (isAuthenticated() ? 'title' : 'auth'));
   const [mode, setMode] = useState<Mode>('hotseat');
   const [controller, setController] = useState<LocalGameController | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const onlineController = useMemo(() => new OnlineMatchController(), []);
   const onlineSnapshot = useSyncExternalStore(onlineController.subscribe, onlineController.getSnapshot);
+  const appSettings = useAppSettings();
 
-  if (screen === 'library') {
-    return (
+  const isInBattleScene =
+    screen === 'game' ||
+    ((mode === 'online' || screen === 'online') && onlineSnapshot.inGame);
+  const bgmScene: BgmScene =
+    screen === 'auth' ? 'auth' : isInBattleScene ? 'battle' : 'lobby';
+
+  useEffect(() => {
+    setBgmScene(bgmScene);
+  }, [bgmScene]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.documentElement.dataset.scanlineFx = appSettings.scanlineFxEnabled ? 'on' : 'off';
+    document.documentElement.dataset.combatVfx = appSettings.combatVfxEnabled ? 'on' : 'off';
+  }, [appSettings.scanlineFxEnabled, appSettings.combatVfxEnabled]);
+
+  const handleOpenSettings = () => {
+    playTacticalSfx('click');
+    setSettingsOpen(true);
+  };
+
+  const handleLogout = () => {
+    onlineController.leaveRoom();
+    setController(null);
+    setMode('hotseat');
+    logoutAccount();
+    setScreen('auth');
+  };
+
+  const activeSession = screen !== 'auth' ? getAuthSession() : null;
+
+  let content: React.ReactNode;
+
+  if (screen === 'auth') {
+    content = (
+      <AuthView
+        onAuthenticated={() => setScreen('title')}
+        onOpenSettings={handleOpenSettings}
+      />
+    );
+  } else if (screen === 'library') {
+    content = (
       <CardLibraryView
         onBack={() => setScreen('title')}
         onOpenDeckEditor={() => setScreen('deckEditor')}
       />
     );
-  }
-
-  if (screen === 'recruitment') {
-    return (
+  } else if (screen === 'recruitment') {
+    content = (
       <RecruitmentView
         onBack={() => setScreen('title')}
         onOpenDeckEditor={() => setScreen('deckEditor')}
       />
     );
-  }
-
-  if (screen === 'deckEditor') {
-    return <DeckEditorView onBack={() => setScreen('title')} />;
-  }
-
-  if (screen === 'title') {
-    return (
+  } else if (screen === 'deckEditor') {
+    content = <DeckEditorView onBack={() => setScreen('title')} />;
+  } else if (screen === 'title') {
+    content = (
       <StartView
         onHotseat={() => {
           setMode('hotseat');
@@ -86,25 +127,24 @@ export function App() {
         onRecruitment={() => {
           setScreen('recruitment');
         }}
+        onOpenSettings={handleOpenSettings}
+        onLogout={handleLogout}
       />
     );
-  }
-
-  if (mode === 'online' || screen === 'online') {
-    return (
+  } else if (mode === 'online' || screen === 'online') {
+    content = (
       <OnlineScreen
         controller={onlineController}
         snapshot={onlineSnapshot}
+        onOpenSettings={handleOpenSettings}
         onExit={() => {
           onlineController.leaveRoom();
           setScreen('title');
         }}
       />
     );
-  }
-
-  if (screen === 'deckSelect' || !controller) {
-    return (
+  } else if (screen === 'deckSelect' || !controller) {
+    content = (
       <DeckSelectView
         mode={mode}
         onCancel={() => setScreen('title')}
@@ -115,19 +155,32 @@ export function App() {
         }}
       />
     );
+  } else {
+    content = (
+      <GameScreen
+        controller={controller}
+        mode={mode}
+        botSeat="player_b"
+        onOpenSettings={handleOpenSettings}
+        onExit={() => {
+          setController(null);
+          setScreen('title');
+        }}
+        onRestart={() => setController(LocalGameController.create({ ...controller.getSetup(), seed: randomSeed() }))}
+      />
+    );
   }
 
   return (
-    <GameScreen
-      controller={controller}
-      mode={mode}
-      botSeat="player_b"
-      onExit={() => {
-        setController(null);
-        setScreen('title');
-      }}
-      onRestart={() => setController(LocalGameController.create({ ...controller.getSetup(), seed: randomSeed() }))}
-    />
+    <>
+      {content}
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        activeUsername={screen !== 'auth' ? getActiveAccountName() : activeSession?.username ?? null}
+        onLogout={screen !== 'auth' ? handleLogout : undefined}
+      />
+    </>
   );
 }
 
@@ -135,11 +188,12 @@ interface GameScreenProps {
   readonly controller: LocalGameController;
   readonly mode: Mode;
   readonly botSeat: PlayerId;
+  readonly onOpenSettings: () => void;
   readonly onExit: () => void;
   readonly onRestart: () => void;
 }
 
-function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreenProps) {
+function GameScreen({ controller, mode, botSeat, onOpenSettings, onExit, onRestart }: GameScreenProps) {
   const snapshot = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const state = snapshot.state;
   const [reward, setReward] = useState<BattleReward | null>(null);
@@ -261,6 +315,7 @@ function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreen
       controller={controller}
       humanPlayer={mode === 'vs-bot' ? (botSeat === 'player_b' ? 'player_a' : 'player_b') : null}
       onExit={onExit}
+      onOpenSettings={onOpenSettings}
     />
   );
 }
@@ -268,10 +323,11 @@ function GameScreen({ controller, mode, botSeat, onExit, onRestart }: GameScreen
 interface OnlineScreenProps {
   readonly controller: OnlineMatchController;
   readonly snapshot: OnlineMatchSnapshot;
+  readonly onOpenSettings: () => void;
   readonly onExit: () => void;
 }
 
-function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
+function OnlineScreen({ controller, snapshot, onOpenSettings, onExit }: OnlineScreenProps) {
   const [reward, setReward] = useState<BattleReward | null>(null);
   const rewardRoomRef = useRef<string | null>(null);
   const mySeat: PlayerId = snapshot.seat === 'host' ? 'player_a' : 'player_b';
@@ -366,6 +422,7 @@ function OnlineScreen({ controller, snapshot, onExit }: OnlineScreenProps) {
           controller.leaveRoom();
           onExit();
         }}
+        onOpenSettings={onOpenSettings}
         networkStatus={{
           isOnline: true,
           roomCode: snapshot.roomCode ?? '',

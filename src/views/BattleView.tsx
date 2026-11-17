@@ -28,6 +28,7 @@ import {
 import { enumerateLegalActions } from '../game/legal-actions';
 import { useCombatAnimations } from '../hooks/useCombatAnimations';
 import { useViewport } from '../hooks/useViewport';
+import { useAppSettings } from '../data/app-settings';
 import type { CardInstance, CardInstanceId, GameAction, LaneId, PlayerId, Position } from '../game/types';
 
 const SLOT_POPUP_STYLE: Record<FloatingPopupKind, string> = {
@@ -71,9 +72,10 @@ interface BattleViewProps {
   readonly humanPlayer?: PlayerId | null;
   readonly networkStatus?: NetworkStatus | null;
   readonly onExit?: () => void;
+  readonly onOpenSettings?: () => void;
 }
 
-export function BattleView({ snapshot, controller, onDispatch, humanPlayer = null, networkStatus = null, onExit }: BattleViewProps) {
+export function BattleView({ snapshot, controller, onDispatch, humanPlayer = null, networkStatus = null, onExit, onOpenSettings }: BattleViewProps) {
   const state = snapshot.state;
   const actor = state.active_player_id;
   const canAct = !humanPlayer || actor === humanPlayer;
@@ -102,6 +104,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   const effectiveOnExit = onExit ?? networkStatus?.onLeaveRoom ?? null;
   const surrenderActor: PlayerId = humanPlayer ?? actor;
   const canSurrender = Boolean((controller || onDispatch) && state.phase !== 'finished' && state.phase !== 'mulligan');
+  const appSettings = useAppSettings();
 
   const combatAnim = useCombatAnimations({
     state,
@@ -835,6 +838,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         onCycleAnimSpeed={combatAnim.cycleSpeedMode}
         enemyBaseDamageDelta={activeBeat?.baseDamage.enemy ?? null}
         disableMotion={combatAnim.effectiveDisabled}
+        onOpenSettings={onOpenSettings}
       />
 
       {/* 2. 系统提示与待决响应横幅区（无提示时自动折叠为 0px） */}
@@ -1023,7 +1027,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
                 slotCenters={boardGeometry.slotCenters}
                 boardSize={boardGeometry.boardSize}
                 cssAnimScale={combatAnim.cssAnimScale}
-                disableMotion={combatAnim.effectiveDisabled}
+                disableMotion={combatAnim.effectiveDisabled || !appSettings.combatVfxEnabled}
               />
             </div>
           </div>
