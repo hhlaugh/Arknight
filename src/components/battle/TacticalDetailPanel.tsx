@@ -128,7 +128,7 @@ export function TacticalDetailPanel({
             </Button>
           </div>
 
-          <div className="p-3.5 flex-1 overflow-y-auto space-y-3.5 text-xs">
+          <div className="p-2.5 sm:p-3.5 flex-1 overflow-y-auto space-y-2.5 sm:space-y-3.5 text-xs">
             <div className="flex justify-center">
               <CardFrame
                 cardId={selectedInstance.card_id}
@@ -137,7 +137,7 @@ export function TacticalDetailPanel({
                 variant="preview"
                 interactive={false}
                 redeployCd={selectedInstance.operator_lifecycle?.redeploy_cd_remaining ?? 0}
-                className="max-w-[210px] min-h-[260px] shadow-lg"
+                className="max-w-[156px] min-h-[196px] sm:max-w-[210px] sm:min-h-[260px] shadow-lg"
               />
             </div>
 

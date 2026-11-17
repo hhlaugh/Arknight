@@ -526,7 +526,7 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
   const activeInspect = inspectCard;
 
   return (
-    <div className="deck-editor-view flex flex-col h-screen w-full bg-[#11141a] text-[#e8e9e6] font-sans select-none overflow-hidden">
+    <div className="deck-editor-view flex flex-col h-[100dvh] w-full bg-[#11141a] text-[#e8e9e6] font-sans select-none overflow-hidden">
       {/* Top Navigation & Deck Action Bar */}
       <header className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 bg-[#161b23] border-b border-[#2a3544] shadow-md z-10 shrink-0">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">

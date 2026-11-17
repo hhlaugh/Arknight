@@ -79,7 +79,7 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
         variant="default"
         title={`${PLAYER_LABEL[playerId]} 作战编制`}
         codeName={isPlayerA ? 'OPERATOR.ALPHA' : 'OPERATOR.BETA'}
-        className="flex-1 flex flex-col min-w-[280px]"
+        className="flex-1 flex flex-col min-w-0"
       >
         <div className="p-3 space-y-2 max-h-[55vh] overflow-y-auto">
           {availableDecks.map((deck) => {
@@ -196,13 +196,13 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
         )}
 
         {/* Dual Deck Selection Columns */}
-        <div className="p-5 flex flex-col md:flex-row gap-4 bg-gradient-to-b from-[#1b2025] to-[#14181c]">
+        <div className="p-3 sm:p-5 flex flex-col md:flex-row gap-3 sm:gap-4 bg-gradient-to-b from-[#1b2025] to-[#14181c]">
           {renderColumn('player_a')}
           {renderColumn('player_b')}
         </div>
 
         {/* Action Controls & Seed Input */}
-        <div className="px-5 py-3.5 bg-[#121518] border-t border-[#313b43] flex flex-wrap items-center justify-between gap-3">
+        <div className="px-3 sm:px-5 py-3 bg-[#121518] border-t border-[#313b43] flex flex-wrap items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-400 font-mono">随机种子:</span>
             <input

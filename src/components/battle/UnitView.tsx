@@ -15,6 +15,7 @@ interface UnitViewProps {
   readonly state: GameState;
   readonly instance: CardInstance;
   readonly highlight: UnitHighlight;
+  readonly compact?: boolean;
   readonly animState?: UnitAnimationState;
   readonly onClick?: () => void;
   readonly onLongPress?: () => void;
@@ -43,6 +44,7 @@ export function UnitView({
   state,
   instance,
   highlight,
+  compact = false,
   animState,
   onClick,
   onLongPress,
@@ -129,10 +131,10 @@ export function UnitView({
                 : animState?.skillFlash
                   ? 'border-cyan-400 ring-1 ring-cyan-400/70 z-20'
                   : 'border-[#36424e] hover:border-[#526475] hover:bg-[#1e252e]'
-      } ${motionClass} w-full h-[66px] sm:h-[74px] lg:h-[82px]`}
+      } ${motionClass} w-full ${compact ? 'h-[54px]' : 'h-[58px] sm:h-[70px] lg:h-[82px]'}`}
     >
       {/* 内部裁切内容容器（保证立绘/血条不溢出，同时允许上方浮动跳字完整浮现） */}
-      <div className="relative flex flex-col justify-between w-full h-full p-1 sm:p-1.5 pl-1.5 sm:pl-2 overflow-hidden">
+      <div className={`relative flex flex-col justify-between w-full h-full ${compact ? 'p-0.5 pl-1.5' : 'p-1 sm:p-1.5 pl-1.5 sm:pl-2'} overflow-hidden`}>
         {/* 左侧稀有度竖向导轨 */}
         <div
           className="absolute left-0 top-0 bottom-0 w-[3px] pointer-events-none"
@@ -150,22 +152,22 @@ export function UnitView({
         )}
 
         {/* 顶部：干员头像、名称与状态标 */}
-        <div className="flex items-center justify-between gap-1 w-full overflow-hidden">
-          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-0.5 sm:gap-1 w-full overflow-hidden">
+          <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1">
             <OperatorPortrait
               key={instance.card_id}
               cardId={instance.card_id}
               presentation={presentation}
               variant="avatar"
-              className="w-5.5 h-5.5 shrink-0 rounded-xs border border-slate-700/80 shadow-xs"
+              className={`${compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-5.5 sm:h-5.5'} shrink-0 rounded-xs border border-slate-700/80 shadow-xs`}
             />
-            <div className="flex items-center gap-1 min-w-0 flex-1">
-              <span className="font-bold text-xs text-white truncate">
+            <div className="flex items-center gap-0.5 sm:gap-1 min-w-0 flex-1">
+              <span className={`font-bold ${compact ? 'text-[10px]' : 'text-[11px] sm:text-xs'} text-white truncate leading-tight`}>
                 {definition.card_name_zh}
               </span>
               {definition.floating && (
-                <span className="text-[8px] px-0.5 bg-amber-950/80 text-amber-300 border border-amber-500/40 shrink-0">
-                  浮空
+                <span className="text-[8px] px-0.5 bg-amber-950/80 text-amber-300 border border-amber-500/40 shrink-0 leading-none py-0.2">
+                  浮
                 </span>
               )}
             </div>
@@ -174,53 +176,55 @@ export function UnitView({
           {/* 右上：状态/装备指示或射程类型 */}
           {hasStatuses ? (
             <div className="flex items-center gap-0.5 shrink-0">
-              {combat.statuses.slice(0, 2).map((status) => (
+              {combat.statuses.slice(0, 1).map((status) => (
                 <span
                   key={status.kind}
                   title={`${STATUS_LABEL[status.kind] ?? status.kind}${status.remaining_owner_turns > 0 ? ` (${status.remaining_owner_turns}回合)` : ''}`}
-                  className="text-[8px] px-1 py-0.2 bg-rose-950 text-rose-300 border border-rose-500/60 font-mono"
+                  className="text-[8px] px-0.5 sm:px-1 bg-rose-950 text-rose-300 border border-rose-500/60 font-mono leading-tight"
                 >
                   {STATUS_LABEL[status.kind] ?? status.kind}
                 </span>
               ))}
-              {combat.statuses.length > 2 && (
-                <span className="text-[8px] px-0.5 bg-slate-800 text-slate-300 border border-slate-600 font-mono">
-                  +{combat.statuses.length - 2}
+              {combat.statuses.length > 1 && (
+                <span className="text-[8px] px-0.5 bg-slate-800 text-slate-300 border border-slate-600 font-mono leading-tight">
+                  +{combat.statuses.length - 1}
                 </span>
               )}
               {combat.equipment_ids.length > 0 && (
-                <span className="text-[8px] px-1 py-0.2 bg-emerald-950 text-emerald-300 border border-emerald-500/60 font-mono">
+                <span className="text-[8px] px-0.5 sm:px-1 bg-emerald-950 text-emerald-300 border border-emerald-500/60 font-mono leading-tight">
                   装
                 </span>
               )}
             </div>
           ) : (
-            <span className="text-[9px] font-mono text-slate-400 shrink-0">
-              {definition.attack_type === 'melee' ? '近战' : '远程'}
+            <span className="text-[8px] sm:text-[9px] font-mono text-slate-400 shrink-0 leading-none">
+              <span className="hidden sm:inline">{definition.attack_type === 'melee' ? '近战' : '远程'}</span>
+              <span className="sm:hidden">{definition.attack_type === 'melee' ? '近' : '远'}</span>
             </span>
           )}
         </div>
 
         {/* 中部：等宽生命条与护盾 */}
-        <div className="w-full my-0.5">
+        <div className={`w-full ${compact ? 'my-0' : 'my-0 sm:my-0.5'}`}>
           <HealthBar
             currentHp={combat.current_hp}
             maxHp={maxHp}
             shield={combat.shield}
             size="sm"
+            compact={compact}
             showNumbers
             disableMotion={motionOff}
           />
         </div>
 
         {/* 底部：ATK 与 SP 数值条 */}
-        <div className="flex items-center justify-between text-[11px] font-mono tabular-nums px-1.5 py-0.5 bg-[#12161b] border border-[#2b353f] leading-none">
+        <div className={`flex items-center justify-between ${compact ? 'text-[9px] px-1 py-[1px]' : 'text-[10px] sm:text-[11px] px-1 sm:px-1.5 py-[1px] sm:py-0.5'} font-mono tabular-nums bg-[#12161b] border border-[#2b353f] leading-none`}>
           <span className="text-rose-400 font-bold flex items-center gap-0.5">
-            <span className="text-[9px]">⚔</span>
+            <span className="text-[8px] sm:text-[9px]">⚔</span>
             <span>{atk}</span>
           </span>
           <span className="text-sky-400 font-bold flex items-center gap-0.5">
-            <span className="text-[9px]">⚡</span>
+            <span className="text-[8px] sm:text-[9px]">⚡</span>
             <span>{combat.current_sp}/{definition.max_sp ?? 5}</span>
           </span>
         </div>

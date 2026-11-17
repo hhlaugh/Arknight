@@ -221,8 +221,8 @@ export function CardFrame({
   const isClickable = Boolean(interactive && !disabled && onClick);
 
   const sizeClasses = {
-    compact: 'w-28 h-40 p-1.5',
-    hand: 'w-[96px] h-[128px] sm:w-[110px] sm:h-[144px] lg:w-[116px] lg:h-[154px] p-1 sm:p-1.5 shrink-0',
+    compact: 'w-full min-w-[82px] h-[106px] p-1',
+    hand: 'w-[82px] h-[108px] sm:w-[104px] sm:h-[138px] lg:w-[116px] lg:h-[154px] p-1 sm:p-1.5 shrink-0',
     deck: 'w-full min-h-[178px] p-2.5',
     preview: 'w-full max-w-[248px] min-h-[320px] p-3.5',
   }[variant];
@@ -351,7 +351,7 @@ export function CardFrame({
         {/* 干员中英文代号 */}
         <div className="px-0.5">
           <div className="flex items-center justify-between gap-1">
-            <h4 className="font-black text-[13px] sm:text-sm text-white tracking-wide truncate drop-shadow-md m-0 leading-tight">
+            <h4 className={`font-black ${variant === 'hand' || variant === 'compact' ? 'text-[11px] sm:text-sm' : 'text-[13px] sm:text-sm'} text-white tracking-wide truncate drop-shadow-md m-0 leading-tight`}>
               {nameZh}
             </h4>
             {variant === 'preview' && isOperator && uiDef?.attack_type && (
@@ -361,7 +361,7 @@ export function CardFrame({
             )}
           </div>
           {variant !== 'compact' && (
-            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 tracking-wider uppercase truncate leading-tight">
+            <div className={`${variant === 'hand' ? 'hidden sm:flex' : 'flex'} items-center justify-between text-[9px] font-mono text-slate-400 tracking-wider uppercase truncate leading-tight`}>
               <span className="truncate">{p.codeNameEn}</span>
               {variant === 'preview' && isOperator && uiDef?.deploy_rule && (
                 <span className="text-amber-300/90 shrink-0">
@@ -373,13 +373,23 @@ export function CardFrame({
         </div>
 
         {/* TypeAndStatsLayer：数值面板 */}
-        <div className="flex flex-col gap-1 w-full pt-1 border-t border-slate-700/75 bg-[#10151b]/90 px-1 pb-1">
+        <div className={`flex flex-col gap-0.5 sm:gap-1 w-full pt-0.5 sm:pt-1 border-t border-slate-700/75 bg-[#10151b]/90 px-0.5 sm:px-1 ${variant === 'hand' || variant === 'compact' ? 'pb-0.5' : 'pb-1'}`}>
           {isOperator && definition && (
-            <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono leading-none">
-              <span className="text-rose-300 font-bold">ATK {definition.atk ?? 0}</span>
-              <span className="text-emerald-300 font-bold">HP {definition.hp ?? 0}</span>
+            <div className={`flex items-center justify-between ${variant === 'hand' || variant === 'compact' ? 'text-[9px] sm:text-[11px]' : 'text-[10px] sm:text-[11px]'} font-mono tabular-nums leading-none`}>
+              <span className="text-rose-300 font-bold">
+                <span className={variant === 'hand' ? 'hidden sm:inline' : variant === 'compact' ? 'hidden' : ''}>ATK </span>
+                <span className={variant === 'hand' ? 'sm:hidden' : variant === 'compact' ? '' : 'hidden'}>⚔</span>
+                {definition.atk ?? 0}
+              </span>
+              <span className="text-emerald-300 font-bold">
+                <span className={variant === 'hand' ? 'hidden sm:inline' : variant === 'compact' ? 'hidden' : ''}>HP </span>
+                <span className={variant === 'hand' ? 'sm:hidden' : variant === 'compact' ? '' : 'hidden'}>♥</span>
+                {definition.hp ?? 0}
+              </span>
               <span className="text-sky-300 font-bold">
-                SP {definition.starting_sp ?? 0}/{definition.max_sp ?? 5}
+                <span className={variant === 'hand' ? 'hidden sm:inline' : variant === 'compact' ? 'hidden' : ''}>SP </span>
+                <span className={variant === 'hand' ? 'sm:hidden' : variant === 'compact' ? '' : 'hidden'}>⚡</span>
+                {definition.starting_sp ?? 0}/{definition.max_sp ?? 5}
               </span>
             </div>
           )}
@@ -388,7 +398,7 @@ export function CardFrame({
           {variant !== 'compact' && rulesSummary && (
             <p
               className={`text-[10px] text-slate-300 leading-snug m-0 ${
-                variant === 'hand' ? 'line-clamp-1' : variant === 'preview' ? 'line-clamp-3' : 'line-clamp-2'
+                variant === 'hand' ? 'hidden sm:line-clamp-1' : variant === 'preview' ? 'line-clamp-3' : 'line-clamp-2'
               }`}
             >
               {rulesSummary}

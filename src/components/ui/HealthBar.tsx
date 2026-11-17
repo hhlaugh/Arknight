@@ -5,6 +5,7 @@ export interface HealthBarProps {
   readonly maxHp: number;
   readonly shield?: number;
   readonly size?: 'sm' | 'md' | 'lg';
+  readonly compact?: boolean;
   readonly showNumbers?: boolean;
   readonly disableMotion?: boolean;
   readonly className?: string;
@@ -15,6 +16,7 @@ export function HealthBar({
   maxHp,
   shield = 0,
   size = 'md',
+  compact = false,
   showNumbers = true,
   disableMotion = false,
   className = '',
@@ -52,22 +54,22 @@ export function HealthBar({
   }
 
   const heightClasses = {
-    sm: 'h-1.5',
+    sm: compact ? 'h-1' : 'h-1 sm:h-1.5',
     md: 'h-2.5',
     lg: 'h-3.5',
   }[size];
 
   return (
-    <div className={`w-full flex flex-col gap-0.5 select-none ${className}`}>
+    <div className={`w-full flex flex-col ${compact ? 'gap-[1px]' : 'gap-0.5'} select-none ${className}`}>
       {showNumbers && (
-        <div className="flex items-center justify-between text-[10px] font-mono tabular-nums leading-none tracking-tight">
+        <div className={`flex items-center justify-between ${compact ? 'text-[9px]' : 'text-[9px] sm:text-[10px]'} font-mono tabular-nums leading-none tracking-tight`}>
           <span className="text-slate-400 font-semibold">HP</span>
-          <div className="flex items-center gap-1 font-bold">
+          <div className="flex items-center gap-0.5 sm:gap-1 font-bold">
             <span style={{ color: hpColor }}>{currentHp}</span>
             <span className="text-slate-600">/</span>
             <span className="text-slate-400">{maxHp}</span>
             {shield > 0 && (
-              <span className="text-sky-400 text-[9px] bg-sky-950/80 px-1 py-0.2 border border-sky-500/40">
+              <span className="text-sky-400 text-[8px] sm:text-[9px] bg-sky-950/80 px-0.5 sm:px-1 py-0.2 border border-sky-500/40">
                 +{shield}
               </span>
             )}

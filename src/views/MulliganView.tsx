@@ -78,19 +78,19 @@ export function MulliganView({
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-4 sm:p-6 select-none">
+    <div className="min-h-[100dvh] w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-2.5 sm:p-6 select-none overflow-y-auto">
       <Panel
         variant="raised"
         cornerCut="lg"
         scanlines
-        className="w-full max-w-5xl border border-[#4a555b] shadow-2xl flex flex-col"
+        className="w-full max-w-5xl border border-[#4a555b] shadow-2xl flex flex-col my-auto"
       >
         {/* Terminal Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45]">
-          <div className="flex items-center gap-3">
-            <span className="w-2 h-5 bg-[#e5a52b]" />
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-5 py-2.5 sm:py-3.5 bg-[#14171a] border-b border-[#363f45]">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <span className="w-1.5 sm:w-2 h-5 bg-[#e5a52b]" />
             <div>
-              <h2 className="text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
+              <h2 className="text-sm sm:text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
                 战术调度阶段 · 起手换牌
               </h2>
               <span className="text-[10px] font-mono text-slate-400 tracking-wider">
@@ -98,20 +98,20 @@ export function MulliganView({
               </span>
             </div>
           </div>
-          <span className="text-xs font-mono text-amber-300 bg-amber-950/60 px-2.5 py-1 border border-amber-500/40">
+          <span className="text-[11px] sm:text-xs font-mono text-amber-300 bg-amber-950/60 px-2 sm:px-2.5 py-0.5 sm:py-1 border border-amber-500/40">
             已选择换出: {selected.size} / {hand.length} 张
           </span>
         </div>
 
         {/* Instructions banner */}
-        <div className="px-4 sm:px-5 py-2.5 bg-[#1a2026] border-b border-[#2e3740] text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+        <div className="px-3 sm:px-5 py-2 bg-[#1a2026] border-b border-[#2e3740] text-[11px] sm:text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
           <span>点击勾选想要换掉的卡牌（可全不选）。换出卡牌将洗回牌库并等量抽取新手牌。</span>
-          <span className="text-slate-400 text-[10px] font-mono">STEP: 01_DEPLOY_PREP</span>
+          <span className="text-slate-400 text-[10px] font-mono hidden sm:inline">STEP: 01_DEPLOY_PREP</span>
         </div>
 
         {/* Hand Cards Selection Grid */}
-        <div className="p-6 bg-gradient-to-b from-[#1b2025] to-[#14181c] flex items-center justify-center">
-          <div className="flex flex-wrap gap-4 justify-center items-center max-w-4xl">
+        <div className="p-3 sm:p-6 bg-gradient-to-b from-[#1b2025] to-[#14181c] flex items-center justify-center">
+          <div className="flex flex-wrap gap-2.5 sm:gap-4 justify-center items-center max-w-4xl">
             {hand.map((id) => (
               <CardView
                 key={id}
@@ -128,17 +128,17 @@ export function MulliganView({
 
         {/* Error Toast */}
         {error && (
-          <div className="mx-6 mb-3 p-2.5 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs text-center">
+          <div className="mx-3 sm:mx-6 mb-3 p-2.5 bg-rose-950/80 border border-rose-500 text-rose-300 text-xs text-center">
             {error}
           </div>
         )}
 
         {/* Bottom Actions */}
-        <div className="px-4 sm:px-5 py-3.5 bg-[#121518] border-t border-[#313b43] flex flex-wrap items-center justify-between gap-3">
+        <div className="px-3 sm:px-5 py-2.5 sm:py-3.5 bg-[#121518] border-t border-[#313b43] flex flex-wrap items-center justify-between gap-2.5">
           <div className="text-[11px] text-slate-400 font-mono">
             {selected.size === 0 ? '保持当前起手手牌不作替换' : `替换选中的 ${selected.size} 张卡牌`}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             {onLeave && (
               <Button variant="ghost" size="md" onClick={onLeave}>
                 ✕ {leaveLabel}
@@ -150,7 +150,7 @@ export function MulliganView({
               cornerCut
               onClick={confirm}
               loading={submitting}
-              className="font-bold px-8 shadow-lg"
+              className="font-bold px-5 sm:px-8 shadow-lg"
             >
               确认调度（换 {selected.size} 张） ▶
             </Button>

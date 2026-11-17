@@ -40,13 +40,13 @@ export function Modal({
   }[size];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
       {/* Backdrop close capture */}
       <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Modal Dialog Window */}
       <div
-        className={`relative w-full ${sizeClasses} bg-[#1e2329] border border-[#4a555e] text-[#e8e9e6] shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-10 flex flex-col overflow-hidden`}
+        className={`relative w-full ${sizeClasses} max-h-[calc(100dvh-1.25rem)] sm:max-h-[90dvh] bg-[#1e2329] border border-[#4a555e] text-[#e8e9e6] shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-10 flex flex-col overflow-hidden`}
         style={{ clipPath: CORNER_CUTS.md }}
         role="dialog"
         aria-modal="true"
@@ -61,12 +61,12 @@ export function Modal({
         />
 
         {/* Modal Header */}
-        <div className="relative z-10 flex items-center justify-between px-4 py-3 bg-[#171a1d] border-b border-[#363f45]">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-4 bg-[#e5a52b]" />
-            <h3 className="font-bold text-sm tracking-wider text-slate-100 uppercase">{title}</h3>
+        <div className="relative z-10 flex items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 bg-[#171a1d] border-b border-[#363f45] shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-1.5 h-4 bg-[#e5a52b] shrink-0" />
+            <h3 className="font-bold text-sm tracking-wider text-slate-100 uppercase truncate">{title}</h3>
             {codeName && (
-              <span className="text-[10px] font-mono text-slate-400 tracking-widest uppercase">
+              <span className="text-[10px] font-mono text-slate-400 tracking-widest uppercase shrink-0 hidden sm:inline">
                 · {codeName}
               </span>
             )}
@@ -75,7 +75,7 @@ export function Modal({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="text-slate-400 hover:text-white px-2 py-0.5 text-xs"
+            className="text-slate-400 hover:text-white px-2 py-0.5 text-xs shrink-0"
             aria-label="关闭"
           >
             ✕
@@ -83,13 +83,13 @@ export function Modal({
         </div>
 
         {/* Modal Body */}
-        <div className="relative z-10 p-5 overflow-y-auto max-h-[70vh] text-xs leading-relaxed text-slate-300">
+        <div className="relative z-10 flex-1 min-h-0 p-3.5 sm:p-5 overflow-y-auto overscroll-contain text-xs leading-relaxed text-slate-300">
           {children}
         </div>
 
         {/* Optional Footer */}
         {footer && (
-          <div className="relative z-10 flex items-center justify-end gap-2 px-4 py-3 bg-[#171a1d]/90 border-t border-[#363f45]">
+          <div className="relative z-10 flex flex-wrap items-center justify-end gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3 bg-[#171a1d]/90 border-t border-[#363f45] shrink-0">
             {footer}
           </div>
         )}

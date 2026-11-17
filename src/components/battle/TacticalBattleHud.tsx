@@ -95,9 +95,9 @@ export function TacticalBattleHud({
   const enemyHpPct = Math.max(0, Math.min(100, (playerEnemy.base_points / 10) * 100));
 
   return (
-    <header className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-x-2 gap-y-1 px-2 sm:px-3.5 py-1 sm:py-1.5 bg-[#0d1016] border-b border-[#232d3d] text-[#e8e9e6] shadow-md z-30 shrink-0 select-none">
+    <header className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 sm:gap-x-2 gap-y-1 px-1.5 sm:px-3.5 py-1 sm:py-1.5 bg-[#0d1016] border-b border-[#232d3d] text-[#e8e9e6] shadow-md z-30 shrink-0 select-none">
       {/* 1. 左区：PRTS 官方菱形徽记 + 回合轮次与阶段状态 */}
-      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 justify-self-start">
+      <div className="flex items-center gap-1 sm:gap-2 min-w-0 justify-self-start">
         <img
           src="./assets/arknights/logos/prts_diamond.png"
           alt="PRTS"
@@ -106,7 +106,7 @@ export function TacticalBattleHud({
         />
         <div className="flex items-center gap-1 font-mono tabular-nums shrink-0">
           <span className="w-1 h-3.5 sm:h-4 bg-[#e5a52b]" />
-          <span className="font-black text-xs sm:text-sm tracking-widest text-white">
+          <span className="font-black text-xs sm:text-sm tracking-wider sm:tracking-widest text-white">
             T{String(state.turn_number).padStart(2, '0')}
           </span>
         </div>
@@ -127,10 +127,10 @@ export function TacticalBattleHud({
         )}
       </div>
 
-      {/* 2. 中区（移动端占第二行全宽，桌面端居正中）：敌方基地状态面板 */}
+      {/* 2. 中区（窄竖屏占第二行全宽，横屏及平板桌面居正中）：敌方基地状态面板 */}
       <div
         data-testid="enemy-hud-panel"
-        className={`col-span-2 md:col-span-1 order-3 md:order-2 justify-self-stretch md:justify-self-center relative flex items-center justify-between md:justify-center gap-2 sm:gap-3 px-2 sm:px-3.5 py-0.5 sm:py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
+        className={`col-span-2 sm:col-span-1 order-3 sm:order-2 justify-self-stretch sm:justify-self-center relative flex items-center justify-between sm:justify-center gap-1.5 sm:gap-3 px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
           enemyHit
             ? `border-amber-400 ring-2 ring-amber-400/70 ${disableMotion ? '' : 'anim-base-hit'}`
             : isEnemyTurn
@@ -139,17 +139,17 @@ export function TacticalBattleHud({
         }`}
         style={{ clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)' }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <span className="px-1.5 py-0.2 bg-rose-600 text-white font-black text-[10px] sm:text-xs tracking-wider shrink-0 uppercase whitespace-nowrap">
             {isHotseat ? (
               <>
-                <span className="hidden sm:inline">{topPlayer === 'player_a' ? '玩家 A (等待中)' : '玩家 B (等待中)'}</span>
-                <span className="sm:hidden">{topPlayer === 'player_a' ? '玩家 A' : '玩家 B'}</span>
+                <span className="hidden md:inline">{topPlayer === 'player_a' ? '玩家 A (等待中)' : '玩家 B (等待中)'}</span>
+                <span className="md:hidden">{topPlayer === 'player_a' ? '玩家 A' : '玩家 B'}</span>
               </>
             ) : (
               <>
-                <span className="hidden sm:inline">敌方基地</span>
-                <span className="sm:hidden">敌方</span>
+                <span className="hidden md:inline">敌方基地</span>
+                <span className="md:hidden">敌方</span>
               </>
             )}
           </span>
@@ -158,12 +158,12 @@ export function TacticalBattleHud({
           <div className="relative flex items-center gap-1.5 font-mono tabular-nums">
             <div className="flex items-baseline gap-0.5 sm:gap-1">
               <span className="text-[10px] text-rose-400 font-bold">HP</span>
-              <strong className={`text-sm sm:text-xl font-black leading-none ${enemyHit ? 'text-amber-300' : 'text-rose-400'}`}>
+              <strong className={`text-sm sm:text-lg lg:text-xl font-black leading-none ${enemyHit ? 'text-amber-300' : 'text-rose-400'}`}>
                 {playerEnemy.base_points}
               </strong>
               <span className="text-[10px] text-slate-500">/10</span>
             </div>
-            <div className="hidden sm:block w-14 h-1.5 bg-rose-950/80 border border-rose-900/70 overflow-hidden" aria-hidden="true">
+            <div className="hidden lg:block w-14 h-1.5 bg-rose-950/80 border border-rose-900/70 overflow-hidden" aria-hidden="true">
               <div
                 className="h-full bg-rose-500 transition-[width] duration-300"
                 style={{ width: `${enemyHpPct}%` }}
@@ -180,7 +180,7 @@ export function TacticalBattleHud({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-2.5 font-mono tabular-nums">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 font-mono tabular-nums">
           <span className="h-3 w-px bg-rose-900/60 hidden sm:inline-block" aria-hidden="true" />
           {/* 敌方可用 DP */}
           <div className="flex items-baseline gap-0.5 sm:gap-1 text-xs sm:text-sm">
@@ -192,24 +192,24 @@ export function TacticalBattleHud({
           <span className="h-3 w-px bg-rose-900/60" aria-hidden="true" />
 
           {/* 敌方手牌与牌库余量 */}
-          <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-slate-400 whitespace-nowrap">
+          <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[11px] text-slate-400 whitespace-nowrap">
             <span>
-              <span className="hidden sm:inline">手牌 </span>
-              <span className="sm:hidden">手</span>
+              <span className="hidden md:inline">手牌 </span>
+              <span className="md:hidden">手</span>
               <strong className="text-slate-200">{playerEnemy.hand.length}</strong>
             </span>
             <span>·</span>
             <span>
-              <span className="hidden sm:inline">牌库 </span>
-              <span className="sm:hidden">库</span>
+              <span className="hidden md:inline">牌库 </span>
+              <span className="md:hidden">库</span>
               <strong className="text-slate-200">{playerEnemy.deck.length}</strong>
             </span>
           </div>
         </div>
       </div>
 
-      {/* 3. 右区：倍速、日志、档案与投降/退出操作 */}
-      <div className="order-2 md:order-3 justify-self-end flex items-center gap-1 shrink-0">
+      {/* 3. 右区：倍速、日志、档案与投降/退出操作（支持窄屏自适应换行与紧凑触控尺寸） */}
+      <div className="order-2 sm:order-3 justify-self-end flex flex-wrap items-center justify-end gap-0.5 sm:gap-1 min-w-0">
         {onCycleAnimSpeed && (
           <Button
             variant={animSpeedMode === 'off' ? 'ghost' : 'secondary'}
@@ -217,7 +217,7 @@ export function TacticalBattleHud({
             onClick={onCycleAnimSpeed}
             title={SPEED_LABEL[animSpeedMode].title}
             aria-label={`切换战斗动效速度，当前：${SPEED_LABEL[animSpeedMode].short}`}
-            className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 font-mono whitespace-nowrap ${
+            className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 min-h-[30px] sm:min-h-[28px] shrink-0 font-mono whitespace-nowrap ${
               animSpeedMode === 'off' ? 'text-slate-400 border border-slate-700' : 'text-amber-300'
             }`}
           >
@@ -230,7 +230,8 @@ export function TacticalBattleHud({
           size="sm"
           onClick={onToggleLog}
           title={showLog ? '关闭战斗日志' : '打开战斗日志'}
-          className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 whitespace-nowrap"
+          aria-label={showLog ? '关闭战斗日志' : '打开战斗日志'}
+          className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 min-h-[30px] min-w-[30px] sm:min-h-[28px] shrink-0 whitespace-nowrap"
         >
           📜<span className="hidden lg:inline ml-1">日志</span>
         </Button>
@@ -240,7 +241,8 @@ export function TacticalBattleHud({
           size="sm"
           onClick={onToggleDetail}
           title={showDetail ? '关闭干员档案' : '查看干员档案'}
-          className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 whitespace-nowrap"
+          aria-label={showDetail ? '关闭干员档案' : '查看干员档案'}
+          className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 min-h-[30px] min-w-[30px] sm:min-h-[28px] shrink-0 whitespace-nowrap"
         >
           🔍<span className="hidden lg:inline ml-1">档案</span>
         </Button>
@@ -252,7 +254,7 @@ export function TacticalBattleHud({
             onClick={onOpenSettings}
             title="打开系统设置（音量、特效、动效倍速）"
             aria-label="系统设置"
-            className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 whitespace-nowrap text-slate-200 hover:text-amber-300"
+            className="text-[11px] sm:text-xs px-1.5 sm:px-2 py-0.5 min-h-[30px] min-w-[30px] sm:min-h-[28px] shrink-0 whitespace-nowrap text-slate-200 hover:text-amber-300"
           >
             ⚙<span className="hidden xl:inline ml-1">设置</span>
           </Button>
@@ -260,7 +262,7 @@ export function TacticalBattleHud({
 
         {(onSurrender || onExit) && (
           <>
-            <span className="hidden sm:inline-block h-4 w-px bg-[#2b3746] mx-0.5" aria-hidden="true" />
+            <span className="hidden md:inline-block h-4 w-px bg-[#2b3746] mx-0.5" aria-hidden="true" />
             {onSurrender && (
               <Button
                 variant="ghost"
@@ -268,9 +270,9 @@ export function TacticalBattleHud({
                 onClick={onSurrender}
                 title="宣告撤退（投降并直接进入胜负结算）"
                 aria-label="投降"
-                className="inline-flex text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 text-amber-200 bg-amber-950/45 border border-amber-500/50 hover:bg-amber-900/60 hover:border-amber-400 whitespace-nowrap"
+                className="inline-flex text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 min-h-[30px] min-w-[30px] sm:min-h-[28px] shrink-0 text-amber-200 bg-amber-950/45 border border-amber-500/50 hover:bg-amber-900/60 hover:border-amber-400 whitespace-nowrap"
               >
-                🏳<span className="ml-0.5 sm:ml-1">投降</span>
+                🏳<span className="hidden md:inline ml-1">投降</span>
               </Button>
             )}
             {onExit && (
@@ -280,9 +282,9 @@ export function TacticalBattleHud({
                 onClick={onExit}
                 title="退出当前对局并返回主菜单"
                 aria-label="退出对局"
-                className="inline-flex text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 shrink-0 text-rose-200 bg-rose-950/45 border border-rose-500/50 hover:bg-rose-900/60 hover:border-rose-400 whitespace-nowrap"
+                className="inline-flex text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 min-h-[30px] min-w-[30px] sm:min-h-[28px] shrink-0 text-rose-200 bg-rose-950/45 border border-rose-500/50 hover:bg-rose-900/60 hover:border-rose-400 whitespace-nowrap"
               >
-                ✕<span className="ml-0.5 sm:ml-1">退出</span>
+                ✕<span className="hidden md:inline ml-1">退出</span>
               </Button>
             )}
           </>

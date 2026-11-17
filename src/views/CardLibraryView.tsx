@@ -263,7 +263,7 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
   );
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#10141a] text-[#e8e9e6] font-sans overflow-hidden select-none">
+    <div className="flex flex-col h-[100dvh] w-full bg-[#10141a] text-[#e8e9e6] font-sans overflow-hidden select-none">
       {/* 1. Top PRTS Archive Header */}
       <header className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#141820] border-b border-[#263140] text-slate-100 shadow-md shrink-0">
         <div className="flex items-center gap-2 sm:gap-3">
@@ -504,11 +504,9 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
         onClose={() => setMobileDossierOpen(false)}
         title={inspectCard.card_name_zh}
         codeName={inspectCard.card_id}
-        maxHeight="max-h-[90vh]"
+        maxHeight="max-h-[90dvh]"
       >
-        <div className="max-h-[75vh] overflow-y-auto">
-          {renderDossierBody()}
-        </div>
+        {renderDossierBody()}
       </BottomSheet>
     </div>
   );

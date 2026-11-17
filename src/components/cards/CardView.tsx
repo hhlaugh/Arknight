@@ -45,6 +45,7 @@ export function effectSummary(definition: UiCardDefinition): string {
 interface CardViewProps {
   readonly state: GameState;
   readonly instanceId: CardInstanceId;
+  readonly variant?: 'hand' | 'compact';
   readonly selected?: boolean;
   readonly interactive?: boolean;
   readonly selectable?: boolean;
@@ -61,6 +62,7 @@ interface CardViewProps {
 export function CardView({
   state,
   instanceId,
+  variant = 'hand',
   selected = false,
   interactive = false,
   selectable = false,
@@ -91,7 +93,7 @@ export function CardView({
     <CardFrame
       cardId={instance.card_id}
       definition={definition}
-      variant="hand"
+      variant={variant}
       selected={selected}
       interactive={interactive}
       unplayable={isUnplayable}
