@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { OrundumIcon } from '../components/ui/OrundumIcon';
 import { RhodesWatermarkBackdrop } from '../components/ui/RhodesWatermark';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 import {
   createAccount,
   exportAccountsJson,
@@ -15,7 +16,6 @@ import {
 } from '../data/player-collection';
 import type { AccountSummary } from '../data/player-collection';
 import { DEMO_CARDS } from '../client/gameData';
-import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
 
 interface StartViewProps {
   readonly onHotseat: () => void;
@@ -99,22 +99,13 @@ export function StartView({
   };
   return (
     <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
-      {/* 指挥舰桥氛围底图 + 暗场遮罩 */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-        <img
-          src={tacticalCommandBackdrop}
-          alt=""
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover opacity-[0.24] scale-105"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(18,22,27,0.38) 0%, rgba(13,17,22,0.86) 76%, rgba(10,13,17,0.96) 100%)',
-          }}
-        />
-      </div>
+      {/* 官方罗德岛舰桥半淡出风景底图 + 纹章水印 */}
+      <ScenicBackdrop
+        scene="rhodes-bridge"
+        fade="diagonal-tr"
+        opacityClassName="opacity-[0.4]"
+        tint="radial-gradient(circle at 78% 22%, rgba(56,189,248,0.14) 0%, transparent 58%)"
+      />
       <RhodesWatermarkBackdrop />
       {/* Central Terminal Console Panel */}
       <Panel
@@ -180,13 +171,19 @@ export function StartView({
         </div>
 
         {/* Hero Section */}
-        <div className="relative px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-br from-[#1b222a]/90 via-[#151a20]/90 to-[#11151b]/95 border-b border-[#313b46] overflow-hidden">
+        <div className="relative px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-[#131820] border-b border-[#313b46] overflow-hidden">
+          <ScenicBannerLayer
+            scene="rhodes-exterior"
+            fade="right"
+            opacityClassName="opacity-50"
+            tint="radial-gradient(circle at 74% 46%, rgba(229,165,43,0.16) 0%, transparent 62%)"
+          />
           <img
             src="./assets/arknights/logos/rhodes_island_dark.png"
             alt=""
             aria-hidden="true"
             referrerPolicy="no-referrer"
-            className="pointer-events-none select-none absolute right-6 md:right-60 top-1/2 -translate-y-1/2 w-56 h-56 object-contain opacity-[0.22]"
+            className="pointer-events-none select-none relative md:absolute right-6 md:right-60 top-1/2 -translate-y-1/2 w-56 h-56 object-contain opacity-[0.18] hidden md:block z-0"
           />
           <div className="relative z-10 flex-1 space-y-2.5">
             <div className="inline-flex items-center gap-2 text-xs font-mono text-[#e5a52b] tracking-wider uppercase">

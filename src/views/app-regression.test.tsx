@@ -151,6 +151,9 @@ describe('Phase 7 全面回归验收测试套件', () => {
       <AuthView onAuthenticated={noop} onOpenSettings={noop} />,
     );
     expect(authHtml).toContain('data-testid="auth-rhodes-tower-backdrop"');
+    expect(authHtml).toContain('data-testid="scenic-backdrop"');
+    expect(authHtml).toContain('bg_rhodes_exterior.png');
+    expect(authHtml).toContain('bg_rhodes_bridge.png');
     expect(authHtml).toContain('rhodes_island_dark.png');
     expect(authHtml).toContain('登录账户');
     expect(authHtml).toContain('注册新档案');
@@ -186,6 +189,10 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(startHtml).toContain('罗德岛干员图鉴');
     expect(startHtml).toContain('干员寻访');
     expect(startHtml).toContain('data-testid="rhodes-watermark"');
+    expect(startHtml).toContain('data-testid="scenic-backdrop"');
+    expect(startHtml).toContain('data-testid="scenic-banner-layer"');
+    expect(startHtml).toContain('bg_rhodes_bridge.png');
+    expect(startHtml).toContain('bg_rhodes_exterior.png');
     expect(startHtml).toContain('rhodes_island_light.png');
     expect(startHtml).toContain('rhodes_island_dark.png');
     expect(startHtml).toContain('prts_badge.svg');
@@ -205,16 +212,19 @@ describe('Phase 7 全面回归验收测试套件', () => {
     );
     expect(deckSelectHtml).toContain('作战出击配置');
     expect(deckSelectHtml).toContain('本地热座双人推演模式');
+    expect(deckSelectHtml).toContain('bg_rhodes_command.png');
 
     const libraryHtml = renderToString(
       <CardLibraryView onBack={noop} onOpenDeckEditor={noop} />,
     );
     expect(libraryHtml).toContain('罗德岛干员档案');
     expect(libraryHtml).toContain('72');
+    expect(libraryHtml).toContain('bg_terra_landscape.png');
     expect(libraryHtml).not.toContain('未解锁');
 
     const editorHtml = renderToString(<DeckEditorView onBack={noop} />);
     expect(editorHtml).toContain('20');
+    expect(editorHtml).toContain('bg_rhodes_command.png');
 
     const mulliganHtml = renderToString(
       <MulliganView
@@ -227,6 +237,7 @@ describe('Phase 7 全面回归验收测试套件', () => {
     );
     expect(mulliganHtml).toContain('战术调度阶段');
     expect(mulliganHtml).toContain('离开对局');
+    expect(mulliganHtml).toContain('bg_snowfield.png');
 
     const mulliganWaitingHtml = renderToString(
       <MulliganView
@@ -240,6 +251,7 @@ describe('Phase 7 全面回归验收测试套件', () => {
     );
     expect(mulliganWaitingHtml).toContain('起手调度已锁定');
     expect(mulliganWaitingHtml).toContain('离开对局');
+    expect(mulliganWaitingHtml).toContain('bg_snowfield.png');
 
     const recruitmentHtml = renderToString(
       <RecruitmentView onBack={noop} onOpenDeckEditor={noop} />,
@@ -247,6 +259,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(recruitmentHtml).toContain('干员寻访');
     expect(recruitmentHtml).toContain('返回');
     expect(recruitmentHtml).toContain('编制卡组');
+    expect(recruitmentHtml).toContain('bg_terra_landscape.png');
+    expect(recruitmentHtml).toContain('bg_lungmen_night.png');
     expect(recruitmentHtml).toContain('data-testid="orundum-icon"');
     expect(recruitmentHtml).toContain('orundum.png');
     expect(recruitmentHtml).toContain('holo-btn');
@@ -340,6 +354,7 @@ describe('Phase 7 全面回归验收测试套件', () => {
     );
     expect(lobbyIdleHtml).toContain('好友联机对战');
     expect(lobbyIdleHtml).toContain('创建房间');
+    expect(lobbyIdleHtml).toContain('bg_lungmen_night.png');
 
     const lobbyWaitingHtml = renderToString(
       <RoomLobbyView
@@ -360,6 +375,7 @@ describe('Phase 7 全面回归验收测试套件', () => {
     );
     expect(lobbyWaitingHtml).toContain('ABCD2345');
     expect(lobbyWaitingHtml).toContain('ROOM LOBBY');
+    expect(lobbyWaitingHtml).toContain('bg_lungmen_night.png');
   });
 
   it('完整对局生命周期回归：选牌 → 换牌 → 双人/人机行动推进 → 战斗日志产出 → 新种子重开', () => {

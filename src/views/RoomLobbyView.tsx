@@ -5,7 +5,7 @@ import { getActiveAccountName, getDeckMode } from '../data/player-collection';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 
 interface RoomLobbyViewProps {
   readonly controller: OnlineMatchController;
@@ -82,21 +82,12 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
   if (!inRoom) {
     return (
       <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-          <img
-            src={tacticalCommandBackdrop}
-            alt=""
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover opacity-[0.18]"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(circle at center, rgba(16,20,26,0.45) 0%, rgba(12,15,20,0.88) 76%, rgba(10,12,16,0.97) 100%)',
-            }}
-          />
-        </div>
+        <ScenicBackdrop
+          scene="lungmen-night"
+          fade="diagonal-tr"
+          opacityClassName="opacity-[0.44]"
+          tint="radial-gradient(circle at 78% 22%, rgba(56,189,248,0.16) 0%, transparent 58%)"
+        />
         <Panel
           variant="raised"
           cornerCut="lg"
@@ -104,8 +95,14 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
           className="relative z-10 w-full max-w-4xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden"
         >
           {/* Terminal Header */}
-          <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45]">
-            <div className="flex items-center gap-3">
+          <div className="relative flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45] overflow-hidden">
+            <ScenicBannerLayer
+              scene="lungmen-night"
+              fade="right"
+              opacityClassName="opacity-42"
+              tint="radial-gradient(circle at 80% 45%, rgba(56,189,248,0.16) 0%, transparent 58%)"
+            />
+            <div className="relative z-10 flex items-center gap-3">
               <span className="w-2 h-5 bg-[#e5a52b]" />
               <div>
                 <h1 className="text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
@@ -116,7 +113,7 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="relative z-10 flex items-center gap-2">
               <Badge variant="neutral">账户 {getActiveAccountName()}</Badge>
               <Badge variant="ally">免服直连</Badge>
             </div>
@@ -228,35 +225,34 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
 
   return (
     <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-        <img
-          src={tacticalCommandBackdrop}
-          alt=""
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover opacity-[0.18]"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(16,20,26,0.45) 0%, rgba(12,15,20,0.88) 76%, rgba(10,12,16,0.97) 100%)',
-          }}
-        />
-      </div>
+      <ScenicBackdrop
+        scene="lungmen-night"
+        fade="diagonal-tr"
+        opacityClassName="opacity-[0.44]"
+        tint="radial-gradient(circle at 78% 22%, rgba(56,189,248,0.16) 0%, transparent 58%)"
+      />
       <Panel
         variant="raised"
         cornerCut="lg"
         scanlines
         className="relative z-10 w-full max-w-4xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden"
       >
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45]">
-          <div className="flex items-center gap-3">
+        <div className="relative flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45] overflow-hidden">
+          <ScenicBannerLayer
+            scene="lungmen-night"
+            fade="right"
+            opacityClassName="opacity-42"
+            tint="radial-gradient(circle at 80% 45%, rgba(56,189,248,0.16) 0%, transparent 58%)"
+          />
+          <div className="relative z-10 flex items-center gap-3">
             <span className="w-2 h-5 bg-[#e5a52b]" />
             <h1 className="text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
               好友对战大厅 · ROOM LOBBY
             </h1>
           </div>
-          <Badge variant="ally">🌐 P2P 直连</Badge>
+          <div className="relative z-10">
+            <Badge variant="ally">🌐 P2P 直连</Badge>
+          </div>
         </div>
 
         {snapshot.errorMessage && (

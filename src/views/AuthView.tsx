@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { OrundumIcon } from '../components/ui/OrundumIcon';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 import {
   listLoginableAccounts,
   loginAccount,
@@ -10,7 +11,6 @@ import {
 } from '../data/auth-store';
 import { playTacticalSfx, unlockBgmPlayback, useBgmStatus } from '../audio/bgmPlayer';
 import { updateAppSettings, useAppSettings } from '../data/app-settings';
-import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
 
 interface AuthViewProps {
   readonly onAuthenticated: (username: string) => void;
@@ -80,18 +80,17 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
 
   return (
     <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col justify-between p-4 sm:p-6 overflow-hidden select-none">
-      {/* 罗德岛指挥中枢底图 + 塔形三角形官方 Logo 背景层 */}
+      {/* 官方罗德岛外景半淡出底图 + 塔形三角形官方 Logo 背景层 */}
       <div
         data-testid="auth-rhodes-tower-backdrop"
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        {/* 商业级指挥舰桥氛围底图 */}
-        <img
-          src={tacticalCommandBackdrop}
-          alt=""
-          referrerPolicy="no-referrer"
-          className="absolute inset-0 w-full h-full object-cover opacity-[0.22] scale-105"
+        <ScenicBackdrop
+          scene="rhodes-exterior"
+          fade="diagonal-tr"
+          opacityClassName="opacity-[0.44]"
+          tint="radial-gradient(circle at 75% 24%, rgba(229,165,43,0.16) 0%, transparent 56%)"
         />
         {/* 对角微弱重复暗纹 */}
         <div
@@ -108,17 +107,9 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
             src="./assets/arknights/logos/rhodes_island_dark.png"
             alt="罗德岛制药塔形标识"
             referrerPolicy="no-referrer"
-            className="w-[460px] h-[460px] sm:w-[620px] sm:h-[620px] object-contain opacity-[0.26] drop-shadow-[0_0_48px_rgba(0,0,0,0.9)]"
+            className="w-[460px] h-[460px] sm:w-[620px] sm:h-[620px] object-contain opacity-[0.24] drop-shadow-[0_0_48px_rgba(0,0,0,0.9)]"
           />
         </div>
-        {/* 边缘暗角渐变提高表单可读性 */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(16,20,26,0.28) 0%, rgba(11,14,18,0.84) 76%, rgba(9,11,15,0.96) 100%)',
-          }}
-        />
       </div>
 
       {/* 顶部 PRTS 导航条：BGM 音乐状态与全局设置按钮 */}
@@ -185,8 +176,14 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
           className="border-[#546372] bg-[#141920]/90 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)]"
         >
           {/* 标题与模式切换栏 */}
-          <div className="px-5 pt-5 pb-4 border-b border-[#2e3842] space-y-3">
-            <div className="flex items-center justify-between gap-2">
+          <div className="relative px-5 pt-5 pb-4 border-b border-[#2e3842] space-y-3 overflow-hidden">
+            <ScenicBannerLayer
+              scene="rhodes-bridge"
+              fade="right"
+              opacityClassName="opacity-38"
+              tint="radial-gradient(circle at 82% 45%, rgba(229,165,43,0.14) 0%, transparent 60%)"
+            />
+            <div className="relative z-10 flex items-center justify-between gap-2">
               <div>
                 <div className="text-[10px] font-mono tracking-widest text-[#e5a52b] uppercase">
                   NEURAL AUTHENTICATION
@@ -200,11 +197,11 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
                 alt=""
                 aria-hidden="true"
                 referrerPolicy="no-referrer"
-                className="w-10 h-10 object-contain opacity-80"
+                className="w-10 h-10 object-contain opacity-85"
               />
             </div>
 
-            <div className="grid grid-cols-2 border border-[#323d48] bg-[#111519] p-1 gap-1">
+            <div className="relative z-10 grid grid-cols-2 border border-[#323d48] bg-[#111519]/90 p-1 gap-1">
               <button
                 type="button"
                 onClick={() => {

@@ -5,9 +5,9 @@ import { CardView } from '../components/cards/CardView';
 import type { CardInstanceId, GameState, PlayerId } from '../game/types';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 import { playTacticalSfx } from '../audio/bgmPlayer';
 import { playCombatSfx } from '../audio/combatSfx';
-import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
 
 interface MulliganViewProps {
   readonly state: GameState;
@@ -69,21 +69,12 @@ export function MulliganView({
   if (waitingForOpponent || (submitting && !error)) {
     return (
       <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-4 select-none overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-          <img
-            src={tacticalCommandBackdrop}
-            alt=""
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover opacity-[0.18]"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(circle at center, rgba(16,20,26,0.48) 0%, rgba(12,15,20,0.92) 82%)',
-            }}
-          />
-        </div>
+        <ScenicBackdrop
+          scene="snowfield"
+          fade="top"
+          opacityClassName="opacity-[0.38]"
+          tint="radial-gradient(circle at 60% 18%, rgba(125,211,252,0.14) 0%, transparent 56%)"
+        />
         <Panel variant="raised" cornerCut="lg" scanlines className="relative z-10 max-w-md p-6 text-center space-y-3 border-[#52606d] bg-[#161b22]/92">
           <div className="w-12 h-12 mx-auto rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
           <h2 className="text-base font-bold text-white uppercase tracking-wider">
@@ -106,30 +97,28 @@ export function MulliganView({
 
   return (
     <div className="relative min-h-[100dvh] w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-2.5 sm:p-6 select-none overflow-y-auto">
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-        <img
-          src={tacticalCommandBackdrop}
-          alt=""
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover opacity-[0.18]"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(16,20,26,0.45) 0%, rgba(12,15,20,0.9) 82%)',
-          }}
-        />
-      </div>
+      <ScenicBackdrop
+        scene="snowfield"
+        fixed
+        fade="top"
+        opacityClassName="opacity-[0.38]"
+        tint="radial-gradient(circle at 60% 18%, rgba(125,211,252,0.14) 0%, transparent 56%)"
+      />
       <Panel
         variant="raised"
         cornerCut="lg"
         scanlines
-        className="relative z-10 w-full max-w-5xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col my-auto"
+        className="relative z-10 w-full max-w-5xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col my-auto overflow-hidden"
       >
         {/* Terminal Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-5 py-2.5 sm:py-3.5 bg-[#14171a] border-b border-[#363f45]">
-          <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="relative flex flex-wrap items-center justify-between gap-2 px-3 sm:px-5 py-2.5 sm:py-3.5 bg-[#14171a] border-b border-[#363f45] overflow-hidden">
+          <ScenicBannerLayer
+            scene="snowfield"
+            fade="right"
+            opacityClassName="opacity-42"
+            tint="radial-gradient(circle at 80% 45%, rgba(125,211,252,0.14) 0%, transparent 58%)"
+          />
+          <div className="relative z-10 flex items-center gap-2.5 sm:gap-3">
             <span className="w-1.5 sm:w-2 h-5 bg-[#e5a52b]" />
             <div>
               <h2 className="text-sm sm:text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
@@ -140,7 +129,7 @@ export function MulliganView({
               </span>
             </div>
           </div>
-          <span className="text-[11px] sm:text-xs font-mono text-amber-300 bg-amber-950/60 px-2 sm:px-2.5 py-0.5 sm:py-1 border border-amber-500/40">
+          <span className="relative z-10 text-[11px] sm:text-xs font-mono text-amber-300 bg-amber-950/60 px-2 sm:px-2.5 py-0.5 sm:py-1 border border-amber-500/40">
             已选择换出: {selected.size} / {hand.length} 张
           </span>
         </div>

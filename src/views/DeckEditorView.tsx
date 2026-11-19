@@ -22,6 +22,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { BottomSheet } from '../components/ui/BottomSheet';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 
 interface DeckEditorViewProps {
   readonly onBack: () => void;
@@ -526,10 +527,23 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
   const activeInspect = inspectCard;
 
   return (
-    <div className="deck-editor-view flex flex-col h-[100dvh] w-full bg-[#11141a] text-[#e8e9e6] font-sans select-none overflow-hidden">
+    <div className="deck-editor-view relative flex flex-col h-[100dvh] w-full bg-[#11141a] text-[#e8e9e6] font-sans select-none overflow-hidden">
+      <ScenicBackdrop
+        scene="rhodes-command"
+        fixed
+        fade="top"
+        opacityClassName="opacity-[0.24]"
+        baseColor="#11141a"
+      />
       {/* Top Navigation & Deck Action Bar */}
-      <header className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 bg-[#161b23] border-b border-[#2a3544] shadow-md z-10 shrink-0">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
+      <header className="relative z-10 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2 bg-[#161b23] border-b border-[#2a3544] shadow-md shrink-0 overflow-hidden">
+        <ScenicBannerLayer
+          scene="rhodes-command"
+          fade="right"
+          opacityClassName="opacity-40"
+          tint="radial-gradient(circle at 80% 45%, rgba(56,189,248,0.12) 0%, transparent 60%)"
+        />
+        <div className="relative z-10 flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
           <Button variant="ghost" size="sm" onClick={onBack} className="text-xs px-2 sm:px-3">
             ◀ 返回
           </Button>
@@ -571,7 +585,7 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
         </div>
 
         {/* Global Deck Actions */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="relative z-10 flex flex-wrap items-center gap-1.5">
           <div className="flex items-center gap-1 bg-[#161b21] border border-[#3b485e] p-0.5">
             {(['collection', 'free'] as DeckMode[]).map((candidate) => (
               <button
@@ -654,7 +668,7 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
       )}
 
       {/* Mobile Tab Switcher */}
-      <div className="lg:hidden flex items-center bg-[#151a23] border-b border-[#242d3d] px-3 py-1.5 gap-2 shrink-0">
+      <div className="relative z-10 lg:hidden flex items-center bg-[#151a23] border-b border-[#242d3d] px-3 py-1.5 gap-2 shrink-0">
         <button
           type="button"
           onClick={() => setMobileTab('catalog')}
@@ -681,9 +695,9 @@ export function DeckEditorView({ onBack, initialDeckId }: DeckEditorViewProps) {
       </div>
 
       {/* Main Content Area: Split Library & Current Deck */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative z-10 flex flex-1 overflow-hidden">
         {/* Left: Card Pool & Filters */}
-        <section className={`flex-[3] flex-col border-r border-[#242d3d] bg-[#10141a] overflow-hidden ${mobileTab !== 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
+        <section className={`flex-[3] flex-col border-r border-[#242d3d] bg-[#10141a]/92 overflow-hidden ${mobileTab !== 'catalog' ? 'hidden lg:flex' : 'flex'}`}>
           {/* Filter Bar */}
           <div className="p-2.5 sm:p-3 bg-[#151a23] border-b border-[#242d3d] flex flex-col gap-2 shrink-0">
             <div className="flex flex-wrap items-center gap-2">

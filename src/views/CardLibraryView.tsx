@@ -10,6 +10,7 @@ import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { BottomSheet } from '../components/ui/BottomSheet';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 import { CardFrame } from '../components/cards/CardFrame';
 import { OperatorPortrait } from '../components/cards/OperatorPortrait';
 
@@ -263,10 +264,23 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
   );
 
   return (
-    <div className="flex flex-col h-[100dvh] w-full bg-[#10141a] text-[#e8e9e6] font-sans overflow-hidden select-none">
+    <div className="relative flex flex-col h-[100dvh] w-full bg-[#10141a] text-[#e8e9e6] font-sans overflow-hidden select-none">
+      <ScenicBackdrop
+        scene="terra-landscape"
+        fixed
+        fade="top"
+        opacityClassName="opacity-[0.22]"
+        baseColor="#10141a"
+      />
       {/* 1. Top PRTS Archive Header */}
-      <header className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#141820] border-b border-[#263140] text-slate-100 shadow-md shrink-0">
-        <div className="flex items-center gap-2 sm:gap-3">
+      <header className="relative z-10 flex items-center justify-between px-3 sm:px-4 py-2 bg-[#141820] border-b border-[#263140] text-slate-100 shadow-md shrink-0 overflow-hidden">
+        <ScenicBannerLayer
+          scene="terra-landscape"
+          fade="right"
+          opacityClassName="opacity-42"
+          tint="radial-gradient(circle at 80% 45%, rgba(229,165,43,0.12) 0%, transparent 60%)"
+        />
+        <div className="relative z-10 flex items-center gap-2 sm:gap-3">
           <Button variant="ghost" size="sm" onClick={onBack} className="text-xs px-2 sm:px-3 text-slate-300">
             ◀ 返回
           </Button>
@@ -281,7 +295,7 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="relative z-10 flex items-center gap-2">
           {onOpenDeckEditor && (
             <Button variant="primary" size="sm" cornerCut onClick={onOpenDeckEditor} className="text-xs px-2.5 sm:px-3">
               前往编制卡组
@@ -291,9 +305,9 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
       </header>
 
       {/* 2. Main Work Area: Filtered Catalog Grid + Inspect Panel */}
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="relative z-10 flex flex-1 overflow-hidden">
         {/* Left Column: Search, Filter Chips, and Grid of Cards */}
-        <section className="flex-[3] flex flex-col border-r border-[#242e3d] bg-[#0d1016] overflow-hidden">
+        <section className="flex-[3] flex flex-col border-r border-[#242e3d] bg-[#0d1016]/90 overflow-hidden">
           {/* Filter Bar */}
           <div className="p-2 sm:p-3 bg-[#131720] border-b border-[#242e3d] flex flex-col gap-2 shrink-0">
             {/* Search Input & Sort Selector */}

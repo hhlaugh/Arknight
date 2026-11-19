@@ -7,7 +7,7 @@ import type { DeckDefinition, PlayerId } from '../game/types';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 
 interface DeckSelectViewProps {
   readonly mode: 'hotseat' | 'vs-bot';
@@ -122,30 +122,27 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
 
   return (
     <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-        <img
-          src={tacticalCommandBackdrop}
-          alt=""
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover opacity-[0.18]"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(16,20,26,0.45) 0%, rgba(12,15,20,0.88) 76%, rgba(10,12,16,0.97) 100%)',
-          }}
-        />
-      </div>
+      <ScenicBackdrop
+        scene="rhodes-command"
+        fade="diagonal-tr"
+        opacityClassName="opacity-[0.42]"
+        tint="radial-gradient(circle at 72% 24%, rgba(56,189,248,0.14) 0%, transparent 58%)"
+      />
       <Panel
         variant="raised"
         cornerCut="lg"
         scanlines
-        className="relative z-10 w-full max-w-5xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col"
+        className="relative z-10 w-full max-w-5xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden"
       >
         {/* Terminal Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45]">
-          <div className="flex items-center gap-3">
+        <div className="relative flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45] overflow-hidden">
+          <ScenicBannerLayer
+            scene="rhodes-bridge"
+            fade="right"
+            opacityClassName="opacity-38"
+            tint="radial-gradient(circle at 78% 50%, rgba(229,165,43,0.14) 0%, transparent 58%)"
+          />
+          <div className="relative z-10 flex items-center gap-3">
             <span className="w-2 h-5 bg-[#e5a52b]" />
             <div>
               <h2 className="text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
@@ -157,7 +154,7 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
             </div>
           </div>
           {onOpenDeckEditor && (
-            <div className="flex items-center gap-2">
+            <div className="relative z-10 flex items-center gap-2">
               <div className="flex items-center gap-1 bg-[#161b21] border border-[#3b485e] p-0.5">
                 {(['collection', 'free'] as DeckMode[]).map((candidate) => (
                   <button

@@ -12,6 +12,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { OrundumIcon } from '../components/ui/OrundumIcon';
+import { ScenicBackdrop, ScenicBannerLayer } from '../components/ui/ScenicBackdrop';
 import headhuntingBannerArt from '../assets/images/headhunting_banner_art_1795044169776.jpg';
 
 interface RecruitmentViewProps {
@@ -197,16 +198,28 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none">
+    <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
+      <ScenicBackdrop
+        scene="terra-landscape"
+        fade="diagonal-tr"
+        opacityClassName="opacity-[0.42]"
+        tint="radial-gradient(circle at 76% 24%, rgba(229,165,43,0.16) 0%, transparent 58%)"
+      />
       <Panel
         variant="raised"
         cornerCut="lg"
         scanlines
-        className="w-full max-w-4xl border border-[#4a555b] shadow-2xl flex flex-col overflow-hidden"
+        className="relative z-10 w-full max-w-4xl border border-[#4a555b] bg-[#161b22]/92 backdrop-blur-sm shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Terminal Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3 bg-[#14171a] border-b border-[#363f45]">
-          <div className="flex items-center gap-2 sm:gap-3">
+        <div className="relative flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3 bg-[#14171a] border-b border-[#363f45] overflow-hidden">
+          <ScenicBannerLayer
+            scene="lungmen-night"
+            fade="right"
+            opacityClassName="opacity-35"
+            tint="radial-gradient(circle at 80% 45%, rgba(229,165,43,0.16) 0%, transparent 58%)"
+          />
+          <div className="relative z-10 flex items-center gap-2 sm:gap-3">
             <Button variant="ghost" size="sm" onClick={onBack} className="text-xs px-2 sm:px-3">
               ◀ 返回
             </Button>
@@ -220,7 +233,7 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
               </span>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono tabular-nums">
+          <div className="relative z-10 flex flex-wrap items-center gap-2.5 text-xs font-mono tabular-nums">
             {isTest && (
               <span className="text-[9px] font-black text-rose-300 bg-rose-950/70 border border-rose-500/60 px-1.5 py-0.5">
                 TEST
@@ -365,14 +378,18 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
                 src={headhuntingBannerArt}
                 alt="罗德岛标准寻访卡池"
                 referrerPolicy="no-referrer"
-                className="absolute inset-0 w-full h-full object-cover opacity-80"
+                className="absolute inset-0 w-full h-full object-cover opacity-85"
+                style={{
+                  maskImage: 'linear-gradient(95deg, rgba(0,0,0,0.08) 4%, rgba(0,0,0,0.62) 45%, rgba(0,0,0,1) 82%)',
+                  WebkitMaskImage: 'linear-gradient(95deg, rgba(0,0,0,0.08) 4%, rgba(0,0,0,0.62) 45%, rgba(0,0,0,1) 82%)',
+                }}
               />
               <div
                 aria-hidden="true"
                 className="absolute inset-0"
                 style={{
                   background:
-                    'linear-gradient(90deg, rgba(11,15,20,0.92) 0%, rgba(11,15,20,0.68) 52%, rgba(11,15,20,0.38) 100%)',
+                    'linear-gradient(90deg, rgba(11,15,20,0.94) 0%, rgba(11,15,20,0.72) 50%, rgba(11,15,20,0.34) 100%)',
                 }}
               />
               <div className="relative z-10 max-w-lg space-y-1.5">
