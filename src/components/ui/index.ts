@@ -7,3 +7,6 @@ export * from './Tooltip';
 export * from './BottomSheet';
 export * from './HealthBar';
 export * from './ResourceIndicator';
+export * from './OrundumIcon';
+export * from './RhodesWatermark';
+export * from './SettingsModal';

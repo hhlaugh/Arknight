@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
+import { OrundumIcon } from '../components/ui/OrundumIcon';
 import {
   listLoginableAccounts,
   loginAccount,
@@ -385,7 +386,10 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
                         </span>
                       )}
                       <span>{acc.name}</span>
-                      <span className="text-amber-300 tabular-nums">◆{acc.originite}</span>
+                      <span className="inline-flex items-center gap-1 text-amber-300 tabular-nums">
+                        <OrundumIcon size="xs" />
+                        <span>{acc.originite}</span>
+                      </span>
                       <span className="text-[10px] text-slate-400">
                         {acc.hasPassword ? '🔒' : '→'}
                       </span>

@@ -155,6 +155,10 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(authHtml).toContain('登录账户');
     expect(authHtml).toContain('注册新档案');
     expect(authHtml).toContain('aria-label="打开系统设置"');
+    expect(authHtml).toContain('holo-panel');
+    expect(authHtml).toContain('holo-btn');
+    expect(authHtml).toContain('data-testid="orundum-icon"');
+    expect(authHtml).toContain('orundum.png');
     expect(authHtml).not.toContain('animate-pulse');
 
     const settingsModalHtml = renderToString(
@@ -187,6 +191,11 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(startHtml).toContain('prts_badge.svg');
     expect(startHtml).toContain('aria-label="打开系统设置"');
     expect(startHtml).toContain('aria-label="退出登录"');
+    expect(startHtml).toContain('holo-panel');
+    expect(startHtml).toContain('holo-btn');
+    expect(startHtml).toContain('holo-frame');
+    expect(startHtml).toContain('data-testid="orundum-icon"');
+    expect(startHtml).toContain('orundum.png');
     expect(startHtml).not.toContain('animate-pulse');
     expect(startHtml).not.toContain('招募');
     expect(startHtml).not.toContain('PROTOCOL');
@@ -238,6 +247,9 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(recruitmentHtml).toContain('干员寻访');
     expect(recruitmentHtml).toContain('返回');
     expect(recruitmentHtml).toContain('编制卡组');
+    expect(recruitmentHtml).toContain('data-testid="orundum-icon"');
+    expect(recruitmentHtml).toContain('orundum.png');
+    expect(recruitmentHtml).toContain('holo-btn');
 
     const battleHotseatHtml = renderToString(
       <BattleView
@@ -252,6 +264,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(battleHotseatHtml).toContain('结束行动');
     expect(battleHotseatHtml).toContain('data-testid="enemy-hud-panel"');
     expect(battleHotseatHtml).toContain('data-testid="player-hand-dock"');
+    expect(battleHotseatHtml).toContain('holo-frame');
+    expect(battleHotseatHtml).toContain('holo-btn');
     expect(battleHotseatHtml).toContain('prts_diamond.png');
     expect(battleHotseatHtml).toContain('aria-label="投降"');
     expect(battleHotseatHtml).toContain('aria-label="退出对局"');
@@ -288,11 +302,33 @@ describe('Phase 7 全面回归验收测试套件', () => {
         snapshot={battleSnap}
         setup={setup}
         modeLabel="模式：单人对战"
+        outcome="victory"
+        reward={{ originite: 300, accountName: '指挥官' }}
         onRestart={noop}
         onExit={noop}
       />,
     );
     expect(settlementHtml).toContain('MISSION SETTLEMENT');
+    expect(settlementHtml).toContain('MISSION ACCOMPLISHED');
+    expect(settlementHtml).toContain('战果总览');
+    expect(settlementHtml).toContain('战斗记录');
+    expect(settlementHtml).toContain('战术统计对比');
+    expect(settlementHtml).toContain('合成玉 +300');
+    expect(settlementHtml).toContain('orundum.png');
+    expect(settlementHtml).toContain('再来一局');
+
+    const settlementDefeatHtml = renderToString(
+      <SettlementView
+        snapshot={battleSnap}
+        setup={setup}
+        modeLabel="模式：单人对战"
+        outcome="defeat"
+        onRestart={noop}
+        onExit={noop}
+      />,
+    );
+    expect(settlementDefeatHtml).toContain('TACTICAL RETREAT');
+    expect(settlementDefeatHtml).not.toContain('MISSION ACCOMPLISHED');
 
     const mockOnlineCtrl = createMockOnlineController();
     const lobbyIdleHtml = renderToString(

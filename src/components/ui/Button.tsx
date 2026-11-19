@@ -29,7 +29,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const baseClasses =
-      'inline-flex items-center justify-center font-medium tracking-wide transition-all duration-150 select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#171a1d] disabled:cursor-not-allowed disabled:opacity-40';
+      'holo-btn inline-flex items-center justify-center font-medium tracking-wide select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1318] disabled:cursor-not-allowed disabled:opacity-40';
 
     const sizeClasses: Record<ButtonSize, string> = {
       sm: 'text-xs px-2.5 py-1 gap-1.5 min-h-[28px]',
@@ -38,17 +38,21 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const variantClasses: Record<ButtonVariant, string> = {
-      primary:
-        'bg-[#e5a52b] hover:bg-[#f59e0b] active:bg-[#d97706] text-slate-950 font-bold border border-[#f59e0b] shadow-[0_2px_8px_rgba(229,165,43,0.25)]',
-      secondary:
-        'bg-[#20262b] hover:bg-[#293137] active:bg-[#1a1f23] text-slate-200 border border-[#4a555b] hover:border-amber-400/70',
-      danger:
-        'bg-[#3b1921] hover:bg-[#4c1d27] active:bg-[#2e1319] text-rose-200 border border-rose-700/80 hover:border-rose-500',
-      ghost:
-        'bg-transparent hover:bg-white/5 active:bg-white/10 text-slate-300 hover:text-white border border-transparent',
-      outline:
-        'bg-transparent hover:bg-amber-400/10 active:bg-amber-400/20 text-amber-300 border border-amber-400/70 hover:border-amber-400',
+      primary: 'holo-btn-primary font-bold',
+      secondary: 'holo-btn-secondary',
+      danger: 'holo-btn-danger',
+      ghost: 'holo-btn-ghost',
+      outline: 'holo-btn-outline',
     };
+
+    const tickColor =
+      variant === 'primary'
+        ? 'border-slate-950/55'
+        : variant === 'danger'
+          ? 'border-rose-300/80'
+          : variant === 'outline'
+            ? 'border-amber-300/85'
+            : 'border-cyan-300/75';
 
     const combinedStyle = cornerCut
       ? {
@@ -65,8 +69,22 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         style={combinedStyle}
         {...props}
       >
+        {/* 立体全息边角投射框标（pointer-events-none 绝不阻挡点击） */}
+        {variant !== 'ghost' && (
+          <>
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none absolute top-[2px] left-[2px] w-1.5 h-1.5 border-t border-l ${tickColor} z-[2]`}
+            />
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none absolute bottom-[2px] right-[2px] w-1.5 h-1.5 border-b border-r ${tickColor} z-[2]`}
+            />
+          </>
+        )}
+
         {loading && (
-          <svg className="animate-spin -ml-0.5 h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
+          <svg className="relative z-[3] animate-spin -ml-0.5 h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path
               className="opacity-75"
@@ -75,8 +93,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             />
           </svg>
         )}
-        {!loading && icon && <span className="shrink-0">{icon}</span>}
-        <span>{children}</span>
+        {!loading && icon && <span className="relative z-[3] shrink-0">{icon}</span>}
+        <span className="relative z-[3] inline-flex items-center justify-center gap-1.5">{children}</span>
       </button>
     );
   },

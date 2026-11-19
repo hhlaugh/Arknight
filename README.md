@@ -15,24 +15,27 @@
 ```text
 .
 ├── assets/
-│   └── arknights/            # 144 张本地干员立绘与头像 (.webp) 及构建静态产物
+│   └── arknights/            # 干员立绘/头像 (.webp)、官方徽标、合成玉素材、BGM 及构建静态产物
 ├── docs/
 │   ├── specs/
 │   │   ├── v0.7/             # v0.7 卡池、AI 与规则设计文档
-│   │   └── v0.8/             # v0.8 竞技规则与多人联机规范
+│   │   ├── v0.8/             # v0.8 竞技规则与多人联机规范
+│   │   └── v3.3/             # v3.3 72 干员平衡审计与词条字典参考数据
 │   └── ui/                   # UI 设计系统、重构计划与验收清单
 ├── src/
 │   ├── ai/                   # BotPlayer 规则驱动 AI 与模拟测试
+│   ├── assets/images/        # 商业化战场地面、装甲底座与寻访/结算主视觉素材
+│   ├── audio/                # Arknights BGM 场景播放器与战术/战斗合成音效
 │   ├── client/               # LocalGameController、WebRTC P2P 联机控制器与 gameData
 │   ├── components/
-│   │   ├── battle/           # UnitView、LogView、TacticalBattleHud、TacticalDetailPanel 等战场组件
+│   │   ├── battle/           # 战场动态背景、攻击轨迹、视野缩放、战后统计与 HUD 组件
 │   │   ├── cards/            # CardFrame、CardView、OperatorPortrait 等卡框与立绘组件
-│   │   └── ui/               # Button、Panel、Badge、Modal、BottomSheet、HealthBar 等终端基础组件
-│   ├── data/                 # 72 卡池、预设牌组 CSV、寻访配置、立绘 Manifest 与玩家账号存档
+│   │   └── ui/               # 全息立体 Button、Panel、OrundumIcon、SettingsModal 等终端组件
+│   ├── data/                 # 72 卡池、预设牌组 CSV、寻访配置、立绘 Manifest、账号凭证与设置存储
 │   ├── game/                 # 纯函数核心规则引擎、动作枚举、战斗结算与随机数模块
 │   ├── hooks/                # useViewport、useLongPress、useCombatAnimations
-│   ├── styles/               # terminal.css (Design Tokens、卡框主题与轻量 CSS 动效)
-│   └── views/                # StartView、RecruitmentView、CardLibraryView、DeckEditorView、BattleView 等页面
+│   ├── styles/               # terminal.css (全息样式、战场粒子天气、动效与 Design Tokens)
+│   └── views/                # AuthView、StartView、RecruitmentView、BattleView、SettlementView 等页面
 ├── index.html
 ├── package.json
 ├── tsconfig.json

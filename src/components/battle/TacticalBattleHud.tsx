@@ -104,6 +104,10 @@ export function TacticalBattleHud({
         referrerPolicy="no-referrer"
         className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-[0.22]"
       />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-cyan-400/20 via-cyan-300/65 to-amber-400/50 z-20"
+      />
       {/* 1. 左区：PRTS 官方菱形徽记 + 回合轮次与阶段状态 */}
       <div className="relative z-10 flex items-center gap-1 sm:gap-2 min-w-0 justify-self-start">
         <img
@@ -138,15 +142,19 @@ export function TacticalBattleHud({
       {/* 2. 中区（窄竖屏占第二行全宽，横屏及平板桌面居正中）：敌方基地状态面板 */}
       <div
         data-testid="enemy-hud-panel"
-        className={`relative z-10 col-span-2 sm:col-span-1 order-3 sm:order-2 justify-self-stretch sm:justify-self-center flex items-center justify-between sm:justify-center gap-1.5 sm:gap-3 px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
+        className={`holo-frame relative z-10 col-span-2 sm:col-span-1 order-3 sm:order-2 justify-self-stretch sm:justify-self-center flex items-center justify-between sm:justify-center gap-1.5 sm:gap-3 px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
           enemyHit
             ? `border-amber-400 ring-2 ring-amber-400/70 ${disableMotion ? '' : 'anim-base-hit'}`
             : isEnemyTurn
               ? 'border-rose-500 ring-1 ring-rose-500/45 shadow-[0_0_12px_rgba(244,63,94,0.3)]'
-              : 'border-rose-800/60'
+              : 'border-rose-800/75'
         }`}
         style={{ clipPath: 'polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)' }}
       >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-rose-400/20 via-rose-300/75 to-amber-400/55"
+        />
         <div className="flex items-center gap-1.5 sm:gap-2">
           <span className="px-1.5 py-0.2 bg-rose-600 text-white font-black text-[10px] sm:text-xs tracking-wider shrink-0 uppercase whitespace-nowrap">
             {isHotseat ? (

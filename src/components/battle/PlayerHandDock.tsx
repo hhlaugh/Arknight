@@ -87,6 +87,10 @@ export function PlayerHandDock({
           referrerPolicy="no-referrer"
           className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-[0.2]"
         />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 left-0 bottom-0 w-[1.5px] bg-gradient-to-b from-cyan-300/75 via-sky-400/45 to-amber-400/55 z-20"
+        />
         {/* 侧栏顶部：我方 HP + DP + 结束行动 */}
         <div
           className={`relative z-10 p-2 bg-[#111824]/92 border-b space-y-1.5 shrink-0 transition-colors ${
@@ -245,6 +249,10 @@ export function PlayerHandDock({
         aria-hidden="true"
         referrerPolicy="no-referrer"
         className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-[0.2]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-cyan-400/20 via-cyan-300/70 to-amber-400/50 z-20"
       />
       {/* 0. 整合式选中提示 / 目标预演条（内嵌于底座顶部，不遮挡战场） */}
       {selectionPrompt && (

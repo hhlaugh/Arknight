@@ -11,6 +11,7 @@ import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
+import { OrundumIcon } from '../components/ui/OrundumIcon';
 import headhuntingBannerArt from '../assets/images/headhunting_banner_art_1795044169776.jpg';
 
 interface RecruitmentViewProps {
@@ -228,7 +229,10 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
             <span className="text-slate-400">
               账户 <strong className="text-slate-200">{accountName}</strong> · 已收录 {ownedSpeciesCount}/{DEMO_CARDS.length}
             </span>
-            <span className="text-amber-300 font-bold">◆ 合成玉 {balance}</span>
+            <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold">
+              <OrundumIcon size="sm" />
+              <span>合成玉 {balance}</span>
+            </span>
             {onOpenDeckEditor && (
               <Button variant="outline" size="sm" onClick={onOpenDeckEditor} className="text-xs">
                 编制卡组
@@ -274,7 +278,11 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
                 disabled={balance < singleCost}
                 title={balance < singleCost ? `还差 ${singleCost - balance} 合成玉` : undefined}
               >
-                单抽 ◆{singleCost}
+                <span className="inline-flex items-center gap-1.5">
+                  <span>单抽</span>
+                  <OrundumIcon size="xs" />
+                  <span>{singleCost}</span>
+                </span>
               </Button>
               <Button
                 variant="primary"
@@ -285,7 +293,11 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
                 className="font-bold px-5"
                 title={balance < tenCost ? `还差 ${tenCost - balance} 合成玉` : undefined}
               >
-                十连 ◆{tenCost}
+                <span className="inline-flex items-center gap-1.5">
+                  <span>十连</span>
+                  <OrundumIcon size="xs" />
+                  <span>{tenCost}</span>
+                </span>
               </Button>
             </div>
           </div>

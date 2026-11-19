@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { OrundumIcon } from '../components/ui/OrundumIcon';
 import { RhodesWatermarkBackdrop } from '../components/ui/RhodesWatermark';
 import {
   createAccount,
@@ -145,7 +146,10 @@ export function StartView({
             <span className="text-slate-300">
               账户 <strong className="text-white">{activeName}</strong>
             </span>
-            <span className="text-amber-300 font-bold">◆ {collection.currency.originite}</span>
+            <span className="inline-flex items-center gap-1 text-amber-300 font-bold">
+              <OrundumIcon size="sm" />
+              <span>{collection.currency.originite}</span>
+            </span>
             <span className="text-slate-400">
               收录 {ownedSpeciesCount}/{DEMO_CARDS.length}
             </span>
@@ -208,7 +212,10 @@ export function StartView({
               onClick={onRecruitment}
               className="w-full md:w-60 font-bold tracking-wide shadow-[0_6px_18px_rgba(229,165,43,0.22)]"
             >
-              ◆ 干员寻访 (Gacha)
+              <span className="inline-flex items-center justify-center gap-1.5">
+                <OrundumIcon size="md" />
+                <span>干员寻访 (Gacha)</span>
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -241,9 +248,10 @@ export function StartView({
           {/* Mode 1: VS Bot */}
           <div
             onClick={onVsBot}
-            className="group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-amber-500/75 hover:border-[#e5a52b] shadow-md transition-all cursor-pointer select-none"
+            className="holo-frame group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-amber-400/85 hover:border-[#e5a52b] transition-all cursor-pointer select-none overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
+            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-300/85 via-amber-400/35 to-transparent" />
             <div className="space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-[#e5a52b] font-bold">MODE 01</span>
@@ -264,9 +272,10 @@ export function StartView({
           {/* Mode 2: Hotseat */}
           <div
             onClick={onHotseat}
-            className="group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-sky-400/75 hover:border-sky-400 shadow-md transition-all cursor-pointer select-none"
+            className="holo-frame group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-sky-400/85 hover:border-sky-400 transition-all cursor-pointer select-none overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
+            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-cyan-300/85 via-sky-400/35 to-transparent" />
             <div className="space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-sky-400 font-bold">MODE 02</span>
@@ -287,9 +296,10 @@ export function StartView({
           {/* Mode 3: Online Room */}
           <div
             onClick={onOnline}
-            className="group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-rose-400/75 hover:border-rose-400 shadow-md transition-all cursor-pointer select-none"
+            className="holo-frame group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-rose-400/85 hover:border-rose-400 transition-all cursor-pointer select-none overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
+            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-rose-300/85 via-rose-400/35 to-transparent" />
             <div className="space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-rose-400 font-bold">MODE 03</span>
@@ -346,7 +356,10 @@ export function StartView({
                   <span className="text-[8px] font-black text-rose-300 bg-rose-950/80 border border-rose-500/60 px-1">TEST</span>
                 )}
                 <span>{account.name}</span>
-                <span className="text-amber-300">◆{account.originite}</span>
+                <span className="inline-flex items-center gap-1 text-amber-300">
+                  <OrundumIcon size="xs" />
+                  <span>{account.originite}</span>
+                </span>
                 {account.name === activeName && <span className="text-[#e5a52b]">✓</span>}
               </button>
             ))}

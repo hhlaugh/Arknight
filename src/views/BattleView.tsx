@@ -1108,10 +1108,23 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
             aria-hidden="true"
             className={`pointer-events-none absolute inset-0 ${
               isDeployTarget
-                ? 'bg-amber-950/35'
+                ? 'bg-amber-950/35 shadow-[inset_0_0_16px_rgba(245,158,11,0.35)]'
                 : isEnemy
-                  ? 'bg-[#120a0e]/45'
-                  : 'bg-[#091119]/45'
+                  ? 'bg-[#120a0e]/45 shadow-[inset_0_1px_0_rgba(251,113,133,0.22),inset_0_0_12px_rgba(244,63,94,0.1)]'
+                  : 'bg-[#091119]/45 shadow-[inset_0_1px_0_rgba(125,211,252,0.26),inset_0_0_12px_rgba(56,189,248,0.1)]'
+            }`}
+          />
+          {/* 全息边角投射标 */}
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute top-[2px] left-[2px] w-2 h-2 border-t border-l z-10 ${
+              isDeployTarget ? 'border-amber-300' : isEnemy ? 'border-rose-400/65' : 'border-cyan-400/65'
+            }`}
+          />
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute bottom-[2px] right-[2px] w-2 h-2 border-b border-r z-10 ${
+              isDeployTarget ? 'border-amber-300' : isEnemy ? 'border-rose-400/65' : 'border-cyan-400/65'
             }`}
           />
           {isSlotTapped && (
@@ -1582,14 +1595,14 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
                     return (
                       <div
                         key={lane}
-                        className={`relative flex flex-col bg-[#11161f]/92 backdrop-blur-[1px] border border-t-2 border-t-rose-500/65 border-b-2 border-b-sky-500/65 overflow-hidden shadow-[0_8px_22px_rgba(0,0,0,0.65)] transition-colors duration-150 ${
+                        className={`holo-frame relative flex flex-col bg-[#11161f]/92 backdrop-blur-[1px] border border-t-2 border-t-rose-400/80 border-b-2 border-b-cyan-400/80 overflow-hidden transition-colors duration-150 ${
                           laneStrike
                             ? laneStrike.toBase
-                              ? 'border-rose-500/85'
+                              ? 'border-rose-400 shadow-[0_0_24px_rgba(244,63,94,0.45)]'
                               : laneStrike.kind === 'skill'
-                                ? 'border-cyan-400/85'
-                                : 'border-amber-500/80'
-                            : 'border-[#2c3849]'
+                                ? 'border-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.45)]'
+                                : 'border-amber-400 shadow-[0_0_24px_rgba(245,158,11,0.4)]'
+                            : 'border-cyan-500/35'
                         }`}
                         style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
                       >

@@ -137,22 +137,22 @@ export function UnitView({
           onClick();
         }
       }}
-      className={`touch-gesture-surface group relative rounded-sm bg-[#181d24] select-none transition-all duration-150 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+      className={`holo-frame touch-gesture-surface group relative rounded-sm bg-[#181d24] select-none transition-all duration-150 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
         isDragLocked
-          ? 'border-cyan-300 ring-2 ring-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.65)] scale-[1.03] z-30'
+          ? 'border-cyan-300 ring-2 ring-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.7)] scale-[1.03] z-30'
           : longPressHandlers.isHolding
             ? 'border-amber-400 ring-2 ring-amber-400/80 z-25'
             : isSelected
-              ? 'border-[#e5a52b] ring-2 ring-[#e5a52b]/50 shadow-[0_0_14px_rgba(229,165,43,0.4)] z-20 scale-[1.01]'
+              ? 'border-[#e5a52b] ring-2 ring-[#e5a52b]/55 shadow-[0_0_18px_rgba(229,165,43,0.48)] z-20 scale-[1.01]'
               : isTarget
-                ? 'border-cyan-400 ring-2 ring-cyan-400/60 shadow-[0_0_12px_rgba(56,189,248,0.45)] animate-pulse z-20'
+                ? 'border-cyan-400 ring-2 ring-cyan-400/65 shadow-[0_0_16px_rgba(56,189,248,0.5)] animate-pulse z-20'
                 : isAttackTarget
-                  ? 'border-rose-500 ring-2 ring-rose-500/55 shadow-[0_0_12px_rgba(244,63,94,0.45)] z-20'
+                  ? 'border-rose-500 ring-2 ring-rose-500/60 shadow-[0_0_16px_rgba(244,63,94,0.5)] z-20'
                   : animState?.hit
-                    ? 'border-rose-400 ring-1 ring-rose-400/70 z-20'
+                    ? 'border-rose-400 ring-1 ring-rose-400/75 z-20'
                     : showSkillFx
-                      ? 'border-cyan-300 ring-2 ring-cyan-400/80 shadow-[0_0_16px_rgba(34,211,238,0.55)] z-25'
-                      : 'border-[#36424e] hover:border-[#526475] hover:bg-[#1e252e]'
+                      ? 'border-cyan-300 ring-2 ring-cyan-400/85 shadow-[0_0_20px_rgba(34,211,238,0.65)] z-25'
+                      : 'border-cyan-500/35 hover:border-cyan-300/75 hover:bg-[#1e252e]'
       } ${motionClass} w-full ${compact ? 'h-[54px]' : 'h-[58px] sm:h-[70px] lg:h-[82px]'}`}
     >
       {/* 内部裁切内容容器（保证立绘/血条不溢出，同时允许上方浮动跳字完整浮现） */}
@@ -165,7 +165,12 @@ export function UnitView({
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover opacity-[0.42] pointer-events-none"
         />
-        {/* 稀有度金属光泽与精密 SVG 角标边框 */}
+        {/* 顶部全息棱镜边缘反射 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-cyan-300/40 via-white/45 to-amber-300/40 z-10"
+        />
+        {/* 稀有度金属光泽与精密 SVG 全息角标边框 */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-10"
           viewBox="0 0 120 80"
@@ -173,18 +178,24 @@ export function UnitView({
           aria-hidden="true"
         >
           <polyline
-            points="108 1, 119 1, 119 12"
+            points="105 1.2, 118.8 1.2, 118.8 14"
+            fill="none"
+            stroke={rarityTheme.color}
+            strokeOpacity="0.92"
+            strokeWidth="2"
+          />
+          <polyline
+            points="1.2 66, 1.2 78.8, 15 78.8"
             fill="none"
             stroke={rarityTheme.color}
             strokeOpacity="0.82"
             strokeWidth="1.8"
           />
           <polyline
-            points="1 68, 1 79, 12 79"
+            points="4 4, 14 4"
             fill="none"
-            stroke={rarityTheme.color}
-            strokeOpacity="0.7"
-            strokeWidth="1.5"
+            stroke="rgba(125,211,252,0.6)"
+            strokeWidth="1.2"
           />
         </svg>
 

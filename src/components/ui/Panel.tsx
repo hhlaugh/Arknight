@@ -57,10 +57,20 @@ export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
     return (
       <div
         ref={ref}
-        className={`relative flex flex-col border rounded-sm overflow-hidden ${variantClasses[variant]} ${className}`}
+        className={`holo-panel relative flex flex-col border rounded-sm overflow-hidden ${variantClasses[variant]} ${className}`}
         style={combinedStyle}
         {...props}
       >
+        {/* 顶部全息投影棱镜光脊 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-cyan-400/20 via-cyan-300/75 to-amber-400/55 z-20"
+        />
+        {/* 四角全息投影定位光标 */}
+        <span aria-hidden="true" className="pointer-events-none absolute top-[3px] left-[3px] w-2.5 h-2.5 border-t-2 border-l-2 border-cyan-300/80 z-20" />
+        <span aria-hidden="true" className="pointer-events-none absolute top-[3px] right-[3px] w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400/70 z-20" />
+        <span aria-hidden="true" className="pointer-events-none absolute bottom-[3px] left-[3px] w-2.5 h-2.5 border-b-2 border-l-2 border-cyan-400/65 z-20" />
+        <span aria-hidden="true" className="pointer-events-none absolute bottom-[3px] right-[3px] w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400/65 z-20" />
         {/* 商业级拉丝钛金装甲底纹（替代纯色 CSS 容器底面） */}
         <img
           src={titaniumHudSurface}
