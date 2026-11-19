@@ -3,6 +3,7 @@ import type { CardInstanceId, GameState, PlayerId } from '../../game/types';
 import { CardView, cardDefinitionOf } from '../cards/CardView';
 import { Button } from '../ui/Button';
 import type { HoveredCardPreview } from './CardPreviewPopover';
+import titaniumHudSurface from '../../assets/images/titanium_hud_surface_1795070730280.jpg';
 
 interface PlayerHandDockProps {
   readonly state: GameState;
@@ -77,11 +78,18 @@ export function PlayerHandDock({
       <section
         data-testid="player-hand-dock"
         onClick={(e) => e.stopPropagation()}
-        className="w-[228px] sm:w-[254px] h-full min-h-0 bg-[#0e131b] border-l border-[#263244] shrink-0 flex flex-col z-20 shadow-[-8px_0_24px_rgba(0,0,0,0.45)]"
+        className="relative overflow-hidden w-[228px] sm:w-[254px] h-full min-h-0 bg-[#0e131b] border-l border-[#263244] shrink-0 flex flex-col z-20 shadow-[-8px_0_24px_rgba(0,0,0,0.45)]"
       >
+        <img
+          src={titaniumHudSurface}
+          alt=""
+          aria-hidden="true"
+          referrerPolicy="no-referrer"
+          className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-[0.2]"
+        />
         {/* 侧栏顶部：我方 HP + DP + 结束行动 */}
         <div
-          className={`p-2 bg-[#111824] border-b space-y-1.5 shrink-0 transition-colors ${
+          className={`relative z-10 p-2 bg-[#111824]/92 border-b space-y-1.5 shrink-0 transition-colors ${
             allyHit
               ? `border-rose-400 bg-rose-950/30 ${disableMotion ? '' : 'anim-base-hit'}`
               : isAllyTurn
@@ -166,14 +174,14 @@ export function PlayerHandDock({
 
         {/* 选中提示条 */}
         {selectionPrompt && (
-          <div className="px-2 py-1.5 bg-[#16202e] border-b border-[#29384d] flex flex-col gap-1 text-[11px] text-amber-300 shrink-0">
+          <div className="relative z-10 px-2 py-1.5 bg-[#16202e]/95 border-b border-[#29384d] flex flex-col gap-1 text-[11px] text-amber-300 shrink-0">
             {selectionPrompt}
           </div>
         )}
 
         {/* 手牌双列纵向滚动网格 */}
         <div
-          className={`flex-1 min-h-0 p-1.5 ${
+          className={`relative z-10 flex-1 min-h-0 p-1.5 ${
             draggingCardId ? 'overflow-hidden touch-none' : 'overflow-y-auto overscroll-contain'
           }`}
         >
@@ -229,18 +237,25 @@ export function PlayerHandDock({
     <section
       data-testid="player-hand-dock"
       onClick={(e) => e.stopPropagation()}
-      className="bg-[#0e131b] border-t border-[#263244] shrink-0 flex flex-col pb-safe z-20 shadow-[0_-8px_24px_rgba(0,0,0,0.45)]"
+      className="relative overflow-hidden bg-[#0e131b] border-t border-[#263244] shrink-0 flex flex-col pb-safe z-20 shadow-[0_-8px_24px_rgba(0,0,0,0.45)]"
     >
+      <img
+        src={titaniumHudSurface}
+        alt=""
+        aria-hidden="true"
+        referrerPolicy="no-referrer"
+        className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-[0.2]"
+      />
       {/* 0. 整合式选中提示 / 目标预演条（内嵌于底座顶部，不遮挡战场） */}
       {selectionPrompt && (
-        <div className="px-2 sm:px-3.5 py-1 bg-[#16202e] border-b border-[#29384d] flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 text-xs text-amber-300">
+        <div className="relative z-10 px-2 sm:px-3.5 py-1 bg-[#16202e]/95 border-b border-[#29384d] flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 text-xs text-amber-300">
           {selectionPrompt}
         </div>
       )}
 
       {/* 1. 己方指挥核心条：自适应单行紧凑分区（360px 窄屏绝不挤压换行） */}
       <div
-        className={`flex items-center justify-between gap-1.5 sm:gap-2.5 px-2 sm:px-4 py-1 sm:py-1.5 bg-[#111824] border-b transition-colors ${
+        className={`relative z-10 flex items-center justify-between gap-1.5 sm:gap-2.5 px-2 sm:px-4 py-1 sm:py-1.5 bg-[#111824]/92 border-b transition-colors ${
           allyHit
             ? `border-rose-400 bg-rose-950/30 ${disableMotion ? '' : 'anim-base-hit'}`
             : isAllyTurn
@@ -368,7 +383,7 @@ export function PlayerHandDock({
       {/* 2. 手牌横向滚动托盘 */}
       <div
         onScroll={() => onHoverCard(null)}
-        className={`flex items-center gap-1.5 sm:gap-2 pt-1 sm:pt-2 pb-1 sm:pb-1.5 px-2 sm:px-3 content-start snap-x min-h-[116px] sm:min-h-[148px] lg:min-h-[164px] ${
+        className={`relative z-10 flex items-center gap-1.5 sm:gap-2 pt-1 sm:pt-2 pb-1 sm:pb-1.5 px-2 sm:px-3 content-start snap-x min-h-[116px] sm:min-h-[148px] lg:min-h-[164px] ${
           draggingCardId ? 'overflow-hidden touch-none' : 'overflow-x-auto overscroll-x-contain'
         }`}
       >

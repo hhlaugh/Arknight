@@ -8,6 +8,7 @@ import { cardDefinitionOf } from '../cards/CardView';
 import { OperatorPortrait } from '../cards/OperatorPortrait';
 import { HealthBar } from '../ui/HealthBar';
 import { RARITY_THEMES } from '../ui/tokens';
+import titaniumHudSurface from '../../assets/images/titanium_hud_surface_1795070730280.jpg';
 
 export type UnitHighlight = 'none' | 'target' | 'selected' | 'attack_target';
 
@@ -156,6 +157,37 @@ export function UnitView({
     >
       {/* 内部裁切内容容器（保证立绘/血条不溢出，同时允许上方浮动跳字完整浮现） */}
       <div className={`relative flex flex-col justify-between w-full h-full ${compact ? 'p-0.5 pl-1.5' : 'p-1 sm:p-1.5 pl-1.5 sm:pl-2'} overflow-hidden`}>
+        {/* 拉丝钛金单位框体底纹 */}
+        <img
+          src={titaniumHudSurface}
+          alt=""
+          aria-hidden="true"
+          referrerPolicy="no-referrer"
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.42] pointer-events-none"
+        />
+        {/* 稀有度金属光泽与精密 SVG 角标边框 */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none z-10"
+          viewBox="0 0 120 80"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <polyline
+            points="108 1, 119 1, 119 12"
+            fill="none"
+            stroke={rarityTheme.color}
+            strokeOpacity="0.82"
+            strokeWidth="1.8"
+          />
+          <polyline
+            points="1 68, 1 79, 12 79"
+            fill="none"
+            stroke={rarityTheme.color}
+            strokeOpacity="0.7"
+            strokeWidth="1.5"
+          />
+        </svg>
+
         {/* 长按查看详情蓄力进度条 */}
         {longPressHandlers.isHolding && (
           <div
@@ -163,10 +195,12 @@ export function UnitView({
             className="absolute top-0 left-0 right-0 h-[3px] bg-amber-400 z-30 pointer-events-none anim-hold-charge"
           />
         )}
-        {/* 左侧稀有度竖向导轨 */}
+        {/* 左侧稀有度能量导轨 */}
         <div
           className="absolute left-0 top-0 bottom-0 w-[3px] pointer-events-none"
-          style={{ backgroundColor: rarityTheme.color }}
+          style={{
+            background: `linear-gradient(180deg, ${rarityTheme.color} 0%, rgba(255,255,255,0.4) 50%, ${rarityTheme.color} 100%)`,
+          }}
         />
 
         {/* 受击瞬时白闪+红晕遮罩 */}

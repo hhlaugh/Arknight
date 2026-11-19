@@ -1,5 +1,6 @@
 import React from 'react';
 import { CORNER_CUTS } from './tokens';
+import titaniumHudSurface from '../../assets/images/titanium_hud_surface_1795070730280.jpg';
 
 export type PanelVariant = 'default' | 'raised' | 'dark' | 'glass';
 
@@ -60,6 +61,15 @@ export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
         style={combinedStyle}
         {...props}
       >
+        {/* 商业级拉丝钛金装甲底纹（替代纯色 CSS 容器底面） */}
+        <img
+          src={titaniumHudSurface}
+          alt=""
+          aria-hidden="true"
+          referrerPolicy="no-referrer"
+          className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-[0.22] z-0"
+        />
+
         {/* Subtle Scanlines Texture */}
         {scanlines && (
           <div

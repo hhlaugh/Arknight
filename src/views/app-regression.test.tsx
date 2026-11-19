@@ -267,6 +267,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(battleHotseatHtml).toContain('data-testid="battlefield-weather-haze"');
     expect(battleHotseatHtml).toContain('anim-weather-haze');
     expect(battleHotseatHtml).toContain('data-testid="battlefield-ambient-canvas"');
+    expect(battleHotseatHtml).toContain('data-testid="deploy-pad-ally"');
+    expect(battleHotseatHtml).toContain('data-testid="deploy-pad-enemy"');
     expect(battleHotseatHtml).toContain('anim-arena-drift');
     expect(battleHotseatHtml).toContain('rhodes_island_dark.png');
     expect(battleHotseatHtml).toContain('data-testid="board-camera-controls"');

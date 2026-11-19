@@ -3,6 +3,7 @@ import type { GameState, PlayerId } from '../../game/types';
 import { Button } from '../ui/Button';
 import type { NetworkStatus } from '../../views/BattleView';
 import { DEFAULT_ANIMATION_SPEED_MODE, type AnimationSpeedMode } from './combatPresentation';
+import titaniumHudSurface from '../../assets/images/titanium_hud_surface_1795070730280.jpg';
 
 interface TacticalBattleHudProps {
   readonly state: GameState;
@@ -95,9 +96,16 @@ export function TacticalBattleHud({
   const enemyHpPct = Math.max(0, Math.min(100, (playerEnemy.base_points / 10) * 100));
 
   return (
-    <header className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 sm:gap-x-2 gap-y-1 px-1.5 sm:px-3.5 py-1 sm:py-1.5 bg-[#0d1016] border-b border-[#232d3d] text-[#e8e9e6] shadow-md z-30 shrink-0 select-none">
+    <header className="relative overflow-hidden grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 sm:gap-x-2 gap-y-1 px-1.5 sm:px-3.5 py-1 sm:py-1.5 bg-[#0d1016] border-b border-[#232d3d] text-[#e8e9e6] shadow-md z-30 shrink-0 select-none">
+      <img
+        src={titaniumHudSurface}
+        alt=""
+        aria-hidden="true"
+        referrerPolicy="no-referrer"
+        className="pointer-events-none select-none absolute inset-0 w-full h-full object-cover opacity-[0.22]"
+      />
       {/* 1. 左区：PRTS 官方菱形徽记 + 回合轮次与阶段状态 */}
-      <div className="flex items-center gap-1 sm:gap-2 min-w-0 justify-self-start">
+      <div className="relative z-10 flex items-center gap-1 sm:gap-2 min-w-0 justify-self-start">
         <img
           src="./assets/arknights/logos/prts_diamond.png"
           alt="PRTS"
@@ -130,7 +138,7 @@ export function TacticalBattleHud({
       {/* 2. 中区（窄竖屏占第二行全宽，横屏及平板桌面居正中）：敌方基地状态面板 */}
       <div
         data-testid="enemy-hud-panel"
-        className={`col-span-2 sm:col-span-1 order-3 sm:order-2 justify-self-stretch sm:justify-self-center relative flex items-center justify-between sm:justify-center gap-1.5 sm:gap-3 px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
+        className={`relative z-10 col-span-2 sm:col-span-1 order-3 sm:order-2 justify-self-stretch sm:justify-self-center flex items-center justify-between sm:justify-center gap-1.5 sm:gap-3 px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-[#1a1015] via-[#211319] to-[#1a1015] border transition-all duration-200 ${
           enemyHit
             ? `border-amber-400 ring-2 ring-amber-400/70 ${disableMotion ? '' : 'anim-base-hit'}`
             : isEnemyTurn
@@ -209,7 +217,7 @@ export function TacticalBattleHud({
       </div>
 
       {/* 3. 右区：倍速、日志、档案与投降/退出操作（支持窄屏自适应换行与紧凑触控尺寸） */}
-      <div className="order-2 sm:order-3 justify-self-end flex flex-wrap items-center justify-end gap-0.5 sm:gap-1 min-w-0">
+      <div className="relative z-10 order-2 sm:order-3 justify-self-end flex flex-wrap items-center justify-end gap-0.5 sm:gap-1 min-w-0">
         {onCycleAnimSpeed && (
           <Button
             variant={animSpeedMode === 'off' ? 'ghost' : 'secondary'}

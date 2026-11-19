@@ -4,6 +4,7 @@ import { getCardPresentation, type CardPresentation } from '../../data/card-pres
 import { OperatorPortrait } from './OperatorPortrait';
 import { RARITY_THEMES, CORNER_CUTS } from '../ui/tokens';
 import { CLASS_COLOR, CLASS_LABEL, type UiCardDefinition } from '../../client/gameData';
+import tacticalCardBackplate from '../../assets/images/tactical_card_backplate_1795070703422.jpg';
 
 export type CardFrameVariant = 'hand' | 'deck' | 'preview' | 'compact';
 
@@ -56,6 +57,7 @@ function FrameSvgBorder({
   readonly rarityColor: string;
   readonly variant: CardFrameVariant;
 }) {
+  const gradId = `card-bevel-${rarity}`;
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none z-20"
@@ -63,49 +65,69 @@ function FrameSvgBorder({
       preserveAspectRatio="none"
       aria-hidden="true"
     >
-      {/* 外部主轮廓 */}
+      <defs>
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.42)" />
+          <stop offset="35%" stopColor={rarityColor} stopOpacity="0.85" />
+          <stop offset="70%" stopColor="rgba(148,163,184,0.32)" />
+          <stop offset="100%" stopColor={rarityColor} stopOpacity="0.95" />
+        </linearGradient>
+      </defs>
+
+      {/* 外部金属倒角主轮廓 */}
       <polygon
         points="0 0, 148 0, 160 12, 160 220, 12 220, 0 208"
         fill="none"
-        stroke="rgba(255,255,255,0.16)"
-        strokeWidth="1.5"
+        stroke={`url(#${gradId})`}
+        strokeOpacity={rarity >= 5 ? '0.8' : '0.45'}
+        strokeWidth="1.75"
       />
 
-      {/* 右上与左下主切角高亮 */}
-      <polyline
-        points="134 1, 148 1, 159 12, 159 26"
+      {/* 内部精密装甲框线 */}
+      <polygon
+        points="4 4, 145 4, 156 15, 156 216, 15 216, 4 205"
         fill="none"
-        stroke={rarityColor}
-        strokeWidth={rarity >= 5 ? '2.8' : '2.2'}
-      />
-      <polyline
-        points="1 194, 1 208, 12 219, 26 219"
-        fill="none"
-        stroke={rarityColor}
-        strokeWidth={rarity >= 5 ? '2.4' : '1.8'}
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="0.75"
       />
 
-      {/* 顶部技术刻度线 */}
+      {/* 右上与左下金属护角 */}
+      <polyline
+        points="132 1.2, 148 1.2, 158.8 12, 158.8 28"
+        fill="none"
+        stroke={rarityColor}
+        strokeWidth={rarity >= 5 ? '3' : '2.2'}
+      />
+      <polyline
+        points="1.2 192, 1.2 208, 12 218.8, 28 218.8"
+        fill="none"
+        stroke={rarityColor}
+        strokeWidth={rarity >= 5 ? '2.6' : '1.9'}
+      />
+
+      {/* 顶部技术刻度线与战术铆钉 */}
       <line
         x1="34"
         y1="3.5"
-        x2="92"
+        x2="96"
         y2="3.5"
-        stroke="rgba(255,255,255,0.22)"
+        stroke="rgba(255,255,255,0.28)"
         strokeWidth="1"
-        strokeDasharray="4 2"
+        strokeDasharray="5 2"
       />
+      <circle cx="104" cy="3.5" r="1.1" fill={rarityColor} fillOpacity="0.7" />
+      <circle cx="110" cy="3.5" r="1.1" fill="rgba(255,255,255,0.35)" />
 
       {/* 4★+ 左侧稀有度能量导轨 */}
       {rarity >= 4 && (
         <line
-          x1="2"
+          x1="2.2"
           y1="36"
-          x2="2"
-          y2={rarity >= 6 ? '160' : '116'}
+          x2="2.2"
+          y2={rarity >= 6 ? '164' : '120'}
           stroke={rarityColor}
-          strokeOpacity={rarity >= 6 ? '0.85' : '0.6'}
-          strokeWidth="2.5"
+          strokeOpacity={rarity >= 6 ? '0.9' : '0.68'}
+          strokeWidth="2.8"
         />
       )}
 
@@ -113,28 +135,29 @@ function FrameSvgBorder({
       {rarity >= 5 && (
         <>
           <polyline
-            points="126 5, 145 5, 155 15, 155 34"
+            points="124 6, 144 6, 154 16, 154 36"
             fill="none"
             stroke={rarityColor}
-            strokeOpacity="0.55"
-            strokeWidth="1"
+            strokeOpacity="0.65"
+            strokeWidth="1.2"
           />
-          <line x1="156.5" y1="42" x2="156.5" y2="46" stroke={rarityColor} strokeWidth="1.2" />
-          <line x1="156.5" y1="50" x2="156.5" y2="54" stroke={rarityColor} strokeWidth="1.2" />
-          <line x1="156.5" y1="58" x2="156.5" y2="62" stroke={rarityColor} strokeWidth="1.2" />
+          <line x1="156.5" y1="42" x2="156.5" y2="46" stroke={rarityColor} strokeWidth="1.4" />
+          <line x1="156.5" y1="50" x2="156.5" y2="54" stroke={rarityColor} strokeWidth="1.4" />
+          <line x1="156.5" y1="58" x2="156.5" y2="62" stroke={rarityColor} strokeWidth="1.4" />
         </>
       )}
 
       {/* 6★ 高级资深干员专属双线精雕底轨与角标三角形 */}
       {rarity >= 6 && (
         <>
-          <polygon points="154 214, 154 202, 142 214" fill={rarityColor} fillOpacity="0.7" />
+          <polygon points="154 214, 154 200, 140 214" fill={rarityColor} fillOpacity="0.78" />
+          <polygon points="6 6, 16 6, 6 16" fill={rarityColor} fillOpacity="0.48" />
           <polyline
-            points="5 186, 5 205, 15 215, 34 215"
+            points="6 184, 6 204, 16 214, 36 214"
             fill="none"
             stroke={rarityColor}
-            strokeOpacity="0.55"
-            strokeWidth="1"
+            strokeOpacity="0.65"
+            strokeWidth="1.2"
           />
         </>
       )}
@@ -142,8 +165,8 @@ function FrameSvgBorder({
       {/* 非 compact 模式右侧微标尺 */}
       {variant !== 'compact' && rarity < 5 && (
         <>
-          <line x1="157" y1="44" x2="157" y2="48" stroke="rgba(255,255,255,0.32)" strokeWidth="1" />
-          <line x1="157" y1="52" x2="157" y2="56" stroke="rgba(255,255,255,0.32)" strokeWidth="1" />
+          <line x1="157" y1="44" x2="157" y2="48" stroke="rgba(255,255,255,0.34)" strokeWidth="1" />
+          <line x1="157" y1="52" x2="157" y2="56" stroke="rgba(255,255,255,0.34)" strokeWidth="1" />
         </>
       )}
     </svg>
@@ -274,18 +297,21 @@ export function CardFrame({
           className="absolute top-0 left-0 right-0 h-[3px] bg-amber-400 z-30 pointer-events-none anim-hold-charge"
         />
       )}
-      {/* 1. CardBackgroundLayer：碳纤维斜纹与稀有度顶光 */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at 88% 8%, var(--card-tint) 0%, transparent 58%),
-            linear-gradient(135deg, rgba(255,255,255,0.025) 25%, transparent 25%),
-            linear-gradient(225deg, rgba(255,255,255,0.025) 25%, transparent 25%)
-          `,
-          backgroundSize: '100% 100%, 8px 8px, 8px 8px',
-        }}
-      />
+      {/* 1. CardBackgroundLayer：商业级钛金碳纤维机械框板素材 + 稀有度顶光 */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-[#12161d]">
+        <img
+          src={tacticalCardBackplate}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover opacity-[0.44] scale-[1.03]"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 88% 8%, var(--card-tint) 0%, transparent 60%)',
+          }}
+        />
+      </div>
 
       {/* 2. ArtworkLayer：干员立绘与高对比渐变遮罩 */}
       <div className="absolute inset-0 z-1 pointer-events-none">
