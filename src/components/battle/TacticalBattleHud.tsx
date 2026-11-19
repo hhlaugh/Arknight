@@ -3,6 +3,7 @@ import type { GameState, PlayerId } from '../../game/types';
 import { Button } from '../ui/Button';
 import type { NetworkStatus } from '../../views/BattleView';
 import { DEFAULT_ANIMATION_SPEED_MODE, type AnimationSpeedMode } from './combatPresentation';
+import { ScenicBannerLayer } from '../ui/ScenicBackdrop';
 import titaniumHudSurface from '../../assets/images/titanium_hud_surface_1795070730280.jpg';
 
 interface TacticalBattleHudProps {
@@ -97,6 +98,11 @@ export function TacticalBattleHud({
 
   return (
     <header className="relative overflow-hidden grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 sm:gap-x-2 gap-y-1 px-1.5 sm:px-3.5 py-1 sm:py-1.5 bg-[#0d1016] border-b border-[#232d3d] text-[#e8e9e6] shadow-md z-30 shrink-0 select-none">
+      <ScenicBannerLayer
+        scene={networkStatus?.isOnline ? 'lungmen-night' : 'rhodes-bridge'}
+        fade="right"
+        opacityClassName="opacity-28"
+      />
       <img
         src={titaniumHudSurface}
         alt=""

@@ -147,11 +147,17 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
           )}
 
           <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 sm:gap-6 items-stretch bg-gradient-to-b from-[#1b2025] to-[#14181c]">
-            <div className="p-4 sm:p-5 bg-[#181d22] border border-[#323d46] flex flex-col justify-between gap-4">
-              <div className="space-y-1.5">
+            <div className="relative overflow-hidden p-4 sm:p-5 bg-[#181d22] border border-[#323d46] flex flex-col justify-between gap-4">
+              <ScenicBannerLayer
+                scene="rhodes-exterior"
+                fade="right"
+                opacityClassName="opacity-36"
+                tint="radial-gradient(circle at 78% 42%, rgba(229,165,43,0.14) 0%, transparent 60%)"
+              />
+              <div className="relative z-10 space-y-1.5">
                 <span className="text-[10px] font-mono text-[#e5a52b] font-bold">ACTION · HOST</span>
                 <h2 className="text-base font-bold text-white m-0">创建新房间</h2>
-                <p className="text-xs text-slate-400 leading-relaxed m-0">
+                <p className="text-xs text-slate-300 leading-relaxed m-0">
                   作为房主生成 8 位房间码，邀请好友加入同一战局。
                 </p>
               </div>
@@ -161,7 +167,7 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
                 cornerCut
                 loading={isCreating}
                 onClick={handleCreate}
-                className="w-full font-bold"
+                className="relative z-10 w-full font-bold"
               >
                 {isCreating ? '正在创建…' : '创建房间'}
               </Button>
@@ -171,15 +177,21 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
               OR
             </div>
 
-            <div className="p-4 sm:p-5 bg-[#181d22] border border-[#323d46] flex flex-col justify-between gap-4">
-              <div className="space-y-1.5">
+            <div className="relative overflow-hidden p-4 sm:p-5 bg-[#181d22] border border-[#323d46] flex flex-col justify-between gap-4">
+              <ScenicBannerLayer
+                scene="lungmen-night"
+                fade="right"
+                opacityClassName="opacity-36"
+                tint="radial-gradient(circle at 78% 42%, rgba(56,189,248,0.16) 0%, transparent 60%)"
+              />
+              <div className="relative z-10 space-y-1.5">
                 <span className="text-[10px] font-mono text-sky-400 font-bold">ACTION · GUEST</span>
                 <h2 className="text-base font-bold text-white m-0">输入房间码加入</h2>
-                <p className="text-xs text-slate-400 leading-relaxed m-0">
+                <p className="text-xs text-slate-300 leading-relaxed m-0">
                   输入好友分享的 8 位房间码连接对局。
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative z-10 flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   aria-label="8 位房间码"
@@ -191,7 +203,7 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
                       handleJoin();
                     }
                   }}
-                  className="flex-1 min-w-0 bg-[#111519] border border-[#3e4a54] px-3 py-2 text-sm font-mono font-bold tracking-widest text-center text-white uppercase focus:border-amber-400 focus:outline-none"
+                  className="flex-1 min-w-0 bg-[#111519]/90 border border-[#3e4a54] px-3 py-2 text-sm font-mono font-bold tracking-widest text-center text-white uppercase focus:border-amber-400 focus:outline-none"
                 />
                 <Button
                   variant="primary"
@@ -265,24 +277,26 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
         )}
 
         {/* 房间码与复制区 */}
-        <div className="px-4 sm:px-5 py-3 bg-[#1a2026] border-b border-[#2e3740] flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-xs font-mono text-slate-400">房间码:</span>
-            <span className="text-xl sm:text-2xl font-mono font-black tracking-[0.2em] text-sky-300 bg-[#111519] px-3 py-1 border border-sky-500/40">
+        <div className="relative overflow-hidden px-4 sm:px-5 py-3 bg-[#1a2026] border-b border-[#2e3740] flex flex-wrap items-center justify-between gap-3">
+          <ScenicBannerLayer scene="rhodes-bridge" fade="right" opacityClassName="opacity-30" />
+          <div className="relative z-10 flex flex-wrap items-center gap-2.5">
+            <span className="text-xs font-mono text-slate-300">房间码:</span>
+            <span className="text-xl sm:text-2xl font-mono font-black tracking-[0.2em] text-sky-300 bg-[#111519]/90 px-3 py-1 border border-sky-500/40">
               {snapshot.roomCode}
             </span>
             <Button variant="secondary" size="sm" onClick={copyCode}>
               {copied ? '✅ 已复制' : '📋 复制房间码'}
             </Button>
           </div>
-          <span className="text-[11px] text-slate-400">将房间码发给好友，对方输入即可加入</span>
+          <span className="relative z-10 text-[11px] text-slate-300">将房间码发给好友，对方输入即可加入</span>
         </div>
 
         {/* 双方玩家座位卡片 */}
         <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-4 bg-gradient-to-b from-[#1b2025] to-[#14181c]">
           {/* 房主座位 */}
-          <div className={`p-4 bg-[#181d22] border space-y-3 ${isHost ? 'border-[#e5a52b] ring-1 ring-[#e5a52b]/30' : 'border-[#323d46]'}`}>
-            <div className="flex items-center justify-between gap-2">
+          <div className={`relative overflow-hidden p-4 bg-[#181d22] border space-y-3 ${isHost ? 'border-[#e5a52b] ring-1 ring-[#e5a52b]/30' : 'border-[#323d46]'}`}>
+            <ScenicBannerLayer scene="rhodes-command" fade="right" opacityClassName="opacity-34" />
+            <div className="relative z-10 flex items-center justify-between gap-2">
               <span className="font-bold text-sm text-white">
                 {isHost ? '👤 你（房主 · 玩家 A）' : '👑 房主（玩家 A）'}
               </span>
@@ -291,14 +305,14 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
               </span>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-mono text-slate-400">选择出战卡组：</label>
+            <div className="relative z-10 space-y-1">
+              <label className="block text-[11px] font-mono text-slate-300">选择出战卡组：</label>
               {isHost ? (
                 <select
                   value={roomState?.host.deckId ?? decks[0]?.deck_id}
                   disabled={myReady}
                   onChange={(e) => handleSelectDeck(e.target.value)}
-                  className="w-full bg-[#111519] border border-[#3e4a54] px-2.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none disabled:opacity-60"
+                  className="w-full bg-[#111519]/90 border border-[#3e4a54] px-2.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none disabled:opacity-60"
                 >
                   {decks.map((d) => (
                     <option key={d.deck_id} value={d.deck_id}>
@@ -307,13 +321,13 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
                   ))}
                 </select>
               ) : (
-                <div className="px-2.5 py-2 bg-[#111519] border border-[#2a333c] text-xs font-bold text-slate-200">
+                <div className="px-2.5 py-2 bg-[#111519]/90 border border-[#2a333c] text-xs font-bold text-slate-200">
                   {decks.find((d) => d.deck_id === roomState?.host.deckId)?.deck_name_zh ?? '尚未选定'}
                 </div>
               )}
             </div>
 
-            <div>
+            <div className="relative z-10">
               <Badge variant={roomState?.host.ready ? 'status' : 'neutral'}>
                 {roomState?.host.ready ? '✅ 已准备' : '⏳ 未准备'}
               </Badge>
@@ -321,8 +335,9 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
           </div>
 
           {/* 访客座位 */}
-          <div className={`p-4 bg-[#181d22] border space-y-3 ${isGuest ? 'border-[#e5a52b] ring-1 ring-[#e5a52b]/30' : 'border-[#323d46]'}`}>
-            <div className="flex items-center justify-between gap-2">
+          <div className={`relative overflow-hidden p-4 bg-[#181d22] border space-y-3 ${isGuest ? 'border-[#e5a52b] ring-1 ring-[#e5a52b]/30' : 'border-[#323d46]'}`}>
+            <ScenicBannerLayer scene="lungmen-night" fade="right" opacityClassName="opacity-34" />
+            <div className="relative z-10 flex items-center justify-between gap-2">
               <span className="font-bold text-sm text-white">
                 {isGuest ? '👤 你（访客 · 玩家 B）' : '👥 访客（玩家 B）'}
               </span>
@@ -335,14 +350,14 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
 
             {guestJoined ? (
               <>
-                <div className="space-y-1">
-                  <label className="block text-[11px] font-mono text-slate-400">选择出战卡组：</label>
+                <div className="relative z-10 space-y-1">
+                  <label className="block text-[11px] font-mono text-slate-300">选择出战卡组：</label>
                   {isGuest ? (
                     <select
                       value={roomState?.guest?.deckId ?? decks[1]?.deck_id ?? decks[0]?.deck_id}
                       disabled={myReady}
                       onChange={(e) => handleSelectDeck(e.target.value)}
-                      className="w-full bg-[#111519] border border-[#3e4a54] px-2.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none disabled:opacity-60"
+                      className="w-full bg-[#111519]/90 border border-[#3e4a54] px-2.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none disabled:opacity-60"
                     >
                       {decks.map((d) => (
                         <option key={d.deck_id} value={d.deck_id}>
@@ -351,20 +366,20 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
                       ))}
                     </select>
                   ) : (
-                    <div className="px-2.5 py-2 bg-[#111519] border border-[#2a333c] text-xs font-bold text-slate-200">
+                    <div className="px-2.5 py-2 bg-[#111519]/90 border border-[#2a333c] text-xs font-bold text-slate-200">
                       {decks.find((d) => d.deck_id === roomState?.guest?.deckId)?.deck_name_zh ?? '尚未选定'}
                     </div>
                   )}
                 </div>
 
-                <div>
+                <div className="relative z-10">
                   <Badge variant={roomState?.guest?.ready ? 'status' : 'neutral'}>
                     {roomState?.guest?.ready ? '✅ 已准备' : '⏳ 未准备'}
                   </Badge>
                 </div>
               </>
             ) : (
-              <div className="min-h-[96px] flex flex-col items-center justify-center gap-1.5 text-slate-400 text-xs border border-dashed border-[#323d46] bg-[#13171b]">
+              <div className="relative z-10 min-h-[96px] flex flex-col items-center justify-center gap-1.5 text-slate-300 text-xs border border-dashed border-[#323d46] bg-[#13171b]/85">
                 <span className="text-lg">⏳</span>
                 <span>等待好友输入房间码加入…</span>
               </div>

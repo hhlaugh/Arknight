@@ -455,6 +455,8 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     );
     expect(hudHtml).toContain('2x');
     expect(hudHtml).toContain('-2');
+    expect(hudHtml).toContain('data-testid="scenic-banner-layer"');
+    expect(hudHtml).toContain('bg_rhodes_bridge.png');
 
     const dockHtml = renderToString(
       <PlayerHandDock
@@ -480,6 +482,8 @@ describe('Phase 6: 战斗轻量动画与视觉反馈测试', () => {
     expect(dockHtml).toContain('-3');
     expect(dockHtml).toContain('结束行动');
     expect(dockHtml).toContain('/10');
+    expect(dockHtml).toContain('data-testid="scenic-banner-layer"');
+    expect(dockHtml).toContain('bg_rhodes_command.png');
 
     const defaultHudHtml = renderToString(
       <TacticalBattleHud

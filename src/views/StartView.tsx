@@ -248,8 +248,14 @@ export function StartView({
             className="holo-frame group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-amber-400/85 hover:border-[#e5a52b] transition-all cursor-pointer select-none overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
-            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-300/85 via-amber-400/35 to-transparent" />
-            <div className="space-y-1.5 mb-4">
+            <ScenicBannerLayer
+              scene="rhodes-command"
+              fade="right"
+              opacityClassName="opacity-35"
+              tint="radial-gradient(circle at 80% 45%, rgba(229,165,43,0.14) 0%, transparent 62%)"
+            />
+            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-300/85 via-amber-400/35 to-transparent z-10" />
+            <div className="relative z-10 space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-[#e5a52b] font-bold">MODE 01</span>
                 <span className="text-[9px] font-mono text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.2">AI SIM</span>
@@ -257,11 +263,11 @@ export function StartView({
               <h3 className="text-sm font-bold text-white group-hover:text-[#e5a52b] transition-colors m-0">
                 单人对战（vs 机器人）
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 执玩家 A 对阵规则引擎本地 AI。AI 严格遵守全部卡牌部署与攻防规则。
               </p>
             </div>
-            <Button variant="primary" size="sm" cornerCut className="w-full">
+            <Button variant="primary" size="sm" cornerCut className="relative z-10 w-full">
               进入作战
             </Button>
           </div>
@@ -272,8 +278,14 @@ export function StartView({
             className="holo-frame group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-sky-400/85 hover:border-sky-400 transition-all cursor-pointer select-none overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
-            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-cyan-300/85 via-sky-400/35 to-transparent" />
-            <div className="space-y-1.5 mb-4">
+            <ScenicBannerLayer
+              scene="snowfield"
+              fade="right"
+              opacityClassName="opacity-35"
+              tint="radial-gradient(circle at 80% 45%, rgba(56,189,248,0.16) 0%, transparent 62%)"
+            />
+            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-cyan-300/85 via-sky-400/35 to-transparent z-10" />
+            <div className="relative z-10 space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-sky-400 font-bold">MODE 02</span>
                 <span className="text-[9px] font-mono text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.2">LOCAL</span>
@@ -281,11 +293,11 @@ export function StartView({
               <h3 className="text-sm font-bold text-white group-hover:text-sky-400 transition-colors m-0">
                 本地热座（双人同屏）
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 双人同屏轮流出牌与攻防推演，完整经历选牌、调度与三路对推。
               </p>
             </div>
-            <Button variant="secondary" size="sm" cornerCut className="w-full hover:border-sky-400">
+            <Button variant="secondary" size="sm" cornerCut className="relative z-10 w-full hover:border-sky-400">
               同屏对战
             </Button>
           </div>
@@ -296,8 +308,14 @@ export function StartView({
             className="holo-frame group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-rose-400/85 hover:border-rose-400 transition-all cursor-pointer select-none overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
-            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-rose-300/85 via-rose-400/35 to-transparent" />
-            <div className="space-y-1.5 mb-4">
+            <ScenicBannerLayer
+              scene="lungmen-night"
+              fade="right"
+              opacityClassName="opacity-35"
+              tint="radial-gradient(circle at 80% 45%, rgba(244,63,94,0.14) 0%, transparent 62%)"
+            />
+            <div aria-hidden="true" className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-rose-300/85 via-rose-400/35 to-transparent z-10" />
+            <div className="relative z-10 space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-rose-400 font-bold">MODE 03</span>
                 <span className="text-[9px] font-mono text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.2">P2P RTC</span>
@@ -305,11 +323,11 @@ export function StartView({
               <h3 className="text-sm font-bold text-white group-hover:text-rose-400 transition-colors m-0">
                 好友对战（P2P 联机）
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 基于 WebRTC 直连，生成房间码即可跨设备实时联机对决，无需第三方中继。
               </p>
             </div>
-            <Button variant="secondary" size="sm" cornerCut className="w-full hover:border-rose-400">
+            <Button variant="secondary" size="sm" cornerCut className="relative z-10 w-full hover:border-rose-400">
               联机大厅
             </Button>
           </div>

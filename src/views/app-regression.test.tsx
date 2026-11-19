@@ -168,6 +168,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
       <SettingsModal isOpen onClose={noop} activeUsername="指挥官" onLogout={noop} />,
     );
     expect(settingsModalHtml).toContain('系统设置');
+    expect(settingsModalHtml).toContain('data-testid="scenic-banner-layer"');
+    expect(settingsModalHtml).toContain('bg_rhodes_bridge.png');
     expect(settingsModalHtml).toContain('主音量');
     expect(settingsModalHtml).toContain('背景音乐');
     expect(settingsModalHtml).toContain('战斗动画与轨迹演出速度');
@@ -193,6 +195,9 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(startHtml).toContain('data-testid="scenic-banner-layer"');
     expect(startHtml).toContain('bg_rhodes_bridge.png');
     expect(startHtml).toContain('bg_rhodes_exterior.png');
+    expect(startHtml).toContain('bg_rhodes_command.png');
+    expect(startHtml).toContain('bg_snowfield.png');
+    expect(startHtml).toContain('bg_lungmen_night.png');
     expect(startHtml).toContain('rhodes_island_light.png');
     expect(startHtml).toContain('rhodes_island_dark.png');
     expect(startHtml).toContain('prts_badge.svg');
@@ -213,6 +218,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(deckSelectHtml).toContain('作战出击配置');
     expect(deckSelectHtml).toContain('本地热座双人推演模式');
     expect(deckSelectHtml).toContain('bg_rhodes_command.png');
+    expect(deckSelectHtml).toContain('bg_rhodes_exterior.png');
+    expect(deckSelectHtml).toContain('bg_snowfield.png');
 
     const libraryHtml = renderToString(
       <CardLibraryView onBack={noop} onOpenDeckEditor={noop} />,
@@ -289,6 +296,11 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(battleHotseatHtml).toContain('0.5x');
     expect(battleHotseatHtml).toContain('data-testid="board-viewport"');
     expect(battleHotseatHtml).toContain('data-testid="battlefield-backdrop"');
+    expect(battleHotseatHtml).toContain('data-testid="battlefield-scenic-layer"');
+    expect(battleHotseatHtml).toContain('data-scenic-scene="snowfield"');
+    expect(battleHotseatHtml).toContain('bg_snowfield.png');
+    expect(battleHotseatHtml).toContain('bg_rhodes_bridge.png');
+    expect(battleHotseatHtml).toContain('bg_rhodes_command.png');
     expect(battleHotseatHtml).toContain('data-particle-kinds="snowflake,debris,ember,light_mote"');
     expect(battleHotseatHtml).toContain('data-testid="battlefield-spotlight-mask"');
     expect(battleHotseatHtml).toContain('anim-spotlight-drift');
@@ -310,6 +322,20 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(battleBotHtml).toContain('结束行动');
     expect(battleBotHtml).toContain('投降');
     expect(battleBotHtml).toContain('退出');
+    expect(battleBotHtml).toContain('data-scenic-scene="rhodes-exterior"');
+    expect(battleBotHtml).toContain('bg_rhodes_exterior.png');
+
+    const battleOnlineHtml = renderToString(
+      <BattleView
+        snapshot={battleSnap}
+        controller={controller}
+        humanPlayer="player_a"
+        networkStatus={{ isOnline: true, roomCode: 'ABCD2345', seat: 'host', opponentConnected: true }}
+        onExit={noop}
+      />,
+    );
+    expect(battleOnlineHtml).toContain('data-scenic-scene="lungmen-night"');
+    expect(battleOnlineHtml).toContain('bg_lungmen_night.png');
 
     const settlementHtml = renderToString(
       <SettlementView
@@ -324,6 +350,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
     );
     expect(settlementHtml).toContain('MISSION SETTLEMENT');
     expect(settlementHtml).toContain('MISSION ACCOMPLISHED');
+    expect(settlementHtml).toContain('data-testid="scenic-backdrop"');
+    expect(settlementHtml).toContain('bg_rhodes_command.png');
     expect(settlementHtml).toContain('战果总览');
     expect(settlementHtml).toContain('战斗记录');
     expect(settlementHtml).toContain('战术统计对比');
@@ -355,6 +383,7 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(lobbyIdleHtml).toContain('好友联机对战');
     expect(lobbyIdleHtml).toContain('创建房间');
     expect(lobbyIdleHtml).toContain('bg_lungmen_night.png');
+    expect(lobbyIdleHtml).toContain('bg_rhodes_exterior.png');
 
     const lobbyWaitingHtml = renderToString(
       <RoomLobbyView
@@ -376,6 +405,8 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(lobbyWaitingHtml).toContain('ABCD2345');
     expect(lobbyWaitingHtml).toContain('ROOM LOBBY');
     expect(lobbyWaitingHtml).toContain('bg_lungmen_night.png');
+    expect(lobbyWaitingHtml).toContain('bg_rhodes_bridge.png');
+    expect(lobbyWaitingHtml).toContain('bg_rhodes_command.png');
   });
 
   it('完整对局生命周期回归：选牌 → 换牌 → 双人/人机行动推进 → 战斗日志产出 → 新种子重开', () => {

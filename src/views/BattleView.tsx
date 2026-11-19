@@ -9,6 +9,7 @@ import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Modal } from '../components/ui/Modal';
+import type { ScenicSceneId } from '../components/ui/ScenicBackdrop';
 import { TacticalBattleHud } from '../components/battle/TacticalBattleHud';
 import { PlayerHandDock } from '../components/battle/PlayerHandDock';
 import { TacticalDetailPanel } from '../components/battle/TacticalDetailPanel';
@@ -118,6 +119,11 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   const isHotseat = humanPlayer === null;
   const bottomPlayer: PlayerId = humanPlayer ?? actor;
   const topPlayer: PlayerId = bottomPlayer === 'player_a' ? 'player_b' : 'player_a';
+  const boardScenicScene: ScenicSceneId = networkStatus?.isOnline
+    ? 'lungmen-night'
+    : isHotseat
+      ? 'snowfield'
+      : 'rhodes-exterior';
 
   const [selection, setSelection] = useState<CardInstanceId | null>(null);
   const [hoveredCard, setHoveredCard] = useState<HoveredCardPreview | null>(null);
@@ -1506,6 +1512,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               variant="default"
               title={`战斗日志 (${snapshot.logHistory.length})`}
               codeName="SYS.LOG"
+              headerScene="rhodes-command"
               actions={
                 <Button variant="ghost" size="sm" onClick={() => setShowLog(false)} className="px-1.5 py-0 text-[10px]">
                   ◀ 收起
@@ -1569,6 +1576,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               disableGestures={Boolean(touchDragState || draggingCardId)}
               disableMotion={combatAnim.effectiveDisabled}
               arenaBackdropUrl={battlefieldArenaSurface}
+              scenicScene={boardScenicScene}
               onScaleChange={setBoardScale}
               onBackgroundClick={clearNonModalSelection}
             >

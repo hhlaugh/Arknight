@@ -10,6 +10,7 @@ import { getCardPresentation } from '../../data/card-presentation';
 import { Panel } from '../ui/Panel';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
+import { ScenicBannerLayer } from '../ui/ScenicBackdrop';
 import { CardFrame } from '../cards/CardFrame';
 import { HealthBar } from '../ui/HealthBar';
 import { ResourceIndicator } from '../ui/ResourceIndicator';
@@ -108,14 +109,16 @@ export function TacticalDetailPanel({
       variant="raised"
       title="战术参数与指令"
       codeName={selectedInstance ? selectedInstance.card_instance_id : 'IDLE'}
+      headerScene="rhodes-bridge"
       scanlines
       grid
       className={`flex flex-col h-full bg-[#161a22] border-[#2f3b4a] shadow-xl overflow-hidden ${className}`}
     >
       {selectedInstance && selectedDefinition && selectedPresentation ? (
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="flex items-center justify-between px-3.5 py-2 bg-[#13171e] border-b border-[#283240] shrink-0">
-            <div className="flex items-center gap-1.5 min-w-0">
+          <div className="relative flex items-center justify-between px-3.5 py-2 bg-[#13171e] border-b border-[#283240] shrink-0 overflow-hidden">
+            <ScenicBannerLayer scene="rhodes-command" fade="right" opacityClassName="opacity-28" />
+            <div className="relative z-10 flex items-center gap-1.5 min-w-0">
               <Badge variant={isBoardUnit ? 'status' : 'cost'} value={isBoardUnit ? '在场单位' : `${selectedDefinition.cost} DP`}>
                 {isBoardUnit ? '在场单位' : '手牌'}
               </Badge>
@@ -123,7 +126,7 @@ export function TacticalDetailPanel({
                 {selectedDefinition.card_name_zh}
               </span>
             </div>
-            <Button variant="ghost" size="sm" onClick={onDeselect} className="text-slate-400 hover:text-white px-2 py-0.5 text-xs">
+            <Button variant="ghost" size="sm" onClick={onDeselect} className="relative z-10 text-slate-400 hover:text-white px-2 py-0.5 text-xs">
               ✕ 取消
             </Button>
           </div>
@@ -333,11 +336,12 @@ export function TacticalDetailPanel({
         </div>
       ) : (
         /* Empty / Idle State */
-        <div className="flex flex-col items-center justify-center p-6 h-full text-center space-y-4">
-          <div className="w-16 h-16 rounded-full border border-slate-700/60 bg-[#12161c] flex items-center justify-center text-slate-500 text-2xl shadow-inner">
+        <div className="relative flex flex-col items-center justify-center p-6 h-full text-center space-y-4 overflow-hidden">
+          <ScenicBannerLayer scene="rhodes-command" fade="diagonal-tr" opacityClassName="opacity-22" />
+          <div className="relative z-10 w-16 h-16 rounded-full border border-slate-700/60 bg-[#12161c] flex items-center justify-center text-slate-500 text-2xl shadow-inner">
             🔍
           </div>
-          <div className="space-y-1">
+          <div className="relative z-10 space-y-1">
             <h3 className="font-bold text-sm text-slate-200 uppercase tracking-wider m-0">
               战术监视器在线
             </h3>
@@ -347,7 +351,7 @@ export function TacticalDetailPanel({
           </div>
 
           {/* Quick Battlefield Overview */}
-          <div className="w-full bg-[#10141a] p-3 border border-[#263140] text-left space-y-2 text-xs font-mono">
+          <div className="relative z-10 w-full bg-[#10141a]/90 p-3 border border-[#263140] text-left space-y-2 text-xs font-mono">
             <div className="flex items-center justify-between text-slate-400">
               <span>当前阶段:</span>
               <span className="text-[#e5a52b] font-bold">

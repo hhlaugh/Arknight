@@ -2,6 +2,7 @@ import React from 'react';
 import type { CardInstanceId, GameState, PlayerId } from '../../game/types';
 import { CardView, cardDefinitionOf } from '../cards/CardView';
 import { Button } from '../ui/Button';
+import { ScenicBannerLayer } from '../ui/ScenicBackdrop';
 import type { HoveredCardPreview } from './CardPreviewPopover';
 import titaniumHudSurface from '../../assets/images/titanium_hud_surface_1795070730280.jpg';
 
@@ -80,6 +81,7 @@ export function PlayerHandDock({
         onClick={(e) => e.stopPropagation()}
         className="relative overflow-hidden w-[228px] sm:w-[254px] h-full min-h-0 bg-[#0e131b] border-l border-[#263244] shrink-0 flex flex-col z-20 shadow-[-8px_0_24px_rgba(0,0,0,0.45)]"
       >
+        <ScenicBannerLayer scene="rhodes-command" fade="right" opacityClassName="opacity-24" />
         <img
           src={titaniumHudSurface}
           alt=""
@@ -243,6 +245,7 @@ export function PlayerHandDock({
       onClick={(e) => e.stopPropagation()}
       className="relative overflow-hidden bg-[#0e131b] border-t border-[#263244] shrink-0 flex flex-col pb-safe z-20 shadow-[0_-8px_24px_rgba(0,0,0,0.45)]"
     >
+      <ScenicBannerLayer scene="rhodes-command" fade="right" opacityClassName="opacity-24" />
       <img
         src={titaniumHudSurface}
         alt=""

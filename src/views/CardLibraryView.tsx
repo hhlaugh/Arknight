@@ -503,6 +503,7 @@ export function CardLibraryView({ onBack, onOpenDeckEditor }: CardLibraryViewPro
             variant="raised"
             title="干员战术档案"
             codeName={inspectCard.card_id}
+            headerScene="terra-landscape"
             scanlines
             grid
             className="flex-1 border-0 flex flex-col overflow-hidden"

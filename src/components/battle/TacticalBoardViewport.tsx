@@ -16,6 +16,7 @@ import {
 } from './boardViewportMath';
 
 import { DynamicBattlefieldBackdrop } from './DynamicBattlefieldBackdrop';
+import type { ScenicSceneId } from '../ui/ScenicBackdrop';
 
 interface TacticalBoardViewportProps {
   readonly children: React.ReactNode;
@@ -23,6 +24,7 @@ interface TacticalBoardViewportProps {
   readonly disableGestures?: boolean;
   readonly disableMotion?: boolean;
   readonly arenaBackdropUrl?: string;
+  readonly scenicScene?: ScenicSceneId;
   readonly onScaleChange?: (scale: number) => void;
   readonly onBackgroundClick?: () => void;
 }
@@ -39,6 +41,7 @@ export function TacticalBoardViewport({
   disableGestures = false,
   disableMotion = false,
   arenaBackdropUrl,
+  scenicScene,
   onScaleChange,
   onBackgroundClick,
 }: TacticalBoardViewportProps) {
@@ -283,9 +286,10 @@ export function TacticalBoardViewport({
       onClick={() => onBackgroundClick?.()}
       className="relative flex-1 min-h-0 overflow-hidden overscroll-contain flex items-center justify-center touch-none select-none px-1 sm:px-3 lg:px-4 py-1 sm:py-1.5"
     >
-      {/* 动态 Arknights 主题战场氛围背景（CSS 轻微缓动 + Canvas 源石微尘/战术网格） */}
+      {/* 动态 Arknights 主题战场氛围背景（CSS 轻微缓动 + 半边淡出官方风景 + Canvas 源石微尘/战术网格） */}
       <DynamicBattlefieldBackdrop
         backdropUrl={arenaBackdropUrl}
+        scenicScene={scenicScene}
         disableMotion={disableMotion}
       />
 

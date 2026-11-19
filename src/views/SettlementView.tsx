@@ -4,13 +4,13 @@ import { PLAYER_LABEL } from '../client/gameData';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { OrundumIcon } from '../components/ui/OrundumIcon';
+import { ScenicBackdrop } from '../components/ui/ScenicBackdrop';
 import { OperatorPortrait } from '../components/cards/OperatorPortrait';
 import { LogView } from '../components/battle/LogView';
 import { computeSettlementSummary } from '../components/battle/settlementStats';
 import { playTacticalSfx } from '../audio/bgmPlayer';
 import { playCombatSfx } from '../audio/combatSfx';
 import settlementOperationKeyart from '../assets/images/settlement_operation_keyart_1795044171854.jpg';
-import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
 
 interface SettlementViewProps {
   readonly snapshot: LocalGameSnapshot;
@@ -122,22 +122,14 @@ export function SettlementView({
 
   return (
     <div className="relative min-h-screen w-full bg-[#11151b] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
-      {/* 环境指挥舰桥暗场底图 */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-        <img
-          src={tacticalCommandBackdrop}
-          alt=""
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover opacity-[0.18] scale-105"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(16,20,27,0.45) 0%, rgba(11,15,20,0.88) 76%, rgba(8,11,15,0.97) 100%)',
-          }}
-        />
-      </div>
+      {/* 官方指挥中枢半淡出风景底图 */}
+      <ScenicBackdrop
+        scene="rhodes-command"
+        fade="diagonal-tr"
+        opacityClassName="opacity-[0.38]"
+        baseColor="#11151b"
+        tint="radial-gradient(circle at 76% 24%, rgba(56,189,248,0.14) 0%, transparent 58%)"
+      />
 
       <Panel
         variant="raised"
@@ -173,7 +165,13 @@ export function SettlementView({
             alt=""
             aria-hidden="true"
             referrerPolicy="no-referrer"
-            className="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-45"
+            className="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-50"
+            style={{
+              maskImage:
+                'linear-gradient(96deg, rgba(0,0,0,0.08) 6%, rgba(0,0,0,0.48) 45%, rgba(0,0,0,0.95) 82%, rgba(0,0,0,1) 100%)',
+              WebkitMaskImage:
+                'linear-gradient(96deg, rgba(0,0,0,0.08) 6%, rgba(0,0,0,0.48) 45%, rgba(0,0,0,0.95) 82%, rgba(0,0,0,1) 100%)',
+            }}
           />
           <img
             src="./assets/arknights/logos/rhodes_island_dark.png"

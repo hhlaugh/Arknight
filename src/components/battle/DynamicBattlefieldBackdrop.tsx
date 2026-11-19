@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from 'react';
+import { SCENIC_SCENES, type ScenicSceneId } from '../ui/ScenicBackdrop';
 
 interface DynamicBattlefieldBackdropProps {
   /** Arknights 主题战场底图 URL（已静态导入或相对路径资源） */
   readonly backdropUrl?: string;
+  /** 半边淡出官方战场远景（根据对战模式切换罗德岛外部/雪原/龙门夜景） */
+  readonly scenicScene?: ScenicSceneId;
   /** 关闭动效（用户设置关闭或处于弱动效模式时暂停 canvas 与 CSS 位移） */
   readonly disableMotion?: boolean;
 }
@@ -153,8 +156,12 @@ function particleRgb(tone: AmbientParticle['tone']): string {
  */
 export function DynamicBattlefieldBackdrop({
   backdropUrl,
+  scenicScene = 'rhodes-exterior',
   disableMotion = false,
 }: DynamicBattlefieldBackdropProps) {
+  const scenicMeta = SCENIC_SCENES[scenicScene];
+  const scenicMask =
+    'linear-gradient(212deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.52) 44%, rgba(0,0,0,0.08) 78%, rgba(0,0,0,0) 100%)';
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -376,11 +383,28 @@ export function DynamicBattlefieldBackdrop({
           src={backdropUrl}
           alt=""
           referrerPolicy="no-referrer"
-          className={`absolute inset-0 w-full h-full object-cover opacity-[0.46] will-change-transform ${
+          className={`absolute inset-0 w-full h-full object-cover opacity-[0.44] will-change-transform ${
             disableMotion ? 'scale-[1.06]' : 'anim-arena-drift'
           }`}
         />
       )}
+
+      {/* 1.5 半边淡出官方场景远景层：柔和透出罗德岛/极地雪原/龙门夜景，不干扰前景棋盘辨识 */}
+      <img
+        data-testid="battlefield-scenic-layer"
+        data-scenic-scene={scenicScene}
+        src={scenicMeta.src}
+        alt=""
+        referrerPolicy="no-referrer"
+        className={`absolute inset-0 w-full h-full object-cover opacity-[0.36] will-change-transform ${
+          disableMotion ? 'scale-[1.04]' : 'anim-arena-drift'
+        }`}
+        style={{
+          filter: scenicMeta.defaultFilter,
+          maskImage: scenicMask,
+          WebkitMaskImage: scenicMask,
+        }}
+      />
 
       {/* 2. 反向缓动罗德岛制药塔形徽章暗纹 */}
       <div

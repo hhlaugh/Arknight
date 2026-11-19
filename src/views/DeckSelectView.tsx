@@ -75,46 +75,51 @@ export function DeckSelectView({ mode, onStart, onCancel, onOpenDeckEditor }: De
 
   const renderColumn = (playerId: PlayerId) => {
     const isPlayerA = playerId === 'player_a';
+    const columnScene = isPlayerA ? 'rhodes-exterior' : mode === 'vs-bot' ? 'rhodes-command' : 'snowfield';
     return (
       <Panel
         variant="default"
         title={`${PLAYER_LABEL[playerId]} 作战编制`}
         codeName={isPlayerA ? 'OPERATOR.ALPHA' : 'OPERATOR.BETA'}
+        headerScene={columnScene}
         className="flex-1 flex flex-col min-w-0"
       >
-        <div className="p-3 space-y-2 max-h-[55vh] overflow-y-auto">
-          {availableDecks.map((deck) => {
-            const isSelected = deckIds[playerId] === deck.deck_id;
-            const isCustom = deck.deck_id.startsWith('CUSTOM-');
-            return (
-              <div
-                key={deck.deck_id}
-                onClick={() => setDeckIds((prev) => ({ ...prev, [playerId]: deck.deck_id }))}
-                className={`p-3 border transition-all cursor-pointer select-none ${
-                  isSelected
-                    ? 'bg-[#29323d] border-[#e5a52b] ring-1 ring-[#e5a52b]/40 shadow-md'
-                    : 'bg-[#181d22] border-[#313b43] hover:border-[#4b5a66] hover:bg-[#1d232a]'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-white">{deck.deck_name_zh}</span>
-                    <Badge variant={isCustom ? 'rarity' : 'neutral'} value={isCustom ? 5 : undefined}>
-                      {isCustom ? '自定义' : '官方预设'}
-                    </Badge>
+        <div className="relative overflow-hidden">
+          <ScenicBannerLayer scene={columnScene} fade="right" opacityClassName="opacity-18" />
+          <div className="relative z-10 p-3 space-y-2 max-h-[55vh] overflow-y-auto">
+            {availableDecks.map((deck) => {
+              const isSelected = deckIds[playerId] === deck.deck_id;
+              const isCustom = deck.deck_id.startsWith('CUSTOM-');
+              return (
+                <div
+                  key={deck.deck_id}
+                  onClick={() => setDeckIds((prev) => ({ ...prev, [playerId]: deck.deck_id }))}
+                  className={`p-3 border transition-all cursor-pointer select-none ${
+                    isSelected
+                      ? 'bg-[#29323d]/95 border-[#e5a52b] ring-1 ring-[#e5a52b]/40 shadow-md'
+                      : 'bg-[#181d22]/90 border-[#313b43] hover:border-[#4b5a66] hover:bg-[#1d232a]/95'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs text-white">{deck.deck_name_zh}</span>
+                      <Badge variant={isCustom ? 'rarity' : 'neutral'} value={isCustom ? 5 : undefined}>
+                        {isCustom ? '自定义' : '官方预设'}
+                      </Badge>
+                    </div>
+                    {isSelected && (
+                      <span className="text-[10px] font-mono text-[#e5a52b] font-bold">
+                        ✓ 已选择
+                      </span>
+                    )}
                   </div>
-                  {isSelected && (
-                    <span className="text-[10px] font-mono text-[#e5a52b] font-bold">
-                      ✓ 已选择
-                    </span>
-                  )}
+                  <div className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                    {deckComposition(deck)}
+                  </div>
                 </div>
-                <div className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
-                  {deckComposition(deck)}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </Panel>
     );

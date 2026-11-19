@@ -1,5 +1,6 @@
 import React from 'react';
 import { CORNER_CUTS } from './tokens';
+import { ScenicBannerLayer, type ScenicSceneId } from './ScenicBackdrop';
 import titaniumHudSurface from '../../assets/images/titanium_hud_surface_1795070730280.jpg';
 
 export type PanelVariant = 'default' | 'raised' | 'dark' | 'glass';
@@ -12,6 +13,7 @@ export interface PanelProps extends Omit<React.HTMLAttributes<HTMLDivElement>, '
   readonly cornerCut?: boolean | 'sm' | 'md' | 'lg';
   readonly scanlines?: boolean;
   readonly grid?: boolean;
+  readonly headerScene?: ScenicSceneId;
 }
 
 export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
@@ -24,6 +26,7 @@ export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
       cornerCut = false,
       scanlines = false,
       grid = false,
+      headerScene,
       children,
       className = '',
       style,
@@ -106,8 +109,11 @@ export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
 
         {/* Optional Tactical Header */}
         {(title || codeName || actions) && (
-          <div className="relative z-10 flex items-center justify-between px-3.5 py-2 border-b border-[#363f45] bg-[#1a1f23]/80 select-none">
-            <div className="flex items-center gap-2 overflow-hidden">
+          <div className="relative z-10 flex items-center justify-between px-3.5 py-2 border-b border-[#363f45] bg-[#1a1f23]/80 select-none overflow-hidden">
+            {headerScene && (
+              <ScenicBannerLayer scene={headerScene} fade="right" opacityClassName="opacity-36" />
+            )}
+            <div className="relative z-10 flex items-center gap-2 overflow-hidden">
               <span className="w-1.5 h-3.5 bg-[#e5a52b] rounded-none shrink-0" />
               {title && <span className="font-bold text-xs tracking-wider text-slate-100 uppercase truncate">{title}</span>}
               {codeName && (
@@ -116,7 +122,7 @@ export const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
                 </span>
               )}
             </div>
-            {actions && <div className="flex items-center gap-1.5 shrink-0">{actions}</div>}
+            {actions && <div className="relative z-10 flex items-center gap-1.5 shrink-0">{actions}</div>}
           </div>
         )}
 

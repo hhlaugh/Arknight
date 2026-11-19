@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { Button } from './Button';
+import { ScenicBannerLayer, type ScenicSceneId } from './ScenicBackdrop';
 
 export interface BottomSheetProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly title: React.ReactNode;
   readonly codeName?: string;
+  readonly headerScene?: ScenicSceneId;
   readonly children: React.ReactNode;
   readonly maxHeight?: string;
   readonly className?: string;
@@ -16,6 +18,7 @@ export function BottomSheet({
   onClose,
   title,
   codeName = 'SYS.DRAWER',
+  headerScene = 'rhodes-command',
   children,
   maxHeight = 'max-h-[85dvh]',
   className = '',
@@ -46,8 +49,9 @@ export function BottomSheet({
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-3 sm:px-4 py-1.5 sm:py-2 border-b border-[#313a42] bg-[#171a1d] shrink-0">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="relative flex items-center justify-between px-3 sm:px-4 py-1.5 sm:py-2 border-b border-[#313a42] bg-[#171a1d] shrink-0 overflow-hidden">
+          <ScenicBannerLayer scene={headerScene} fade="right" opacityClassName="opacity-35" />
+          <div className="relative z-10 flex items-center gap-2 min-w-0">
             <span className="w-1.5 h-3.5 bg-[#e5a52b] shrink-0" />
             <span className="font-bold text-xs tracking-wider text-slate-100 uppercase truncate">{title}</span>
             {codeName && (
@@ -56,7 +60,7 @@ export function BottomSheet({
               </span>
             )}
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} className="px-2 py-0.5 text-xs text-slate-400 shrink-0">
+          <Button variant="ghost" size="sm" onClick={onClose} className="relative z-10 px-2 py-0.5 text-xs text-slate-400 shrink-0">
             ✕
           </Button>
         </div>
