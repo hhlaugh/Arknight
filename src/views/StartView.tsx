@@ -14,6 +14,7 @@ import {
 } from '../data/player-collection';
 import type { AccountSummary } from '../data/player-collection';
 import { DEMO_CARDS } from '../client/gameData';
+import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
 
 interface StartViewProps {
   readonly onHotseat: () => void;
@@ -96,7 +97,23 @@ export function StartView({
     event.target.value = '';
   };
   return (
-    <div className="relative min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
+    <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
+      {/* 指挥舰桥氛围底图 + 暗场遮罩 */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <img
+          src={tacticalCommandBackdrop}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover opacity-[0.24] scale-105"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(circle at center, rgba(18,22,27,0.38) 0%, rgba(13,17,22,0.86) 76%, rgba(10,13,17,0.96) 100%)',
+          }}
+        />
+      </div>
       <RhodesWatermarkBackdrop />
       {/* Central Terminal Console Panel */}
       <Panel
@@ -104,7 +121,7 @@ export function StartView({
         cornerCut="lg"
         scanlines
         grid
-        className="relative z-10 w-full max-w-4xl border border-[#4a555b] bg-[#191d22]/86 shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-4xl border border-[#52606d] bg-[#161b21]/90 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] overflow-hidden"
       >
         {/* Top Operational Status Header */}
         <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a]/92 border-b border-[#363f45]">
@@ -159,7 +176,7 @@ export function StartView({
         </div>
 
         {/* Hero Section */}
-        <div className="relative px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-b from-[#1b2025]/82 to-[#14181c]/88 border-b border-[#2d353b] overflow-hidden">
+        <div className="relative px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-br from-[#1b222a]/90 via-[#151a20]/90 to-[#11151b]/95 border-b border-[#313b46] overflow-hidden">
           <img
             src="./assets/arknights/logos/rhodes_island_dark.png"
             alt=""
@@ -167,8 +184,9 @@ export function StartView({
             referrerPolicy="no-referrer"
             className="pointer-events-none select-none absolute right-6 md:right-60 top-1/2 -translate-y-1/2 w-56 h-56 object-contain opacity-[0.22]"
           />
-          <div className="relative z-10 flex-1 space-y-2">
+          <div className="relative z-10 flex-1 space-y-2.5">
             <div className="inline-flex items-center gap-2 text-xs font-mono text-[#e5a52b] tracking-wider uppercase">
+              <span className="w-2 h-2 bg-[#e5a52b]" />
               <span>RHODES ISLAND OPERATIONAL CARD GAME</span>
               <span>·</span>
               <span>72 OPERATORS</span>
@@ -182,13 +200,13 @@ export function StartView({
           </div>
 
           {/* Quick Deck Builder & Archive Launcher */}
-          <div className="w-full md:w-auto shrink-0 flex flex-col sm:flex-row md:flex-col gap-2 items-center">
+          <div className="relative z-10 w-full md:w-auto shrink-0 flex flex-col sm:flex-row md:flex-col gap-2 items-center">
             <Button
               variant="primary"
               size="lg"
               cornerCut
               onClick={onRecruitment}
-              className="w-full md:w-60 font-bold tracking-wide"
+              className="w-full md:w-60 font-bold tracking-wide shadow-[0_6px_18px_rgba(229,165,43,0.22)]"
             >
               ◆ 干员寻访 (Gacha)
             </Button>
@@ -223,13 +241,13 @@ export function StartView({
           {/* Mode 1: VS Bot */}
           <div
             onClick={onVsBot}
-            className="group relative flex flex-col justify-between p-4 bg-[#191e24] hover:bg-[#20272f] border border-[#38424b] hover:border-[#e5a52b] transition-all cursor-pointer select-none"
+            className="group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-amber-500/75 hover:border-[#e5a52b] shadow-md transition-all cursor-pointer select-none"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
             <div className="space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-[#e5a52b] font-bold">MODE 01</span>
-                <span className="text-[9px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.2">AI SIM</span>
+                <span className="text-[9px] font-mono text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.2">AI SIM</span>
               </div>
               <h3 className="text-sm font-bold text-white group-hover:text-[#e5a52b] transition-colors m-0">
                 单人对战（vs 机器人）
@@ -246,13 +264,13 @@ export function StartView({
           {/* Mode 2: Hotseat */}
           <div
             onClick={onHotseat}
-            className="group relative flex flex-col justify-between p-4 bg-[#191e24] hover:bg-[#20272f] border border-[#38424b] hover:border-sky-400 transition-all cursor-pointer select-none"
+            className="group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-sky-400/75 hover:border-sky-400 shadow-md transition-all cursor-pointer select-none"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
             <div className="space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-sky-400 font-bold">MODE 02</span>
-                <span className="text-[9px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.2">LOCAL</span>
+                <span className="text-[9px] font-mono text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.2">LOCAL</span>
               </div>
               <h3 className="text-sm font-bold text-white group-hover:text-sky-400 transition-colors m-0">
                 本地热座（双人同屏）
@@ -269,13 +287,13 @@ export function StartView({
           {/* Mode 3: Online Room */}
           <div
             onClick={onOnline}
-            className="group relative flex flex-col justify-between p-4 bg-[#191e24] hover:bg-[#20272f] border border-[#38424b] hover:border-rose-400 transition-all cursor-pointer select-none"
+            className="group relative flex flex-col justify-between p-4 bg-[#181e25] hover:bg-[#1f2730] border border-[#3a4552] border-t-2 border-t-rose-400/75 hover:border-rose-400 shadow-md transition-all cursor-pointer select-none"
             style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)' }}
           >
             <div className="space-y-1.5 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-rose-400 font-bold">MODE 03</span>
-                <span className="text-[9px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.2">P2P RTC</span>
+                <span className="text-[9px] font-mono text-slate-300 bg-slate-800/90 border border-slate-700 px-1.5 py-0.2">P2P RTC</span>
               </div>
               <h3 className="text-sm font-bold text-white group-hover:text-rose-400 transition-colors m-0">
                 好友对战（P2P 联机）

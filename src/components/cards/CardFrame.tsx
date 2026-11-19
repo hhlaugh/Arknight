@@ -385,21 +385,37 @@ export function CardFrame({
         <div className={`flex flex-col gap-0.5 sm:gap-1 w-full pt-0.5 sm:pt-1 border-t border-slate-700/75 bg-[#10151b]/90 px-0.5 sm:px-1 ${variant === 'hand' || variant === 'compact' ? 'pb-0.5' : 'pb-1'}`}>
           {isOperator && definition && (
             <div className={`flex items-center justify-between ${variant === 'hand' || variant === 'compact' ? 'text-[9px] sm:text-[11px]' : 'text-[10px] sm:text-[11px]'} font-mono tabular-nums leading-none`}>
-              <span className="text-rose-300 font-bold">
-                <span className={variant === 'hand' ? 'hidden sm:inline' : variant === 'compact' ? 'hidden' : ''}>ATK </span>
-                <span className={variant === 'hand' ? 'sm:hidden' : variant === 'compact' ? '' : 'hidden'}>⚔</span>
-                {definition.atk ?? 0}
-              </span>
-              <span className="text-emerald-300 font-bold">
-                <span className={variant === 'hand' ? 'hidden sm:inline' : variant === 'compact' ? 'hidden' : ''}>HP </span>
-                <span className={variant === 'hand' ? 'sm:hidden' : variant === 'compact' ? '' : 'hidden'}>♥</span>
-                {definition.hp ?? 0}
-              </span>
-              <span className="text-sky-300 font-bold">
-                <span className={variant === 'hand' ? 'hidden sm:inline' : variant === 'compact' ? 'hidden' : ''}>SP </span>
-                <span className={variant === 'hand' ? 'sm:hidden' : variant === 'compact' ? '' : 'hidden'}>⚡</span>
-                {definition.starting_sp ?? 0}/{definition.max_sp ?? 5}
-              </span>
+              {variant === 'hand' ? (
+                <>
+                  <span className="text-rose-300 font-bold">
+                    <span className="hidden sm:inline">ATK </span>
+                    <span className="sm:hidden">⚔</span>
+                    {definition.atk ?? 0}
+                  </span>
+                  <span className="text-emerald-300 font-bold">
+                    <span className="hidden sm:inline">HP </span>
+                    <span className="sm:hidden">♥</span>
+                    {definition.hp ?? 0}
+                  </span>
+                  <span className="text-sky-300 font-bold">
+                    <span className="hidden sm:inline">SP </span>
+                    <span className="sm:hidden">⚡</span>
+                    {definition.starting_sp ?? 0}/{definition.max_sp ?? 5}
+                  </span>
+                </>
+              ) : variant === 'compact' ? (
+                <>
+                  <span className="text-rose-300 font-bold">⚔{definition.atk ?? 0}</span>
+                  <span className="text-emerald-300 font-bold">♥{definition.hp ?? 0}</span>
+                  <span className="text-sky-300 font-bold">⚡{definition.starting_sp ?? 0}/{definition.max_sp ?? 5}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-rose-300 font-bold">ATK {definition.atk ?? 0}</span>
+                  <span className="text-emerald-300 font-bold">HP {definition.hp ?? 0}</span>
+                  <span className="text-sky-300 font-bold">SP {definition.starting_sp ?? 0}/{definition.max_sp ?? 5}</span>
+                </>
+              )}
             </div>
           )}
 

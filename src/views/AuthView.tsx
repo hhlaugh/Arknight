@@ -9,6 +9,7 @@ import {
 } from '../data/auth-store';
 import { playTacticalSfx, unlockBgmPlayback, useBgmStatus } from '../audio/bgmPlayer';
 import { updateAppSettings, useAppSettings } from '../data/app-settings';
+import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
 
 interface AuthViewProps {
   readonly onAuthenticated: (username: string) => void;
@@ -78,15 +79,22 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
 
   return (
     <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col justify-between p-4 sm:p-6 overflow-hidden select-none">
-      {/* 罗德岛制药塔形三角形官方 Logo 背景层 */}
+      {/* 罗德岛指挥中枢底图 + 塔形三角形官方 Logo 背景层 */}
       <div
         data-testid="auth-rhodes-tower-backdrop"
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
+        {/* 商业级指挥舰桥氛围底图 */}
+        <img
+          src={tacticalCommandBackdrop}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.22] scale-105"
+        />
         {/* 对角微弱重复暗纹 */}
         <div
-          className="absolute -inset-24 -rotate-12 opacity-[0.045]"
+          className="absolute -inset-24 -rotate-12 opacity-[0.04]"
           style={{
             backgroundImage: "url('./assets/arknights/logos/rhodes_island_light.png')",
             backgroundRepeat: 'repeat',
@@ -107,7 +115,7 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(circle at center, rgba(18,22,27,0.22) 0%, rgba(12,15,19,0.82) 78%, rgba(10,12,16,0.95) 100%)',
+              'radial-gradient(circle at center, rgba(16,20,26,0.28) 0%, rgba(11,14,18,0.84) 76%, rgba(9,11,15,0.96) 100%)',
           }}
         />
       </div>
@@ -173,7 +181,7 @@ export function AuthView({ onAuthenticated, onOpenSettings }: AuthViewProps) {
           cornerCut="lg"
           scanlines
           grid
-          className="border-[#4a5662] bg-[#161b21]/88 shadow-[0_24px_64px_rgba(0,0,0,0.75)]"
+          className="border-[#546372] bg-[#141920]/90 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)]"
         >
           {/* 标题与模式切换栏 */}
           <div className="px-5 pt-5 pb-4 border-b border-[#2e3842] space-y-3">

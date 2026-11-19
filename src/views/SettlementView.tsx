@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { playTacticalSfx } from '../audio/bgmPlayer';
 import { playCombatSfx } from '../audio/combatSfx';
+import settlementOperationKeyart from '../assets/images/settlement_operation_keyart_1795044171854.jpg';
 
 interface SettlementViewProps {
   readonly snapshot: LocalGameSnapshot;
@@ -48,25 +49,42 @@ export function SettlementView({ snapshot, setup, modeLabel, outcome, reward, on
           <div className="flex items-center gap-3">
             <span className="w-2 h-5 bg-[#e5a52b]" />
             <h2 className="text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
-              作战推演报告 // MISSION SETTLEMENT
+              作战推演报告 · MISSION SETTLEMENT
             </h2>
           </div>
           {modeLabel && <span className="text-[10px] font-mono text-slate-400">{modeLabel}</span>}
         </div>
 
-        {/* Victory/Defeat Banner */}
-        <div className="p-6 sm:p-8 text-center bg-gradient-to-b from-[#1f262d] to-[#161a1e] border-b border-[#2e3740]">
-          <div className="inline-block mb-2">
-            <Badge variant={isWinnerA ? 'ally' : isWinnerB ? 'enemy' : 'neutral'} className="text-xs px-3 py-1 font-bold">
-              {isDraw ? 'DRAW' : 'VICTORY'}
-            </Badge>
+        {/* Victory/Defeat Banner with Atmospheric Extraction Key Art */}
+        <div className="relative p-6 sm:p-9 text-center bg-[#12171d] border-b border-[#2e3740] overflow-hidden">
+          <img
+            src={settlementOperationKeyart}
+            alt=""
+            aria-hidden="true"
+            referrerPolicy="no-referrer"
+            className="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-50"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(circle at center, rgba(16,20,27,0.52) 0%, rgba(12,15,20,0.88) 78%, rgba(10,13,18,0.96) 100%)',
+            }}
+          />
+          <div className="relative z-10">
+            <div className="inline-block mb-2.5">
+              <Badge variant={isWinnerA ? 'ally' : isWinnerB ? 'enemy' : 'neutral'} className="text-xs px-3 py-1 font-bold">
+                {isDraw ? 'DRAW' : 'VICTORY'}
+              </Badge>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-widest uppercase m-0 drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+              {winnerText}
+            </h1>
+            <p className="text-xs text-slate-300 font-mono mt-2 tabular-nums">
+              推演总回合: {state.turn_number} · 记录战斗事件: {snapshot.logHistory.length} 条
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-widest uppercase m-0">
-            {winnerText}
-          </h1>
-          <p className="text-xs text-slate-400 font-mono mt-2">
-            推演总回合: {state.turn_number} · 记录战斗事件: {snapshot.logHistory.length} 条
-          </p>
         </div>
 
         {/* Originite Reward */}
@@ -78,8 +96,8 @@ export function SettlementView({ snapshot, setup, modeLabel, outcome, reward, on
         )}
 
         {/* Tactical Metrics Grid */}
-        <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#13171b] text-xs font-mono">
-          <div className="p-3 bg-[#191e24] border border-[#2b353e] space-y-1">
+        <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#13171b] text-xs font-mono tabular-nums">
+          <div className="p-3 bg-[#191e24] border border-[#2b353e] border-l-2 border-l-sky-400 space-y-1">
             <div className="text-sky-400 font-bold flex items-center justify-between">
               <span>玩家 A</span>
               <span>{state.players.player_a.base_points} HP</span>
@@ -92,7 +110,7 @@ export function SettlementView({ snapshot, setup, modeLabel, outcome, reward, on
             </div>
           </div>
 
-          <div className="p-3 bg-[#191e24] border border-[#2b353e] space-y-1">
+          <div className="p-3 bg-[#191e24] border border-[#2b353e] border-l-2 border-l-rose-400 space-y-1">
             <div className="text-rose-400 font-bold flex items-center justify-between">
               <span>玩家 B</span>
               <span>{state.players.player_b.base_points} HP</span>
@@ -107,8 +125,8 @@ export function SettlementView({ snapshot, setup, modeLabel, outcome, reward, on
         </div>
 
         {/* Seed Info */}
-        <div className="px-4 sm:px-5 py-2 bg-[#101316] border-t border-[#242b32] text-[10px] font-mono text-slate-500 flex flex-wrap justify-between gap-2">
-          <span>SEED // {setup.seed}</span>
+        <div className="px-4 sm:px-5 py-2 bg-[#101316] border-t border-[#242b32] text-[10px] font-mono text-slate-500 flex flex-wrap justify-between gap-2 tabular-nums">
+          <span>SEED · {setup.seed}</span>
           <span>REPLAY INVARIANTS: PASS</span>
         </div>
 

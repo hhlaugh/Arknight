@@ -21,6 +21,7 @@ import {
   previewAttackTargets,
 } from './tacticalSelectors';
 import { UnitView } from './UnitView';
+import { DynamicBattlefieldBackdrop } from './DynamicBattlefieldBackdrop';
 import { DEMO_CARDS, PRESET_DECKS } from '../../client/gameData';
 import { advancePhase, createInitialGameState, mulligan, reduceGameAction } from '../../game/engine';
 import type { CardId, CardInstanceId, Cost, GameState } from '../../game/types';
@@ -373,6 +374,29 @@ describe('Phase 5: 桌面与移动端交互体验测试', () => {
       />,
     );
     expect(htmlDragLocked).toContain('✓ 释放锁定');
+
+    const htmlTapHitShake = renderToString(
+      <UnitView
+        state={unitState}
+        instance={unitState.card_instances[unitId]}
+        highlight="selected"
+        tapCue={{ kind: 'tap', seq: 1 }}
+      />,
+    );
+    expect(htmlTapHitShake).toContain('data-tap-cue="tap"');
+    expect(htmlTapHitShake).toContain('anim-cell-hit-shake');
+
+    const htmlTapSkillFx = renderToString(
+      <UnitView
+        state={unitState}
+        instance={unitState.card_instances[unitId]}
+        highlight="none"
+        tapCue={{ kind: 'skill', seq: 2 }}
+      />,
+    );
+    expect(htmlTapSkillFx).toContain('data-tap-cue="skill"');
+    expect(htmlTapSkillFx).toContain('anim-skill-burst');
+    expect(htmlTapSkillFx).toContain('anim-skill-sweep');
   });
 
   it('双击手势识别: 300ms 内连续轻点触发双击快速技能，超过阈值则按普通单击处理', () => {
@@ -531,5 +555,41 @@ describe('Phase 5: 桌面与移动端交互体验测试', () => {
       canDirectPlay: true,
     });
     expect(cancelRes.kind).toBe('cancel');
+  });
+
+  it('DynamicBattlefieldBackdrop: 启用与关闭动效时均安全渲染 Arknights 主题底图、漂移聚光灯遮罩、天气烟雾遮罩与多样化粒子层', () => {
+    const activeHtml = renderToString(
+      <DynamicBattlefieldBackdrop backdropUrl="/mock-arena.jpg" disableMotion={false} />,
+    );
+    expect(activeHtml).toContain('data-testid="battlefield-backdrop"');
+    expect(activeHtml).toContain('data-motion-disabled="false"');
+    expect(activeHtml).toContain('data-particle-kinds="snowflake,debris,ember,light_mote"');
+    expect(activeHtml).toContain('data-testid="battlefield-spotlight-mask"');
+    expect(activeHtml).toContain('data-testid="battlefield-spotlight-secondary"');
+    expect(activeHtml).toContain('data-testid="battlefield-weather-haze"');
+    expect(activeHtml).toContain('data-testid="battlefield-weather-shimmer"');
+    expect(activeHtml).toContain('radial-gradient(');
+    expect(activeHtml).toContain('anim-spotlight-drift');
+    expect(activeHtml).toContain('anim-spotlight-secondary');
+    expect(activeHtml).toContain('anim-weather-haze');
+    expect(activeHtml).toContain('anim-weather-shimmer');
+    expect(activeHtml).toContain('data-testid="battlefield-ambient-canvas"');
+    expect(activeHtml).toContain('anim-arena-drift');
+    expect(activeHtml).toContain('anim-emblem-drift');
+    expect(activeHtml).toContain('rhodes_island_dark.png');
+
+    const staticHtml = renderToString(
+      <DynamicBattlefieldBackdrop backdropUrl="/mock-arena.jpg" disableMotion />,
+    );
+    expect(staticHtml).toContain('data-motion-disabled="true"');
+    expect(staticHtml).toContain('data-testid="battlefield-spotlight-mask"');
+    expect(staticHtml).toContain('data-testid="battlefield-weather-haze"');
+    expect(staticHtml).toContain('data-testid="battlefield-ambient-canvas"');
+    expect(staticHtml).not.toContain('anim-spotlight-drift');
+    expect(staticHtml).not.toContain('anim-spotlight-secondary');
+    expect(staticHtml).not.toContain('anim-weather-haze');
+    expect(staticHtml).not.toContain('anim-weather-shimmer');
+    expect(staticHtml).not.toContain('anim-arena-drift');
+    expect(staticHtml).not.toContain('anim-emblem-drift');
   });
 });

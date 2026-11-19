@@ -15,6 +15,8 @@ import { TacticalDetailPanel } from '../components/battle/TacticalDetailPanel';
 import { AttackPathOverlay, type Point2D } from '../components/battle/AttackPathOverlay';
 import { CardPreviewPopover, type HoveredCardPreview } from '../components/battle/CardPreviewPopover';
 import { CardTouchDragOverlay } from '../components/battle/CardTouchDragOverlay';
+import { TacticalBoardViewport } from '../components/battle/TacticalBoardViewport';
+import battlefieldArenaSurface from '../assets/images/battlefield_arena_surface_1795044169209.jpg';
 import {
   computeTouchAimPoint,
   detectTouchDragIntent,
@@ -153,6 +155,30 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
 
   const boardGridRef = useRef<HTMLDivElement>(null);
   const slotElRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [boardScale, setBoardScale] = useState(1);
+  const boardScaleRef = useRef(1);
+  boardScaleRef.current = boardScale;
+
+  const [slotTapCue, setSlotTapCue] = useState<{
+    readonly slotKey: SlotKey;
+    readonly kind: 'tap' | 'skill' | 'deploy';
+    readonly seq: number;
+  } | null>(null);
+  const tapCueSeqRef = useRef(0);
+  const tapCueTimerRef = useRef<number | null>(null);
+
+  const triggerSlotCue = (slotKey: SlotKey, kind: 'tap' | 'skill' | 'deploy') => {
+    tapCueSeqRef.current += 1;
+    const seq = tapCueSeqRef.current;
+    setSlotTapCue({ slotKey, kind, seq });
+    if (tapCueTimerRef.current !== null) {
+      window.clearTimeout(tapCueTimerRef.current);
+    }
+    tapCueTimerRef.current = window.setTimeout(() => {
+      setSlotTapCue((prev) => (prev && prev.seq === seq ? null : prev));
+    }, 460);
+  };
+
   const [boardGeometry, setBoardGeometry] = useState<{
     boardSize: { width: number; height: number };
     slotCenters: Record<string, Point2D>;
@@ -168,18 +194,19 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       const gridRect = gridEl.getBoundingClientRect();
       if (gridRect.width <= 0 || gridRect.height <= 0) return;
 
+      const scale = Math.max(0.1, boardScaleRef.current);
       const centers: Record<string, Point2D> = {};
       for (const [key, el] of Object.entries(slotElRefs.current)) {
         if (!el) continue;
         const rect = el.getBoundingClientRect();
         if (rect.width <= 0 && rect.height <= 0) continue;
         centers[key] = {
-          x: rect.left - gridRect.left + rect.width / 2,
-          y: rect.top - gridRect.top + rect.height / 2,
+          x: (rect.left - gridRect.left + rect.width / 2) / scale,
+          y: (rect.top - gridRect.top + rect.height / 2) / scale,
         };
       }
       setBoardGeometry({
-        boardSize: { width: gridRect.width, height: gridRect.height },
+        boardSize: { width: gridRect.width / scale, height: gridRect.height / scale },
         slotCenters: centers,
       });
     };
@@ -195,7 +222,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       window.removeEventListener('resize', measure);
       observer?.disconnect();
     };
-  }, [activeBeat?.id, showLog, showDetail, isMobile, isLandscape, isCompactLandscape, width, height]);
+  }, [activeBeat?.id, boardScale, showLog, showDetail, isMobile, isLandscape, isCompactLandscape, width, height]);
 
   const cancelPendingTouchCandidate = () => {
     touchCleanupRef.current?.();
@@ -235,6 +262,10 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     return () => {
       touchCleanupRef.current?.();
       touchCleanupRef.current = null;
+      if (tapCueTimerRef.current !== null) {
+        window.clearTimeout(tapCueTimerRef.current);
+        tapCueTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -394,7 +425,9 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
 
   const onSlotClick = (half: PlayerId, lane: LaneId, position: Position) => {
     if (Date.now() - justFinishedTouchDragAtRef.current < 160) return;
+    const slotKey = makeSlotKey(half, lane, position);
     if (!canAct) {
+      triggerSlotCue(slotKey, 'tap');
       if (selection) {
         playTacticalSfx('alert');
         setError('当前不是你的行动回合。');
@@ -402,11 +435,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
       return;
     }
     if (hasPending) {
+      triggerSlotCue(slotKey, 'tap');
       playTacticalSfx('alert');
       setError('请先完成回合开始的 SP 支援选择。');
       return;
     }
     if (!isActionPhase) {
+      triggerSlotCue(slotKey, 'tap');
       if (selection) {
         playTacticalSfx('alert');
         setError('只有行动阶段可以执行部署操作。');
@@ -416,10 +451,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
 
     const action = selectedDeployActions.find((candidate) => candidate.lane === lane && candidate.position === position);
     if (action) {
+      triggerSlotCue(slotKey, 'deploy');
+      triggerHaptic(10);
       dispatch(action);
       return;
     }
 
+    triggerSlotCue(slotKey, 'tap');
     if (selection) {
       const selectedInst = state.card_instances[selection];
       const selectedDef = cardDefinitionOf(state, selection);
@@ -439,7 +477,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
   };
 
   const onUnitClick = (instance: CardInstance) => {
+    const unitSlotKey =
+      instance.board_half && instance.lane && instance.position
+        ? makeSlotKey(instance.board_half, instance.lane, instance.position)
+        : null;
+
     if (!canAct) {
+      if (unitSlotKey) triggerSlotCue(unitSlotKey, 'tap');
       playCombatSfx('select');
       setSelection(instance.card_instance_id);
       return;
@@ -449,8 +493,10 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     if (hasPending) {
       const pendingAction = pendingResolves.find((candidate) => candidate.target_instance_id === targetId);
       if (pendingAction) {
+        if (unitSlotKey) triggerSlotCue(unitSlotKey, 'skill');
         dispatch(pendingAction);
       } else {
+        if (unitSlotKey) triggerSlotCue(unitSlotKey, 'tap');
         playTacticalSfx('alert');
         setError('SP 支援必须选择尚未满 SP 且未冻结的友方干员。');
       }
@@ -460,6 +506,8 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     if (selection && playTargets.has(targetId)) {
       const action = selectedPlayActions.find((candidate) => candidate.target_instance_id === targetId);
       if (action) {
+        if (unitSlotKey) triggerSlotCue(unitSlotKey, 'skill');
+        triggerHaptic(12);
         dispatch(action);
         return;
       }
@@ -471,11 +519,15 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           candidate.type === 'activate_skill' && candidate.card_instance_id === selection && candidate.target_instance_id === targetId,
       );
       if (action) {
+        if (unitSlotKey) triggerSlotCue(unitSlotKey, 'skill');
+        triggerHaptic(14);
         dispatch(action);
         return;
       }
     }
 
+    if (unitSlotKey) triggerSlotCue(unitSlotKey, 'tap');
+    triggerHaptic(6);
     if (selection === targetId) {
       playTacticalSfx('click');
       setSelection(null);
@@ -523,20 +575,29 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
 
   const handleQuickSkillClick = () => {
     if (!selection) return;
+    const selectedInst = state.card_instances[selection];
+    const selectedSlotKey =
+      selectedInst?.board_half && selectedInst.lane && selectedInst.position
+        ? makeSlotKey(selectedInst.board_half, selectedInst.lane, selectedInst.position)
+        : null;
     if (selectedUnitActions.canSkillDirect) {
       const action = legal.find(
         (a): a is SkillAction => a.type === 'activate_skill' && a.card_instance_id === selection && a.target_instance_id === undefined,
       );
       if (action) {
+        if (selectedSlotKey) triggerSlotCue(selectedSlotKey, 'skill');
+        triggerHaptic(14);
         dispatch(action);
         return;
       }
     }
     if (selectedUnitActions.skillTargets.size > 0) {
+      if (selectedSlotKey) triggerSlotCue(selectedSlotKey, 'tap');
       playTacticalSfx('alert');
       setError('请直接点击棋盘上青色脉冲高亮的目标单位发动技能。');
       return;
     }
+    if (selectedSlotKey) triggerSlotCue(selectedSlotKey, 'tap');
     const reason = getInvalidUnitActionReason(state, actor, selection, 'activate_skill');
     playTacticalSfx('alert');
     setError(reason ?? '当前无法发动主动技能。');
@@ -558,6 +619,10 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
 
   const handleUnitDoubleTap = (instance: CardInstance) => {
     const unitId = instance.card_instance_id;
+    const unitSlotKey =
+      instance.board_half && instance.lane && instance.position
+        ? makeSlotKey(instance.board_half, instance.lane, instance.position)
+        : null;
     // 若刚才已有其它选中项且该单位属于可选目标，单击已触发目标作用，不重复触发技能
     if (
       selection &&
@@ -568,6 +633,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
     }
 
     if (!canAct || hasPending || !isActionPhase || instance.controller_id !== actor) {
+      if (unitSlotKey) triggerSlotCue(unitSlotKey, 'tap');
       setSelection(unitId);
       setShowDetail(true);
       playCombatSfx('select');
@@ -580,6 +646,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         a.type === 'activate_skill' && a.card_instance_id === unitId && a.target_instance_id === undefined,
     );
     if (directSkill) {
+      if (unitSlotKey) triggerSlotCue(unitSlotKey, 'skill');
       triggerHaptic(14);
       void dispatch(directSkill);
       return;
@@ -590,12 +657,14 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         a.type === 'activate_skill' && a.card_instance_id === unitId && a.target_instance_id !== undefined,
     );
     if (targetedSkills.length > 0) {
+      if (unitSlotKey) triggerSlotCue(unitSlotKey, 'tap');
       setSelection(unitId);
       playCombatSfx('select');
       triggerHaptic(10);
       return;
     }
 
+    if (unitSlotKey) triggerSlotCue(unitSlotKey, 'tap');
     setSelection(unitId);
     const reason = getInvalidUnitActionReason(state, actor, unitId, 'activate_skill');
     playTacticalSfx('alert');
@@ -928,6 +997,8 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           touchDragState.resolution.slot.isValidDeploy,
       );
 
+      const isSlotTapped = !combatAnim.effectiveDisabled && slotTapCue?.slotKey === slotKey;
+
       return (
         <div
           key={key}
@@ -937,6 +1008,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           role="button"
           tabIndex={isDeployTarget ? 0 : -1}
           aria-label={`${LANE_LABEL[lane]}${posName}${isDeployTarget ? ' 可部署' : ''}`}
+          data-tap-cue={isSlotTapped ? slotTapCue.kind : undefined}
           onClick={(e) => {
             e.stopPropagation();
             onSlotClick(half, lane, position);
@@ -996,6 +1068,8 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           className={`relative flex items-center justify-center ${
             useCompactBoard ? 'h-[54px]' : 'h-[58px] sm:h-[70px] lg:h-[82px]'
           } border transition-all duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+            isSlotTapped ? 'anim-cell-hit-shake' : ''
+          } ${
             isDeployTarget
               ? isTouchLockedSlot
                 ? 'border-[#f59e0b] bg-amber-500/40 ring-2 ring-[#f59e0b] scale-[1.03] shadow-[0_0_20px_rgba(245,158,11,0.7)] cursor-pointer z-20'
@@ -1012,6 +1086,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           }`}
           style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
         >
+          {isSlotTapped && (
+            <div
+              key={`slot-tap-${slotTapCue.seq}`}
+              aria-hidden="true"
+              className="absolute inset-0 border border-amber-300/70 bg-amber-400/12 pointer-events-none z-25 anim-slot-flash"
+            />
+          )}
           {isDeployTarget ? (
             <div className="flex flex-col items-center gap-0.5 text-[#e5a52b] font-bold text-[10px] sm:text-xs tracking-wider text-center px-1">
               <span className="truncate max-w-full">
@@ -1115,6 +1196,14 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
         touchDragState.resolution.slot.isValidUnitTarget,
     );
 
+    const unitTapCue =
+      !combatAnim.effectiveDisabled && slotTapCue?.slotKey === slotKey
+        ? { kind: slotTapCue.kind, seq: slotTapCue.seq }
+        : null;
+    const isSkillWaveActive =
+      !combatAnim.effectiveDisabled &&
+      (Boolean(activeBeat?.skillUnits[instance.card_instance_id]) || unitTapCue?.kind === 'skill');
+
     return (
       <div
         key={instance.card_instance_id}
@@ -1131,6 +1220,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           canActivateSkill={canActivateUnitSkill}
           isDragLocked={isUnitDragLocked}
           animState={unitAnimState}
+          tapCue={unitTapCue}
           onClick={() => onUnitClick(instance)}
           onDoubleTap={() => handleUnitDoubleTap(instance)}
           onLongPress={() => {
@@ -1149,6 +1239,13 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
           <div
             aria-hidden="true"
             className="absolute inset-0 border-2 border-[#e5a52b] pointer-events-none z-30 anim-slot-flash"
+          />
+        )}
+        {isSkillWaveActive && (
+          <div
+            key={`wave-${unitTapCue?.seq ?? activeBeat?.id ?? 'skill'}`}
+            aria-hidden="true"
+            className="absolute -inset-1 border-2 border-cyan-300/85 shadow-[0_0_20px_rgba(34,211,238,0.6)] pointer-events-none z-30 anim-skill-wave"
           />
         )}
       </div>
@@ -1424,10 +1521,17 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
               </button>
             )}
 
-            <div className="relative flex-1 min-h-0 overflow-y-auto overscroll-contain flex flex-col items-center px-1 sm:px-3 lg:px-4 py-1 sm:py-1.5">
+            <TacticalBoardViewport
+              isMobile={isMobile}
+              disableGestures={Boolean(touchDragState || draggingCardId)}
+              disableMotion={combatAnim.effectiveDisabled}
+              arenaBackdropUrl={battlefieldArenaSurface}
+              onScaleChange={setBoardScale}
+              onBackgroundClick={clearNonModalSelection}
+            >
               <div
                 ref={boardGridRef}
-                className={`relative my-auto w-full max-w-4xl transition-all duration-150 ${
+                className={`relative w-full transition-all duration-150 ${
                   touchDragState?.resolution.kind === 'direct_play'
                     ? 'ring-2 ring-cyan-400/85 bg-cyan-950/15 shadow-[0_0_24px_rgba(34,211,238,0.25)]'
                     : ''
@@ -1448,14 +1552,14 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
                     return (
                       <div
                         key={lane}
-                        className={`relative flex flex-col bg-[#11161f] border border-t-2 border-t-rose-500/55 border-b-2 border-b-sky-500/55 overflow-hidden shadow-md transition-colors duration-150 ${
+                        className={`relative flex flex-col bg-[#11161f]/92 backdrop-blur-[1px] border border-t-2 border-t-rose-500/65 border-b-2 border-b-sky-500/65 overflow-hidden shadow-[0_8px_22px_rgba(0,0,0,0.65)] transition-colors duration-150 ${
                           laneStrike
                             ? laneStrike.toBase
-                              ? 'border-rose-500/80'
+                              ? 'border-rose-500/85'
                               : laneStrike.kind === 'skill'
-                                ? 'border-cyan-400/80'
-                                : 'border-amber-500/75'
-                            : 'border-[#263140]'
+                                ? 'border-cyan-400/85'
+                                : 'border-amber-500/80'
+                            : 'border-[#2c3849]'
                         }`}
                         style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}
                       >
@@ -1518,7 +1622,7 @@ export function BattleView({ snapshot, controller, onDispatch, humanPlayer = nul
                   disableMotion={combatAnim.effectiveDisabled || !appSettings.combatVfxEnabled}
                 />
               </div>
-            </div>
+            </TacticalBoardViewport>
           </div>
 
           {/* 底部 / 横屏右侧统一己方指挥面板与手牌托盘 */}

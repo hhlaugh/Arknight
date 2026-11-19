@@ -5,6 +5,7 @@ import { getActiveAccountName, getDeckMode } from '../data/player-collection';
 import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import tacticalCommandBackdrop from '../assets/images/tactical_command_backdrop_1795044168530.jpg';
 
 interface RoomLobbyViewProps {
   readonly controller: OnlineMatchController;
@@ -80,12 +81,27 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
   // 1. 未进入房间视图：创建房间 或 输入房间码加入
   if (!inRoom) {
     return (
-      <div className="min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none">
+      <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+          <img
+            src={tacticalCommandBackdrop}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover opacity-[0.18]"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(circle at center, rgba(16,20,26,0.45) 0%, rgba(12,15,20,0.88) 76%, rgba(10,12,16,0.97) 100%)',
+            }}
+          />
+        </div>
         <Panel
           variant="raised"
           cornerCut="lg"
           scanlines
-          className="w-full max-w-4xl border border-[#4a555b] shadow-2xl flex flex-col overflow-hidden"
+          className="relative z-10 w-full max-w-4xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden"
         >
           {/* Terminal Header */}
           <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45]">
@@ -136,7 +152,7 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
           <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 sm:gap-6 items-stretch bg-gradient-to-b from-[#1b2025] to-[#14181c]">
             <div className="p-4 sm:p-5 bg-[#181d22] border border-[#323d46] flex flex-col justify-between gap-4">
               <div className="space-y-1.5">
-                <span className="text-[10px] font-mono text-[#e5a52b] font-bold">ACTION // HOST</span>
+                <span className="text-[10px] font-mono text-[#e5a52b] font-bold">ACTION · HOST</span>
                 <h2 className="text-base font-bold text-white m-0">创建新房间</h2>
                 <p className="text-xs text-slate-400 leading-relaxed m-0">
                   作为房主生成 8 位房间码，邀请好友加入同一战局。
@@ -160,7 +176,7 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
 
             <div className="p-4 sm:p-5 bg-[#181d22] border border-[#323d46] flex flex-col justify-between gap-4">
               <div className="space-y-1.5">
-                <span className="text-[10px] font-mono text-sky-400 font-bold">ACTION // GUEST</span>
+                <span className="text-[10px] font-mono text-sky-400 font-bold">ACTION · GUEST</span>
                 <h2 className="text-base font-bold text-white m-0">输入房间码加入</h2>
                 <p className="text-xs text-slate-400 leading-relaxed m-0">
                   输入好友分享的 8 位房间码连接对局。
@@ -198,7 +214,7 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
             <Button variant="ghost" size="md" onClick={onBackToTitle}>
               ◀ 返回标题页
             </Button>
-            <span className="text-[10px] font-mono text-slate-500">PROTOCOL // P2P_DATA_CHANNEL</span>
+            <span className="text-[10px] font-mono text-slate-500">WEBRTC · P2P_DATA_CHANNEL</span>
           </div>
         </Panel>
       </div>
@@ -211,18 +227,33 @@ export function RoomLobbyView({ controller, snapshot, onBackToTitle }: RoomLobby
   const decks = getAllAvailableDecks(getDeckMode());
 
   return (
-    <div className="min-h-screen w-full bg-[#171a1d] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none">
+    <div className="relative min-h-screen w-full bg-[#12161b] text-[#e8e9e6] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <img
+          src={tacticalCommandBackdrop}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover opacity-[0.18]"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(circle at center, rgba(16,20,26,0.45) 0%, rgba(12,15,20,0.88) 76%, rgba(10,12,16,0.97) 100%)',
+          }}
+        />
+      </div>
       <Panel
         variant="raised"
         cornerCut="lg"
         scanlines
-        className="w-full max-w-4xl border border-[#4a555b] shadow-2xl flex flex-col overflow-hidden"
+        className="relative z-10 w-full max-w-4xl border border-[#52606d] bg-[#161b22]/92 backdrop-blur-sm shadow-[0_24px_64px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden"
       >
         <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3.5 bg-[#14171a] border-b border-[#363f45]">
           <div className="flex items-center gap-3">
             <span className="w-2 h-5 bg-[#e5a52b]" />
             <h1 className="text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
-              好友对战大厅 // ROOM LOBBY
+              好友对战大厅 · ROOM LOBBY
             </h1>
           </div>
           <Badge variant="ally">🌐 P2P 直连</Badge>

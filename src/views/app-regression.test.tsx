@@ -259,6 +259,20 @@ describe('Phase 7 全面回归验收测试套件', () => {
     expect(battleHotseatHtml).not.toContain('aria-label="战局菜单"');
     expect(battleHotseatHtml).toContain('--combat-anim-scale:2');
     expect(battleHotseatHtml).toContain('0.5x');
+    expect(battleHotseatHtml).toContain('data-testid="board-viewport"');
+    expect(battleHotseatHtml).toContain('data-testid="battlefield-backdrop"');
+    expect(battleHotseatHtml).toContain('data-particle-kinds="snowflake,debris,ember,light_mote"');
+    expect(battleHotseatHtml).toContain('data-testid="battlefield-spotlight-mask"');
+    expect(battleHotseatHtml).toContain('anim-spotlight-drift');
+    expect(battleHotseatHtml).toContain('data-testid="battlefield-weather-haze"');
+    expect(battleHotseatHtml).toContain('anim-weather-haze');
+    expect(battleHotseatHtml).toContain('data-testid="battlefield-ambient-canvas"');
+    expect(battleHotseatHtml).toContain('anim-arena-drift');
+    expect(battleHotseatHtml).toContain('rhodes_island_dark.png');
+    expect(battleHotseatHtml).toContain('data-testid="board-camera-controls"');
+    expect(battleHotseatHtml).toContain('aria-label="放大棋盘视野"');
+    expect(battleHotseatHtml).toContain('aria-label="缩小棋盘视野"');
+    expect(battleHotseatHtml).toContain('aria-label="重置棋盘视野缩放"');
 
     const battleBotHtml = renderToString(
       <BattleView snapshot={battleSnap} controller={controller} humanPlayer="player_a" onExit={noop} />,

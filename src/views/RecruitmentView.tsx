@@ -11,6 +11,7 @@ import { Panel } from '../components/ui/Panel';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
+import headhuntingBannerArt from '../assets/images/headhunting_banner_art_1795044169776.jpg';
 
 interface RecruitmentViewProps {
   readonly onBack: () => void;
@@ -211,7 +212,7 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
             <span className="w-1.5 h-5 bg-[#e5a52b]" />
             <div>
               <h2 className="text-sm sm:text-base font-black tracking-widest text-slate-100 uppercase m-0 leading-tight">
-                干员寻访 // RECRUITMENT
+                干员寻访 · RECRUITMENT
               </h2>
               <span className="text-[10px] font-mono text-slate-400 tracking-wider tabular-nums">
                 {DEFAULT_POOL.label} · 6★ 2% · 51 抽起递增 · 99 抽必出
@@ -347,10 +348,31 @@ export function RecruitmentView({ onBack, onOpenDeckEditor }: RecruitmentViewPro
           )}
 
           {!pending && (
-            <div className="py-8 text-center space-y-2 border border-dashed border-[#2b353e] bg-[#12161c]/70">
-              <div className="text-sm text-slate-200 font-bold">消耗合成玉寻访干员，收录后即可用于卡组构筑</div>
-              <div className="text-[11px] font-mono text-slate-400 leading-relaxed max-w-xl mx-auto px-3">
-                新干员收录进库存（同名上限 2 张）· 重复干员自动转化为合成玉 · 完成对局（胜 +{economy.battleRewards.win} / 负 +{economy.battleRewards.lose}）补充合成玉
+            <div className="relative overflow-hidden border border-[#3a4654] bg-[#0e1319] min-h-[170px] sm:min-h-[196px] flex flex-col justify-end p-4 sm:p-6 shadow-inner">
+              <img
+                src={headhuntingBannerArt}
+                alt="罗德岛标准寻访卡池"
+                referrerPolicy="no-referrer"
+                className="absolute inset-0 w-full h-full object-cover opacity-80"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(90deg, rgba(11,15,20,0.92) 0%, rgba(11,15,20,0.68) 52%, rgba(11,15,20,0.38) 100%)',
+                }}
+              />
+              <div className="relative z-10 max-w-lg space-y-1.5">
+                <div className="text-[10px] font-mono font-bold tracking-widest text-amber-300 uppercase">
+                  STANDARD HEADHUNTING · {DEFAULT_POOL.label}
+                </div>
+                <div className="text-base sm:text-lg font-black text-white tracking-wide">
+                  消耗合成玉寻访干员，收录后即可用于卡组构筑
+                </div>
+                <div className="text-[11px] font-mono text-slate-300 leading-relaxed">
+                  新干员收录进库存（同名上限 2 张）· 重复干员自动转化为合成玉 · 完成对局（胜 +{economy.battleRewards.win} / 负 +{economy.battleRewards.lose}）补充合成玉
+                </div>
               </div>
             </div>
           )}

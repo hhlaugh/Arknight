@@ -11,6 +11,11 @@ import { RARITY_THEMES } from '../ui/tokens';
 
 export type UnitHighlight = 'none' | 'target' | 'selected' | 'attack_target';
 
+export interface UnitTapCue {
+  readonly kind: 'tap' | 'skill' | 'deploy';
+  readonly seq: number;
+}
+
 interface UnitViewProps {
   readonly state: GameState;
   readonly instance: CardInstance;
@@ -19,6 +24,7 @@ interface UnitViewProps {
   readonly canActivateSkill?: boolean;
   readonly isDragLocked?: boolean;
   readonly animState?: UnitAnimationState;
+  readonly tapCue?: UnitTapCue | null;
   readonly onClick?: () => void;
   readonly onDoubleTap?: () => void;
   readonly onLongPress?: () => void;
@@ -51,6 +57,7 @@ export function UnitView({
   canActivateSkill = false,
   isDragLocked = false,
   animState,
+  tapCue = null,
   onClick,
   onDoubleTap,
   onLongPress,
@@ -86,6 +93,8 @@ export function UnitView({
   const motionOff = Boolean(animState?.disableMotion);
   const rarityDeployCls =
     !motionOff && rarity >= 6 ? ' anim-deploy-rarity-6' : !motionOff && rarity === 5 ? ' anim-deploy-rarity-5' : '';
+  const tapShakeCls = !motionOff && tapCue ? ' anim-cell-hit-shake' : '';
+  const showSkillFx = !motionOff && (Boolean(animState?.skillFlash) || tapCue?.kind === 'skill');
   const motionClass = motionOff
     ? ''
     : animState?.hit
@@ -96,7 +105,7 @@ export function UnitView({
           ? 'anim-melee-lunge-down anim-attack-glow'
           : animState?.deployed
             ? `anim-deploy-land${rarityDeployCls}`
-            : '';
+            : tapShakeCls.trim();
 
   const floatingPopups = animState?.floatingPopups ?? [];
 
@@ -107,6 +116,7 @@ export function UnitView({
       aria-label={`${definition.card_name_zh}，生命 ${combat.current_hp}/${maxHp}，攻击 ${atk}，技力 ${combat.current_sp}/${definition.max_sp ?? 5}`}
       data-rarity={String(rarity)}
       data-highlight={highlight}
+      data-tap-cue={tapCue?.kind}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
       onPointerDown={longPressHandlers.onPointerDown}
@@ -139,8 +149,8 @@ export function UnitView({
                   ? 'border-rose-500 ring-2 ring-rose-500/55 shadow-[0_0_12px_rgba(244,63,94,0.45)] z-20'
                   : animState?.hit
                     ? 'border-rose-400 ring-1 ring-rose-400/70 z-20'
-                    : animState?.skillFlash
-                      ? 'border-cyan-400 ring-1 ring-cyan-400/70 z-20'
+                    : showSkillFx
+                      ? 'border-cyan-300 ring-2 ring-cyan-400/80 shadow-[0_0_16px_rgba(34,211,238,0.55)] z-25'
                       : 'border-[#36424e] hover:border-[#526475] hover:bg-[#1e252e]'
       } ${motionClass} w-full ${compact ? 'h-[54px]' : 'h-[58px] sm:h-[70px] lg:h-[82px]'}`}
     >
@@ -164,9 +174,29 @@ export function UnitView({
           <div className="absolute inset-0 pointer-events-none z-20 anim-hit-flash bg-gradient-to-b from-white/75 via-rose-500/55 to-rose-600/65" />
         )}
 
-        {/* 技能发动瞬时光环遮罩 */}
-        {!motionOff && animState?.skillFlash && (
-          <div className="absolute inset-0 border-2 border-cyan-300/80 bg-cyan-400/15 pointer-events-none z-20 anim-skill-burst" />
+        {/* 单元格点击微震动高光反馈 */}
+        {!motionOff && tapCue && tapCue.kind === 'tap' && (
+          <div
+            key={`tap-pulse-${tapCue.seq}`}
+            aria-hidden="true"
+            className="absolute inset-0 border border-amber-300/75 bg-amber-400/12 pointer-events-none z-20 anim-slot-flash"
+          />
+        )}
+
+        {/* 技能发动复合特效：内框冲击环 + 能量斜扫光束 */}
+        {showSkillFx && (
+          <>
+            <div
+              key={`skill-burst-${tapCue?.seq ?? 'anim'}`}
+              aria-hidden="true"
+              className="absolute inset-0 border-2 border-cyan-300/90 bg-gradient-to-br from-cyan-400/25 via-transparent to-amber-400/20 pointer-events-none z-20 anim-skill-burst"
+            />
+            <div
+              key={`skill-sweep-${tapCue?.seq ?? 'anim'}`}
+              aria-hidden="true"
+              className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-cyan-200/45 to-transparent pointer-events-none z-20 anim-skill-sweep"
+            />
+          </>
         )}
 
         {/* 顶部：干员头像、名称与状态标 */}
